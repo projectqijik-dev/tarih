@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Keşif Başlıyor | Boğaziçi Koleji Tarih Portalı</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        :root {
+            /* Tarihi Kahverengi ve Antik Altın Paleti */
+            --primary-accent: #d4af37; /* Antik Altın */
+            --bg-dark-1: #2c1e14; /* Derin Kahve */
+            --bg-dark-2: #4b3621; /* Orta Kahve */
+            --bg-dark-3: #1a100a; /* Koyu Ahşap */
+            --text-main: #f8f9fa;
+            --text-muted: #d7ccc8; /* Sıcak Beige */
+            --glass-bg: rgba(75, 54, 33, 0.2); /* Kahvemsi cam efekti */
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            /* Kahverengi Degrade */
+            background: linear-gradient(135deg, var(--bg-dark-1) 0%, var(--bg-dark-2) 50%, var(--bg-dark-3) 100%);
+            color: var(--text-main);
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* Arka Planda Süzülen Tarihi İkonlar (Keşif ve Zaman Temalı) */
+        .bg-icons {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            z-index: 0;
+            pointer-events: none;
+            opacity: 0.15; /* Kahverengi zeminde daha belirgin */
+        }
+
+        .bg-icons i {
+            position: absolute;
+            color: #d7ccc8; /* Sıcak beige */
+            animation: floatIcon linear infinite;
+        }
+
+        @keyframes floatIcon {
+            0% { transform: translateY(110vh) rotate(0deg); opacity: 0; }
+            10% { opacity: 0.6; }
+            90% { opacity: 0.6; }
+            100% { transform: translateY(-10vh) rotate(360deg); opacity: 0; }
+        }
+
+        /* Cam Efektli Ana Pano (Glassmorphism - Kahverengi Tonlu) */
+        .glass-panel {
+            background: var(--glass-bg);
+            backdrop-filter: blur(25px);
+            -webkit-backdrop-filter: blur(25px);
+            border: 1px solid rgba(212, 175, 55, 0.15); /* Antik altın çerçeve */
+            border-top: 5px solid var(--primary-accent);
+            border-radius: 20px;
+            padding: 50px 40px;
+            max-width: 650px;
+            width: 90%;
+            text-align: center;
+            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.5);
+            z-index: 10;
+            animation: panelEntrance 1s ease-out;
+        }
+
+        @keyframes panelEntrance {
+            from { opacity: 0; transform: scale(0.9) translateY(30px); }
+            to { opacity: 1; transform: scale(1) translateY(0); }
+        }
+
+        /* Dinamik Antika Pusula İkonu (Kum saati yerine) */
+        .main-icon {
+            font-size: 55px;
+            color: var(--primary-accent);
+            margin-bottom: 25px;
+            display: inline-block;
+            animation: rotateCompass 15s linear infinite; /* Sürekli, yavaş dönüş */
+            text-shadow: 0 0 15px rgba(212, 175, 55, 0.5);
+        }
+
+        @keyframes rotateCompass {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        h1 {
+            font-size: 36px;
+            font-weight: 800;
+            margin-bottom: 15px;
+            letter-spacing: -1px;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+            color: #fff;
+        }
+
+        p {
+            font-size: 16px;
+            color: var(--text-muted);
+            line-height: 1.7;
+            margin-bottom: 40px;
+            font-weight: 400;
+        }
+
+        /* Tarih Timeline İlerleme Çubuğu */
+        .timeline-container {
+            width: 100%;
+            background: rgba(0, 0, 0, 0.4);
+            border-radius: 30px;
+            height: 14px;
+            margin-bottom: 15px;
+            position: relative;
+            box-shadow: inset 0 2px 8px rgba(0,0,0,0.4);
+            border: 1px solid rgba(212, 175, 55, 0.1);
+        }
+
+        .timeline-bar {
+            height: 100%;
+            width: 90%; /* İlerleme yüzdesi açılışa çok yakın */
+            background: linear-gradient(90deg, #8b4513, var(--primary-accent));
+            border-radius: 30px;
+            position: relative;
+            animation: excavate 2.5s cubic-bezier(0.1, 0.8, 0.2, 1) forwards;
+        }
+
+        /* Kazma emojisi tarihe kazıyı simgelemeye devam ediyor */
+        .timeline-bar::after {
+            content: '⛏️';
+            position: absolute;
+            right: -12px;
+            top: -10px;
+            font-size: 20px;
+            animation: dig 0.5s infinite alternate;
+        }
+
+        @keyframes excavate {
+            from { width: 0; }
+        }
+
+        @keyframes dig {
+            from { transform: rotate(0deg) translateY(0); }
+            to { transform: rotate(-25deg) translateY(3px); }
+        }
+
+        .status-text {
+            display: flex;
+            justify-content: space-between;
+            font-size: 13px;
+            color: var(--text-muted);
+            font-weight: 600;
+            margin-bottom: 35px;
+        }
+
+        /* İletişim Butonu */
+        .contact-btn {
+            background: transparent;
+            color: var(--text-main);
+            border: 2px solid rgba(212, 175, 55, 0.3);
+            padding: 14px 35px;
+            border-radius: 14px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .contact-btn:hover {
+            background: rgba(212, 175, 55, 0.1);
+            border-color: var(--primary-accent);
+            color: var(--primary-accent);
+            transform: translateY(-4px);
+            box-shadow: 0 5px 15px rgba(212, 175, 55, 0.2);
+        }
+
+        .school-badge {
+            margin-top: 35px;
+            font-size: 12px;
+            color: rgba(215, 204, 200, 0.4);
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+        }
+
+        @media (max-width: 480px) {
+            h1 { font-size: 28px; }
+            .glass-panel { padding: 40px 20px; }
+            .main-icon { font-size: 45px; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="bg-icons">
+        <i class="fa-solid fa-map" style="left: 10%; font-size: 40px; animation-duration: 18s; animation-delay: 0s;"></i>
+        <i class="fa-solid fa-scroll" style="left: 25%; font-size: 30px; animation-duration: 22s; animation-delay: 2s;"></i>
+        <i class="fa-solid fa-helmet-safety" style="left: 65%; font-size: 50px; animation-duration: 20s; animation-delay: 5s;"></i>
+        <i class="fa-solid fa-feather-pointed" style="left: 85%; font-size: 35px; animation-duration: 24s; animation-delay: 1s;"></i>
+        <i class="fa-solid fa-landmark" style="left: 48%; font-size: 45px; animation-duration: 19s; animation-delay: 7s;"></i>
+        <i class="fa-solid fa-key" style="left: 75%; font-size: 30px; animation-duration: 26s; animation-delay: 4s;"></i>
+    </div>
+
+    <div class="glass-panel">
+        <div class="main-icon">
+            <i class="fa-solid fa-compass"></i>
+        </div>
+        
+        <h1>Keşif Başlıyor...</h1>
+        <p>Tarihi, dijital dünyanın hızıyla buluşturmak için portalımızın v.3 mimarisini inşa ediyoruz. Konu videoları, sunuları, ses kayıtları; akıllı sınav robotu ve ödev gönderme modülleriyle geçmişi keşfetme yolculuğunuz çok yakında başlayacak. Takipte kalın!</p>
+        
+        <div class="timeline-container">
+            <div class="timeline-bar"></div>
+        </div>
+        <div class="status-text">
+            <span>Kodlama & Tasarım Yolculuğu</span>
+            <span style="color: var(--primary-accent);">%90 Tamamlandı</span>
+        </div>
+
+        <a href="mailto:murat@kirkyama.uk" class="contact-btn">
+            <i class="fa-solid fa-feather-pointed"></i> Murat Hoca'ya Mesaj Gönder
+        
+        </a>
+
+        <div class="school-badge">
+            Özel Batman Boğaziçi Koleji MTAL Tarih Zümresi
+        </div>
+    </div>
+
+</body>
+</html>
