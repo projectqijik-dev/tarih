@@ -223,6 +223,8 @@ function acHarita(haritaId, baslik, element) {
     setTimeout(() => {
         if (haritaId === 'kavimler_gocu') {
             cizKavimlerGocu();
+        } else if (haritaId === 'ticaret_yollari') {
+            cizTicaretYollari();
         } else if (haritaId === 'ilk_cag') {
             alert("İlk Çağ Haritası yapım aşamasındadır.");
         }
@@ -335,6 +337,66 @@ function cizKavimlerGocu() {
     };
     legend.addTo(currentMapInstance);
 }
+
+function cizTicaretYollari() {
+    const controlsContainer = document.getElementById('mapControlsContainer');
+    controlsContainer.innerHTML = `
+        <div style="text-align: center; padding: 10px;">
+            <p style="font-size: 0.9em; opacity: 0.8; margin: 0; color: var(--text-color);">Tarihi değiştiren büyük ticaret ağları. Detaylar için rotaların üzerine tıklayın.</p>
+        </div>
+    `;
+    controlsContainer.style.display = 'block';
+
+    currentMapInstance = L.map('mapCanvas').setView([35.0, 50.0], 3);
+
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        maxZoom: 10,
+        attribution: '© OpenStreetMap'
+    }).addTo(currentMapInstance);
+
+    const yollar = [
+        {
+            isim: "İpek Yolu", renk: "#e74c3c",
+            bilgi: "Çin'den başlayarak Orta Asya üzerinden Avrupa'ya uzanan, ipek, porselen ve kağıt taşınan devasa ticaret ağı.",
+            rota: [[34.2, 108.9], [40.1, 94.6], [39.4, 75.9], [39.6, 66.9], [37.6, 61.8], [35.5, 51.4], [33.3, 44.4], [36.2, 36.1], [41.0, 28.9]]
+        },
+        {
+            isim: "Baharat Yolu", renk: "#f39c12",
+            bilgi: "Hindistan'dan başlayıp deniz yoluyla Kızıldeniz'e, oradan İskenderiye üzerinden Avrupa'ya uzanan baharat hattı.",
+            rota: [[11.2, 75.7], [15.0, 65.0], [12.7, 45.0], [20.0, 38.0], [31.2, 29.9], [35.0, 20.0], [45.4, 12.3]]
+        },
+        {
+            isim: "Kral Yolu", renk: "#9b59b6",
+            bilgi: "Sardes'ten (Manisa) başlayıp Pers başkenti Susa'ya uzanan, tarihin ilk büyük sistemli posta ve ticaret yolu.",
+            rota: [[38.4, 28.0], [38.6, 31.9], [40.0, 34.6], [38.3, 38.3], [36.3, 43.1], [32.1, 48.2]]
+        },
+        {
+            isim: "Kürk Yolu", renk: "#3498db",
+            bilgi: "Sibirya ve Ural dağlarından başlayarak güneye, Hazar ve Karadeniz'e inen kuzey ticaret hattı.",
+            rota: [[60.0, 70.0], [55.0, 60.0], [51.0, 51.0], [46.3, 48.0], [47.0, 39.0], [45.3, 34.4]]
+        }
+    ];
+
+    yollar.forEach(yol => {
+        L.polyline(yol.rota, {color: yol.renk, weight: 5, opacity: 0.8})
+            .addTo(currentMapInstance)
+            .bindPopup(`<b>${yol.isim}</b><br>${yol.bilgi}`);
+    });
+
+    const legend = L.control({position: 'bottomright'});
+    legend.onAdd = function () {
+        const div = L.DomUtil.create('div', 'info legend');
+        div.style.backgroundColor = "rgba(255, 255, 255, 0.9)";
+        div.style.padding = "10px";
+        div.style.borderRadius = "5px";
+        div.innerHTML = '<h4 style="margin: 0 0 5px 0; font-size:14px;">Ticaret Yolları</h4>';
+        yollar.forEach(y => {
+            div.innerHTML += `<div style="display:flex; align-items:center; margin-bottom:3px; font-size:12px;"><i style="background: ${y.renk}; width: 15px; height: 3px; display: inline-block; margin-right: 5px;"></i> ${y.isim}</div>`;
+        });
+        return div;
+    };
+    legend.addTo(currentMapInstance);
+}
 // --- HARİTA YÖNETİM MOTORU SONU ---
 	function materyalleriYukle(uniteId) {
         aktifMateryaller = [];
@@ -413,7 +475,12 @@ function cizKavimlerGocu() {
                 { baslik: "Kavimler Göçü Etkileri", tur: "Video Ders", icon: "fa-film", renk: "#e74c3c", link: "#" },
                 { baslik: "Feodalizm ve Şövalyeler", tur: "Video Ders", icon: "fa-film", renk: "#e74c3c", link: "#" },
                 { baslik: "Karanlık Çağ Belgeseli", tur: "Belgesel", icon: "fa-film", renk: "#e74c3c", link: "#" },
-				{ baslik: "Ortaçağ Dünya'sı", tur: "Podcast", icon: "fa-podcast", renk: "#9b59b6", link: "PodcastLinki" },
+				{ baslik: "Podcastİsmi", tur: "Podcast", icon: "fa-podcast", renk: "#9b59b6", link: "PodcastLinki" },
+				{ baslik: "Podcastİsmi", tur: "Podcast", icon: "fa-podcast", renk: "#9b59b6", link: "PodcastLinki" },
+				{ baslik: "Podcastİsmi", tur: "Podcast", icon: "fa-podcast", renk: "#9b59b6", link: "PodcastLinki" },
+				{ baslik: "Podcastİsmi", tur: "Podcast", icon: "fa-podcast", renk: "#9b59b6", link: "PodcastLinki" },
+				{ baslik: "Podcastİsmi", tur: "Podcast", icon: "fa-podcast", renk: "#9b59b6", link: "PodcastLinki" },
+				{ baslik: "Podcastİsmi", tur: "Podcast", icon: "fa-podcast", renk: "#9b59b6", link: "PodcastLinki" },
                 { baslik: "Roma'nın Çöküşü", tur: "Podcast", icon: "fa-podcast", renk: "#9b59b6", link: "#" },
                 { baslik: "Orta Çağ Avrupa'sı", tur: "Podcast", icon: "fa-podcast", renk: "#9b59b6", link: "#" },
                 { baslik: "Ticaret Yolları", tur: "Podcast", icon: "fa-podcast", renk: "#9b59b6", link: "#" },
@@ -438,7 +505,7 @@ function cizKavimlerGocu() {
 				{ baslik: " İslamiyet'in Türk Devlet ve Toplum Yapısına Etkisi", tur: "PDF Not", icon: "fa-file-pdf", renk: "#e67e22", link: "https://depo.kirkyama.uk/PDF/9.%20S%C4%B1n%C4%B1f%20OGM/28-%20%C4%B0slamiyet'in%20T%C3%BCrk%20Devlet%20ve%20Toplum%20Yap%C4%B1s%C4%B1na%20Etkisi.pdf" },
 				{ baslik: "Uygarlıkları", tur: "Sunu", icon: "fa-chalkboard-user", renk: "#e84393", link: "link" },
                 { baslik: "Kavimler Göçü Haritası", tur: "İnteraktif Harita", icon: "fa-map-location-dot", renk: "#2ecc71", link: "kavimler_gocu" },
-                { baslik: "İpek ve Baharat Yolu", tur: "İnteraktif Harita", icon: "fa-map-location-dot", renk: "#2ecc71", link: "#" }
+                { baslik: "Ticaret Yolları Haritası (İpek, Baharat, Kral, Kürk)", tur: "İnteraktif Harita", icon: "fa-map-location-dot", renk: "#2ecc71", link: "ticaret_yollari" }
             ];
         }
     }
@@ -671,16 +738,6 @@ function cizKavimlerGocu() {
                 } else if (m.tur === 'PDF Not' || m.tur === 'Sunu') {
                     matAlani.innerHTML += `
                         <div class="mat-card" style="cursor:pointer;" onclick="oynatPdf('${m.link.replace(/'/g, "\\'")}', '${m.baslik.replace(/'/g, "\\'")}', this)">
-                            <div class="mat-icon" style="color: ${m.renk};"><i class="fa-solid ${m.icon}"></i></div>
-                            <div class="mat-info">
-                                <span class="mat-title">${m.baslik}</span>
-                                <span class="mat-type">${m.tur}</span>
-                            </div>
-                        </div>
-                    `;
-                } else if (m.tur === 'İnteraktif Harita') {
-                    matAlani.innerHTML += `
-                        <div class="mat-card" style="cursor:pointer;" onclick="acHarita('${m.link.replace(/'/g, "\\'")}', '${m.baslik.replace(/'/g, "\\'")}', this)">
                             <div class="mat-icon" style="color: ${m.renk};"><i class="fa-solid ${m.icon}"></i></div>
                             <div class="mat-info">
                                 <span class="mat-title">${m.baslik}</span>
