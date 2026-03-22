@@ -223,7 +223,33 @@ function acHarita(haritaId, baslik, element) {
     setTimeout(() => {
         // YENİ YAPI: Haritayı sinif9haritalar.js dosyasından bul ve çalıştır
         if (window.HARITA_MOTORU && typeof window.HARITA_MOTORU[haritaId] === 'function') {
+			// YENİ YAPI: Haritayı sinif9haritalar.js dosyasından bul ve çalıştır
+        if (window.HARITA_MOTORU && typeof window.HARITA_MOTORU[haritaId] === 'function') {
             window.HARITA_MOTORU[haritaId]();
+            
+            // --- YENİ EKLENEN: OTOMATİK İMZA (WATERMARK) ---
+            if (window.currentMapInstance) {
+                const imza = L.control({position: 'bottomleft'});
+                imza.onAdd = function () {
+                    const div = L.DomUtil.create('div', 'harita-imza');
+                    div.style.backgroundColor = "rgba(255, 255, 255, 0.9)";
+                    div.style.padding = "5px 10px";
+                    div.style.borderRadius = "8px";
+                    div.style.fontWeight = "700";
+                    div.style.fontSize = "12px";
+                    div.style.color = "var(--text-color)";
+                    div.style.border = "1px solid var(--card-border)";
+                    div.style.boxShadow = "0 4px 10px rgba(0,0,0,0.1)";
+                    div.innerHTML = '<i class="fa-solid fa-pen-nib" style="color: #2ecc71; margin-right: 5px;"></i> Harita: Murat Mutlu';
+                    return div;
+                };
+                imza.addTo(window.currentMapInstance);
+            }
+            // --- İMZA SONU ---
+
+        } else {
+            alert("Bu harita (" + haritaId + ") sisteme yüklenmemiş veya yapım aşamasındadır.");
+        }
         } else {
             alert("Bu harita (" + haritaId + ") sisteme yüklenmemiş veya yapım aşamasındadır.");
         }
@@ -311,8 +337,9 @@ function haritaKapat() {
 				{ baslik: "İskitler ve Sakalar", tur: "Sunu", icon: "fa-chalkboard-user", renk: "#e84393", link: "https://depo.kirkyama.uk/PDF/9.SinifSunular/2.Unite/7-%C4%B0skitler%20ve%20Sakalar.pdf" },
 				{ baslik: "Roma Uygarlığı", tur: "Sunu", icon: "fa-chalkboard-user", renk: "#e84393", link: "https://depo.kirkyama.uk/PDF/9.SinifSunular/2.Unite/8-Roma%20Uygarl%C4%B1%C4%9F%C4%B1.pdf" },
 				{ baslik: "Eskiçağ Uygarlıkları Genel Özet", tur: "Sunu", icon: "fa-chalkboard-user", renk: "#e84393", link: "https://depo.kirkyama.uk/PDF/9.SinifSunular/2.Unite/8-Eski%C3%A7a%C4%9F%20Uygarl%C4%B1klar%C4%B1%20Genel%20%C3%96zet.pdf" },
-                { baslik: "İlk Çağ Haritası", tur: "İnteraktif Harita", icon: "fa-map-location-dot", renk: "#2ecc71", link: "#" },
-                { baslik: "Göç Yolları Haritası", tur: "İnteraktif Harita", icon: "fa-map-location-dot", renk: "#2ecc71", link: "#" }
+				{ baslik: "Mezopotamya Uygarlıkları Haritası (İnteraktif)", tur: "İnteraktif Harita", icon: "fa-map-location-dot", renk: "#2ecc71", link: "mezopotamya_uygarliklari" },
+                { baslik: "İlk Çağ Haritası", tur: "İnteraktif Harita", icon: "fa-map-location-dot", renk: "#2ecc71", link: "ilk_cag" },
+                { baslik: "Göç Yolları Haritası", tur: "İnteraktif Harita", icon: "fa-map-location-dot", renk: "#2ecc71", link: "goc_yollaris" }
             ];
         } else if (uniteId === 'u3') {
             aktifMateryaller = [
