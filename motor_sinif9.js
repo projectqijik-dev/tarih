@@ -339,7 +339,7 @@ function haritaKapat() {
 				{ baslik: "Eskiçağ Uygarlıkları Genel Özet", tur: "Sunu", icon: "fa-chalkboard-user", renk: "#e84393", link: "https://depo.kirkyama.uk/PDF/9.SinifSunular/2.Unite/8-Eski%C3%A7a%C4%9F%20Uygarl%C4%B1klar%C4%B1%20Genel%20%C3%96zet.pdf" },
 				{ baslik: "Mezopotamya Uygarlıkları Haritası (İnteraktif)", tur: "İnteraktif Harita", icon: "fa-map-location-dot", renk: "#2ecc71", link: "mezopotamya_uygarliklari" },
                 { baslik: "İlk Çağ Haritası", tur: "İnteraktif Harita", icon: "fa-map-location-dot", renk: "#2ecc71", link: "ilk_cag" },
-                { baslik: "Göç Yolları Haritası", tur: "İnteraktif Harita", icon: "fa-map-location-dot", renk: "#2ecc71", link: "goc_yollaris" }
+                { baslik: "Göç Yolları Haritası", tur: "İnteraktif Harita", icon: "fa-map-location-dot", renk: "#2ecc71", link: "goc_yollari" }
             ];
         } else if (uniteId === 'u3') {
             aktifMateryaller = [
