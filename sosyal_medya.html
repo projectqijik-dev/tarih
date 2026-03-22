@@ -1,0 +1,2552 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sosyal Medya Okuryazarlığı | Boğaziçi Koleji</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600&family=Lora:ital,wght@0,400;0,700;1,400&family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        :root {
+            --primary-dark: #0a0a0a;
+            --gold: #d4af37;
+            --gold-muted: rgba(212, 175, 55, 0.3);
+            --text-white: #f5f5f5;
+            --text-gray: #a0a0a0;
+            --glass: rgba(20, 20, 20, 0.85);
+            --sidebar-width: 280px;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; scroll-behavior: smooth; }
+
+        body {
+            background-color: var(--primary-dark);
+            color: var(--text-white);
+            font-family: 'Poppins', sans-serif;
+            overflow-x: hidden;
+            line-height: 1.8;
+            transition: padding-left 0.3s ease;
+        }
+
+        /* YAPIŞKAN ARKA PLAN */
+        .scrolly-bg {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100vh;
+            z-index: -1; background-size: cover; background-position: center;
+            opacity: 0.12; transition: background-image 1.2s ease-in-out;
+            filter: grayscale(30%);
+        }
+
+        /* SOL NAVİGASYON PANELİ */
+        .sidebar {
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: var(--sidebar-width);
+            height: 100vh;
+            background: rgba(8, 8, 8, 0.95);
+            backdrop-filter: blur(15px);
+            border-right: 1px solid var(--gold-muted);
+            padding: 30px 20px;
+            z-index: 1002;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 4px 0 20px rgba(0,0,0,0.5);
+            transition: left 0.3s ease;
+        }
+        .sidebar.closed {
+            left: calc(-1 * var(--sidebar-width));
+        }
+        
+        .sidebar-brand {
+            font-family: 'Cinzel', serif;
+            color: var(--gold);
+            font-size: 1.0rem;
+            margin-bottom: 4px;
+            text-align: center;
+            letter-spacing: 1px;
+            white-space: nowrap;
+        }
+        .sidebar-sub {
+            font-family: 'Poppins', sans-serif;
+            color: var(--text-gray);
+            font-size: 0.8rem;
+            text-align: center;
+            margin-bottom: 30px;
+            border-bottom: 1px solid var(--gold-muted);
+            padding-bottom: 15px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .nav-list {
+            list-style: none;
+            overflow-y: auto;
+            flex: 1;
+        }
+        .nav-list::-webkit-scrollbar {
+            width: 4px;
+        }
+        .nav-list::-webkit-scrollbar-track {
+            background: rgba(255,255,255,0.05);
+        }
+        .nav-list::-webkit-scrollbar-thumb {
+            background: var(--gold-muted);
+            border-radius: 4px;
+        }
+        .nav-link { 
+            display: block;
+            padding: 12px 18px;
+            color: #aaa;
+            text-decoration: none; 
+            font-size: 0.9rem;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            font-weight: 400;
+            margin-bottom: 5px;
+            border-left: 3px solid transparent;
+        }
+        .nav-link:hover, .nav-link.active {
+            color: var(--gold);
+            background: rgba(212, 175, 55, 0.1);
+            border-left-color: var(--gold);
+        }
+
+        /* HİYERARŞİK MENÜ STİLLERİ */
+        .nav-group {
+            margin-bottom: 4px;
+        }
+        .nav-group-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 14px;
+            color: var(--gold);
+            font-size: 0.82rem;
+            font-weight: 600;
+            cursor: pointer;
+            border-radius: 8px;
+            border-left: 3px solid var(--gold-muted);
+            transition: all 0.3s ease;
+            background: rgba(212, 175, 55, 0.05);
+            font-family: 'Cinzel', serif;
+            user-select: none;
+        }
+        .nav-group-header:hover {
+            background: rgba(212, 175, 55, 0.12);
+            border-left-color: var(--gold);
+        }
+        .nav-group-header .nav-arrow {
+            transition: transform 0.3s ease;
+            font-size: 0.65rem;
+            flex-shrink: 0;
+            margin-left: 6px;
+        }
+        .nav-group-header.open .nav-arrow {
+            transform: rotate(180deg);
+        }
+        .nav-sub-items {
+            display: none;
+            padding-left: 8px;
+            margin-top: 2px;
+            border-left: 1px solid var(--gold-muted);
+            margin-left: 12px;
+            margin-bottom: 4px;
+        }
+        .nav-sub-items.open {
+            display: block;
+        }
+        .nav-link.nav-sub {
+            font-size: 0.78rem;
+            padding: 7px 12px;
+            color: #888;
+            margin-bottom: 2px;
+            border-left: 2px solid transparent;
+        }
+        .nav-link.nav-sub:hover,
+        .nav-link.nav-sub.active {
+            color: var(--gold);
+            background: rgba(212, 175, 55, 0.08);
+            border-left-color: var(--gold);
+        }
+
+        /* ÜST BAR */
+        .top-nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 60px;
+            z-index: 1003;
+            padding: 0 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: var(--glass);
+            backdrop-filter: blur(15px);
+            border-bottom: 1px solid var(--gold-muted);
+        }
+		/* ÜST BAR BAŞLIĞI */
+        .top-nav-title {
+            font-family: 'Cinzel', serif;
+            color: var(--gold);
+            font-size: clamp(0.85rem, 3.5vw, 1.1rem);
+            font-weight: 600;
+            white-space: nowrap;
+            letter-spacing: 1px;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+        }
+        .menu-toggle {
+            background: transparent;
+            border: none;
+            color: var(--gold);
+            font-size: 1.5rem;
+            cursor: pointer;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 8px;
+            transition: background 0.3s;
+        }
+        .menu-toggle:hover {
+            background: rgba(212, 175, 55, 0.1);
+        }
+
+        /* ANA İÇERİK ALANI */
+        main {
+            margin-left: var(--sidebar-width);
+            width: calc(100% - var(--sidebar-width));
+            transition: margin-left 0.3s ease;
+        }
+        main.sidebar-closed {
+            margin-left: 0;
+            width: 100%;
+        }
+        section {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 100px 60px;
+            position: relative;
+        }
+        
+        .content-box {
+            max-width: 850px;
+            opacity: 0;
+            transform: translateY(40px);
+            transition: all 1s cubic-bezier(0.2, 1, 0.3, 1);
+        }
+        .content-box.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        h1 { font-family: 'Cinzel', serif; font-size: 3.5rem; margin-bottom: 20px; text-align: center; }
+        h2 { font-family: 'Cinzel', serif; font-size: 2.2rem; margin-bottom: 25px; color: var(--gold); border-bottom: 1px solid var(--gold-muted); padding-bottom: 10px; }
+        h3 { font-family: 'Cinzel', serif; font-size: 1.5rem; margin: 30px 0 15px; color: var(--gold); }
+        p { font-family: 'Lora', serif; font-size: 1.1rem; margin-bottom: 25px; font-weight: 300; }
+        .highlight { color: var(--gold); font-weight: 700; }
+
+        .fact-panel { background: rgba(212, 175, 55, 0.05); border-left: 4px solid var(--gold); padding: 25px; margin: 30px 0; border-radius: 0 12px 12px 0; }
+        
+        /* KAVRAM KARTLARI (3D FLIP) */
+        .concept-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+            gap: 20px;
+            width: 100%;
+            perspective: 1000px;
+            margin-top: 30px;
+        }
+        .concept-card-wrapper { height: 320px; cursor: pointer; }
+        .concept-card {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            text-align: center;
+            transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+            transform-style: preserve-3d;
+        }
+        .concept-card.flipped { transform: rotateY(180deg); }
+        .card-face {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            -webkit-backface-visibility: hidden;
+            backface-visibility: hidden;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            border-radius: 12px;
+            border: 1px solid var(--gold-muted);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.4);
+            background: linear-gradient(135deg, #1a1a1a, #0d0d0d);
+            overflow-y: auto;
+        }
+        .card-back {
+            background: linear-gradient(135deg, var(--gold), #b3942e);
+            color: #000;
+            transform: rotateY(180deg);
+        }
+        .card-term {
+            font-family: 'Cinzel', serif;
+            font-size: 1.1rem;
+            color: var(--gold);
+            margin-bottom: 10px;
+            font-weight: 700;
+            text-align: center;
+        }
+        .card-back .card-term { color: #000; }
+        .card-definition {
+            font-family: 'Lora', serif;
+            font-size: 0.85rem;
+            margin-bottom: 10px;
+            font-weight: 500;
+            line-height: 1.4;
+            text-align: left;
+            width: 100%;
+        }
+        .card-importance {
+            font-size: 0.75rem;
+            background: rgba(0,0,0,0.05);
+            padding: 8px;
+            border-radius: 6px;
+            font-style: italic;
+            text-align: left;
+            width: 100%;
+            margin-top: 5px;
+        }
+
+        /* Sözlük Açılır Kapanır Mobil Düğmesi */
+        .mobile-concept-toggle {
+            display: none;
+            width: 100%;
+            padding: 15px;
+            background: rgba(212, 175, 55, 0.1);
+            color: var(--gold);
+            border: 1px solid var(--gold);
+            border-radius: 8px;
+            font-family: 'Cinzel', serif;
+            font-size: 1.1rem;
+            cursor: pointer;
+            margin-top: 20px;
+            transition: all 0.3s ease;
+            text-align: center;
+        }
+        .mobile-concept-toggle i { margin-left: 10px; transition: transform 0.3s; }
+        .mobile-concept-toggle.active i { transform: rotate(180deg); }
+        .mobile-concept-toggle:hover { background: rgba(212, 175, 55, 0.2); }
+        
+        /* Güvenlik Rehberi için 2 sütunlu grid */
+        .safety-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        @media (max-width: 768px) {
+            .safety-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Senaryo için ek stiller */
+        .timeline-item { background: rgba(212, 175, 55, 0.03); border-left: 2px solid var(--gold); padding: 20px; margin-bottom: 30px; border-radius: 0 12px 12px 0; }
+        .timeline-time { color: var(--gold); font-weight: 700; font-size: 1.2rem; font-family: 'Cinzel', serif; margin-bottom: 10px; }
+        .actor-badge { display: inline-block; background: rgba(212, 175, 55, 0.1); color: var(--gold); padding: 3px 10px; border-radius: 20px; font-size: 0.7rem; margin-right: 10px; border: 1px solid var(--gold-muted); }
+        .stats-grid { display: flex; gap: 15px; flex-wrap: wrap; margin: 15px 0; }
+        .stat-item { flex: 1; min-width: 80px; background: rgba(0,0,0,0.5); border-radius: 8px; padding: 10px; text-align: center; border: 1px solid var(--gold-muted); }
+        .stat-number { font-size: 1.5rem; font-weight: 700; color: var(--gold); font-family: 'Cinzel', serif; }
+        .stat-label { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 1px; }
+        .warning-box { background: rgba(180, 50, 50, 0.1); border: 1px solid #b43e3e; border-radius: 8px; padding: 20px; margin: 20px 0; }
+        .warning-box h4 { color: #ff6b6b; margin-bottom: 10px; font-family: 'Cinzel', serif; }
+        .impact-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 15px; margin: 20px 0; }
+        .impact-card { background: rgba(0,0,0,0.3); border-radius: 8px; padding: 15px; border: 1px solid var(--gold-muted); }
+        .impact-card i { color: var(--gold); margin-right: 8px; }
+
+        .mini-card { background: rgba(255,255,255,0.03); border: 1px solid var(--gold-muted); padding: 15px; border-radius: 10px; font-size: 0.85rem; margin-bottom: 10px; }
+        .mini-card strong { color: var(--gold); display: block; margin-bottom: 5px; }
+
+        /* Podcast Stilleri (güncellendi) */
+        .podcast-list {
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+            margin-top: 20px;
+        }
+
+        .podcast-card {
+            background: rgba(255,255,255,0.03);
+            border: 1px solid var(--gold-muted);
+            border-radius: 20px;
+            padding: 25px;
+            transition: all 0.3s ease;
+        }
+
+        .podcast-card:hover {
+            background: rgba(212,175,55,0.05);
+            border-color: rgba(212,175,55,0.5);
+        }
+
+        .podcast-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .podcast-number {
+            font-family: 'Cinzel', serif;
+            font-size: 0.85rem;
+            color: var(--gold);
+            background: rgba(212,175,55,0.15);
+            padding: 4px 12px;
+            border-radius: 30px;
+            letter-spacing: 1px;
+        }
+
+        .podcast-duration {
+            font-family: 'Poppins', sans-serif;
+            font-size: 0.75rem;
+            color: var(--text-gray);
+            background: rgba(255,255,255,0.05);
+            padding: 4px 10px;
+            border-radius: 20px;
+        }
+
+        .podcast-title {
+            font-family: 'Cinzel', serif;
+            font-size: 1.3rem;
+            color: var(--gold);
+            margin: 10px 0 12px 0;
+        }
+
+        .podcast-description {
+            font-family: 'Lora', serif;
+            font-size: 0.95rem;
+            color: #c0c0c0;
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+
+        /* Özel Ses Oynatıcı Stilleri (modern) */
+        .custom-audio-player {
+            margin: 15px 0 10px;
+            background: rgba(0,0,0,0.4);
+            border-radius: 40px;
+            padding: 8px 15px;
+            border: 1px solid var(--gold-muted);
+            transition: all 0.3s ease;
+        }
+
+        .custom-audio-player:hover {
+            border-color: var(--gold);
+            background: rgba(0,0,0,0.6);
+        }
+
+        .player-controls {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .play-pause-btn {
+            background: var(--gold);
+            border: none;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            color: #000;
+            font-size: 1rem;
+            flex-shrink: 0;
+        }
+
+        .play-pause-btn:hover {
+            transform: scale(1.05);
+            background: #fff;
+            color: var(--gold);
+        }
+
+        .progress-container {
+            flex: 1;
+            min-width: 150px;
+        }
+
+        .progress-bar {
+            background: rgba(255,255,255,0.2);
+            height: 4px;
+            border-radius: 4px;
+            cursor: pointer;
+            position: relative;
+            margin-bottom: 6px;
+        }
+
+        .progress-fill {
+            background: var(--gold);
+            height: 100%;
+            width: 0%;
+            border-radius: 4px;
+            transition: width 0.1s linear;
+        }
+
+        .time-display {
+            font-family: 'Poppins', sans-serif;
+            font-size: 0.7rem;
+            color: var(--text-gray);
+            letter-spacing: 0.5px;
+        }
+
+        .current-time {
+            color: var(--gold);
+        }
+
+        @media (max-width: 500px) {
+            .player-controls {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            .play-pause-btn {
+                align-self: center;
+            }
+        }
+
+        .podcast-credit {
+            font-family: 'Poppins', sans-serif;
+            font-size: 0.7rem;
+            color: var(--text-gray);
+            text-align: right;
+            margin-top: 10px;
+            border-top: 1px solid var(--gold-muted);
+            padding-top: 12px;
+        }
+
+        @media (max-width: 768px) {
+            .podcast-title {
+                font-size: 1.1rem;
+            }
+            .podcast-card {
+                padding: 18px;
+            }
+        }
+
+        /* AKORDİYON STİLLERİ */
+        details {
+            background: rgba(212, 175, 55, 0.02);
+            border: 1px solid var(--gold-muted);
+            border-radius: 12px;
+            margin-bottom: 20px;
+            transition: all 0.3s;
+        }
+        details[open] {
+            background: rgba(212, 175, 55, 0.05);
+            border-color: var(--gold);
+        }
+        summary {
+            padding: 20px 25px;
+            cursor: pointer;
+            list-style: none;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-family: 'Cinzel', serif;
+            color: var(--gold);
+            font-size: 1.2rem;
+            border-radius: 12px;
+            transition: background 0.3s;
+        }
+        summary::-webkit-details-marker {
+            display: none;
+        }
+        summary::after {
+            content: '\f078';
+            font-family: 'Font Awesome 6 Free';
+            font-weight: 900;
+            font-size: 1rem;
+            transition: transform 0.3s;
+            color: var(--gold);
+        }
+        details[open] summary::after {
+            transform: rotate(180deg);
+        }
+        summary:hover {
+            background: rgba(212, 175, 55, 0.1);
+        }
+        .accordion-content {
+            padding: 0 25px 25px 25px;
+        }
+        .accordion-title {
+            flex: 1;
+        }
+        
+        /* FOOTER ALANI */
+        footer {
+            width: 100%;
+            padding: 40px 20px;
+            background: transparent;
+            border-top: 1px solid var(--gold-muted);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 12px;
+            position: relative;
+            z-index: 10;
+        }
+        .footer-text {
+            font-family: 'Poppins', sans-serif;
+            color: var(--text-gray);
+            font-size: 0.9rem;
+        }
+        .footer-icon {
+            color: var(--gold);
+            font-size: 1.2rem;
+            transition: transform 0.3s, color 0.3s;
+        }
+        .footer-icon:hover {
+            color: #fff;
+            transform: scale(1.1);
+        }
+
+        /* Sözlük Alanı Mobil Gizleme */
+        @media (max-width: 1024px) {
+            .sidebar {
+                left: -280px; 
+            }
+            .sidebar.open {
+                left: 0;
+            }
+            main {
+                margin-left: 0;
+                width: 100%;
+            }
+            section {
+                padding: 80px 20px;
+            }
+            h1 {
+                font-size: 2.2rem;
+            }
+            
+            /* Sözlük kartları başlangıçta kapalı */
+            .concept-grid {
+                display: none; 
+            }
+            .concept-grid.show {
+                display: grid;
+            }
+            .mobile-concept-toggle {
+                display: block;
+            }
+        }
+
+        /* KAYNAK LİNKİ STİLİ */
+        .source {
+            font-family: 'Poppins', sans-serif;
+            font-size: 0.78rem;
+            color: var(--text-gray);
+            margin-top: 20px;
+            padding-top: 15px;
+            border-top: 1px solid var(--gold-muted);
+            word-break: break-all;
+        }
+        .source a {
+            color: var(--gold);
+            text-decoration: none;
+        }
+        .source a:hover {
+            text-decoration: underline;
+        }
+
+        /* İÇERİK LİSTELERİ */
+        .content-box ul {
+            font-family: 'Lora', serif;
+            font-size: 1rem;
+            font-weight: 300;
+            padding-left: 1.5rem;
+            margin-bottom: 20px;
+            line-height: 1.9;
+        }
+        .content-box ul li {
+            margin-bottom: 8px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="scrolly-bg" id="bgLayer"></div>
+
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-brand">Sosyal Medya Okuryazarlığı</div>
+        <div class="sidebar-sub">Menü</div>
+        
+        <nav class="nav-list">
+
+            <!-- GRUP 1: Sosyal Medya Nedir? -->
+            <div class="nav-group">
+                <div class="nav-group-header open" onclick="toggleNavGroup(this)">
+                    <span>1. Sosyal Medya Nedir?</span>
+                    <i class="fa-solid fa-chevron-down nav-arrow"></i>
+                </div>
+                <div class="nav-sub-items open">
+                    <a href="#intro" class="nav-link nav-sub">1.1 İletişimin Evrimi</a>
+                    <a href="#definition" class="nav-link nav-sub">1.2 SM vs. Geleneksel Medya</a>
+                    <a href="#definition" class="nav-link nav-sub">1.3 Neden Kullanıyoruz?</a>
+                    <a href="#architecture" class="nav-link nav-sub">1.4 Algoritmik Mimari</a>
+                    <a href="#bubbles" class="nav-link nav-sub">1.5 Yankı Odaları</a>
+                    <a href="#mining" class="nav-link nav-sub">1.6 Veri Madenciliği</a>
+                </div>
+            </div>
+
+            <!-- GRUP 2: Dijital Tehditler -->
+            <div class="nav-group">
+                <div class="nav-group-header open" onclick="toggleNavGroup(this)">
+                    <span>2. Dijital Tehditler</span>
+                    <i class="fa-solid fa-chevron-down nav-arrow"></i>
+                </div>
+                <div class="nav-sub-items open">
+                    <a href="#dezenformasyon" class="nav-link nav-sub">2.1 Dezenformasyon</a>
+                    <a href="#mezenformasyon" class="nav-link nav-sub">2.2 Mezenformasyon</a>
+                    <a href="#deepfake" class="nav-link nav-sub">2.3 Deepfake ve YZ İçeriği</a>
+                    <a href="#siber-zorbalik" class="nav-link nav-sub">2.4 Siber Zorbalık</a>
+                </div>
+            </div>
+
+            <!-- GRUP 3: Vaka Analizleri -->
+            <div class="nav-group">
+                <div class="nav-group-header open" onclick="toggleNavGroup(this)">
+                    <span>3. Vaka Analizleri</span>
+                    <i class="fa-solid fa-chevron-down nav-arrow"></i>
+                </div>
+                <div class="nav-sub-items open">
+                    <a href="#vaka-analizleri" class="nav-link nav-sub">3.1 Göçmen Suçu Senaryosu</a>
+                    <a href="#vaka-analizleri" class="nav-link nav-sub">3.2 Mucizevi İlaç Senaryosu</a>
+                    <a href="#vaka-analizleri" class="nav-link nav-sub">3.3 Deprem Yardım Çağrısı</a>
+                    <a href="#vaka-analizleri" class="nav-link nav-sub">3.4 Deepfake Senaryosu</a>
+                    <a href="#vaka-analizleri" class="nav-link nav-sub">3.5 Siber Zorbalık Senaryosu</a>
+                </div>
+            </div>
+
+            <!-- GRUP 4: Birey ve Sağlık -->
+            <div class="nav-group">
+                <div class="nav-group-header open" onclick="toggleNavGroup(this)">
+                    <span>4. Birey ve Sağlık</span>
+                    <i class="fa-solid fa-chevron-down nav-arrow"></i>
+                </div>
+                <div class="nav-sub-items open">
+                    <a href="#ruh-sagligi" class="nav-link nav-sub">4.1 Sosyal Medya ve Ruh Sağlığı</a>
+                    <a href="#ruh-sagligi" class="nav-link nav-sub">4.2 Dijital Bağımlılık</a>
+                </div>
+            </div>
+
+            <!-- GRUP 5: Güvenlik Rehberi ve Sözlük -->
+            <div class="nav-group">
+                <div class="nav-group-header open" onclick="toggleNavGroup(this)">
+                    <span>5. Güvenlik Rehberi ve Sözlük</span>
+                    <i class="fa-solid fa-chevron-down nav-arrow"></i>
+                </div>
+                <div class="nav-sub-items open">
+                    <a href="#podcasts" class="nav-link nav-sub">5.1 Podcastler</a>
+					<a href="#safety" class="nav-link nav-sub">5.2 Güvenlik Rehberi</a>
+                    <a href="#concepts" class="nav-link nav-sub">5.3 Dijital Sözlük</a>
+                </div>
+            </div>
+
+        </nav>
+    </aside>
+
+    <nav class="top-nav">
+        <button class="menu-toggle" id="menuToggle">
+            <i class="fa-solid fa-bars"></i>
+        </button>
+		<div class="top-nav-title">Sosyal Medya Okuryazarlığı</div>
+    </nav>
+
+    <main id="main">
+<section id="site-intro" style="min-height: auto; padding-bottom: 0;">
+            <div class="content-box active" style="margin: 0 auto;">
+                <div class="fact-panel" style="margin: 0 auto; border-left: 4px solid var(--gold); border-radius: 12px;">
+                    <p style="font-size: 1.05rem; margin-bottom: 0; line-height: 1.8;">
+                        Bu site <span class="highlight">Boğaziçi Koleji</span> 11. sınıf Medya Okuryazarlığı dersi kapsamında Sosyal Medya'nın bilinçli kullanılması için öğrenci ve velilere bütüncül bakış sağlamak için bir rehber niteliğinde hazırlanmıştır. İçeriği hazırlanırken; ders notları, ilgili kamu kurumlarının yayınları (KVKK, BTK, NATO), akademik kaynaklar, halk sağlığı (Türkiye, Amerika ve İngiltere) resmi internet sitelerinden de yararlanılmıştır.
+                    </p>
+                </div>
+            </div>
+        </section>
+<section id="intro">
+            <div class="content-box active">
+                <h2>İletişimin Kısa(cık) Tarihi</h2>
+                <p>İletişim, insanlık tarihinin en temel dönüşümlerinden birini temsil eder. Bildiğimiz kadarıyla jest ve mimiklerle başlayan iletişim, konuşmayı öğrenmemizle sözlü kültürle devam etmiş bu da bilginin nesilden nesile aktarılmasını sağlarken, <span class="highlight">yazının icadı</span>yla birlikte bilgi artık zamana ve mekâna meydan okumaya başladı. Matbaanın icadıve gelişimi ise bu bilgiyi geniş kitlelere ulaştırarak düşüncenin daha hızlı yayılmasını sağlamıştır. Sanayi Devrimi’yle birlikte <span class="highlight">telgraf</span> ve <span class="highlight">telefon</span> gibi buluşlar, iletişimin hızını neredeyse anlık bir seviyeye taşıdı. 20. yy.'da <span class="highlight">radyo</span> ve <span class="highlight">televiyon</span>, kültürel ve siyasal olayların ortak bir deneyime dönüşmesini sağladı. Günümüzde ise internet ve <span class="highlight">WEB 2.0</span>'ın geliştirilmesi ile mümkün kılınan <span class="highlight">sosyal medya</span>, yalnızca bilgiyi değil, aynı zamanda etkileşimi <span class="highlight">çift yönlü</span> ve küresel bir boyuta evirerek iletişimin tanımını yeniden yazdı.</p>
+            </div>
+        </section>
+
+        <section id="definition">
+    <div class="content-box">
+        <h2>Sosyal Medya Nedir?</h2>
+        <p>Sosyal medya, kullanıcıların internette kendi içeriklerini ürettiği, paylaştığı ve diğer kullanıcılar ile etkileşime girdiği dijital platformların tümüdür. Onu geleneksel medyadan ayıran en büyük güç <span class="highlight">Katılım ve İşbirliği</span>dir; içerik artık herkese aittir.</p>
+        
+        <p>Günümüzde; <span class="highlight">Twitter (X), Facebook, Instagram, TikTok, LinkedIn</span> gibi platformlar en yaygın olanlarıdır. FriendFeed, Google+, Orkut, MySpace gibi platformlar ise bir zamanlar yoğun bir şekilde kullanılan ancak zamana ayak uyduramadıkları için yok olan platformlardır.</p>
+
+        <h3>Sosyal Medya vs. Geleneksel Medya</h3>
+        
+        <p><span class="highlight">Katılım ve İşbirliği:</span> Sosyal medyanın en önemli gücü, herkesin katkıda bulunabilmesidir. Bir kişi fotoğraf paylaşırken, bir diğeri bir fikir üzerine tartışma başlatabilir. İçerik herkesindir.</p>
+        
+        <p><span class="highlight">Açıklık:</span> Çoğu sosyal medya hizmeti herkese açıktır. Elbette gizlilik ayarları var ama temel prensip, herkesin içeriğe ulaşabilmesi ve paylaşabilmesidir.</p>
+        
+        <p><span class="highlight">Etkileşim ve Geri Bildirim:</span> Beğeniler, yorumlar, paylaşımlar... Geri bildirim anlıktır. Paylaştığınız bir içeriğin ne kadar ilgi gördüğünü saniyeler içinde anlarsınız.</p>
+        
+        <p><span class="highlight">Küresel Erişim ve Anlık Paylaşım:</span> Coğrafi sınırlar kalkar. Diyarbakır'dan yaptığınız bir paylaşım, saniyeler içinde Tokyo'daki bir arkadaşınızın ekranına düşebilir. Haberler, olaylar, anlık olarak tüm dünyaya yayılabilir.</p>
+        
+        <p><span class="highlight">Multimedya İçerik (Karma Medya):</span> Sadece yazı değil; fotoğraf, video, ses, canlı yayınlar... Tüm medya türleri tek bir platformda birleşmiştir.</p>
+
+        <h3>Neden Kullanıyoruz?</h3>
+        <div style="display: flex; flex-wrap: wrap; gap: 10px; margin-top: 15px;">
+            <div style="background: rgba(212, 175, 55, 0.1); border: 1px solid var(--gold-muted); border-radius: 20px; padding: 5px 15px; font-size: 0.9rem;">📚 Eğitim, bilgi edinme</div>
+            <div style="background: rgba(212, 175, 55, 0.1); border: 1px solid var(--gold-muted); border-radius: 20px; padding: 5px 15px; font-size: 0.9rem;">🎮 Eğlence</div>
+            <div style="background: rgba(212, 175, 55, 0.1); border: 1px solid var(--gold-muted); border-radius: 20px; padding: 5px 15px; font-size: 0.9rem;">🤝 Ait olma</div>
+            <div style="background: rgba(212, 175, 55, 0.1); border: 1px solid var(--gold-muted); border-radius: 20px; padding: 5px 15px; font-size: 0.9rem;">🔗 Bağlantı kurma</div>
+            <div style="background: rgba(212, 175, 55, 0.1); border: 1px solid var(--gold-muted); border-radius: 20px; padding: 5px 15px; font-size: 0.9rem;">💬 Kendini ifade etme ve onaylanma ihtiyacı</div>
+            <div style="background: rgba(212, 175, 55, 0.1); border: 1px solid var(--gold-muted); border-radius: 20px; padding: 5px 15px; font-size: 0.9rem;">📞 İletişim</div>
+            <div style="background: rgba(212, 175, 55, 0.1); border: 1px solid var(--gold-muted); border-radius: 20px; padding: 5px 15px; font-size: 0.9rem;">📰 Haber ve/ya gündem takip</div>
+            <div style="background: rgba(212, 175, 55, 0.1); border: 1px solid var(--gold-muted); border-radius: 20px; padding: 5px 15px; font-size: 0.9rem;">💼 Kariyer, iş bağlantıları</div>
+            <div style="background: rgba(212, 175, 55, 0.1); border: 1px solid var(--gold-muted); border-radius: 20px; padding: 5px 15px; font-size: 0.9rem;">📢 Pazarlama, reklam</div>
+        </div>
+    </div>
+</section>
+
+        <section id="architecture">
+    <div class="content-box">
+        <h2>Görünmez Motor: Algoritmalar</h2>
+        
+        <div class="fact-panel" style="margin-top: 0;">
+            <h3 style="color: var(--gold); font-family: 'Cinzel', serif; margin-top: 0;">Ana İşleyiş Mekanizması</h3>
+            <p><span class="highlight">Algoritmanın Gücü – Etkileşim Temelli Çalışma!</span> Beğeni, yorum, paylaşım, durma süresi (dwell time) algoritmaların besinidir. Sosyal medyada gördüğünüz, tıkladığınız, izlediğiniz (kaç saniye izlediğiniz dahil), gönderiye kaç dakika baktığınız, kimlere ne gönderdiğiniz. Kısaca her şey.</p>
+            <div style="display: flex; gap: 20px; justify-content: center; font-size: 2rem; margin: 20px 0;">
+                <span style="color: var(--gold);">💙</span>
+                <span style="color: var(--gold);">🎉</span>
+                <span style="color: var(--gold);">🌟</span>
+            </div>
+        </div>
+
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; margin-top: 30px;">
+            <div class="mini-card" style="margin-bottom: 0;">
+                <strong>Veritabanları</strong><br>
+                <span style="font-size: 0.9rem;">Profil bilgileri, paylaşımlar, beğeniler, mesajlar nerede saklanıyor? Petabaytlarca veri.</span>
+            </div>
+            <div class="mini-card" style="margin-bottom: 0;">
+                <strong>Algoritmalar</strong><br>
+                <span style="font-size: 0.9rem;">İçerikleri size kimin, neye göre gösterdiğini belirleyen kodlar. "Arkadaşının paylaşımı" mı, "senin ilgin" mi daha önemli?</span>
+            </div>
+            <div class="mini-card" style="margin-bottom: 0;">
+                <strong>İçerik Dağıtım Ağları (CDN)</strong><br>
+                <span style="font-size: 0.9rem;">Dünya çapında hızlı erişim sağlamak için verilerin coğrafi olarak dağıtılması. Paylaşımınız dünyanın diğer ucuna anında nasıl ulaşıyor?</span>
+            </div>
+        </div>
+
+        <p style="margin-top: 30px;">Arka planda petabaytlarca veri saklayan devasa <span class="highlight">Veritabanları</span> çalışırken, algoritmalar size neyi göstereceğini belirler. Beğeni, yorum, paylaşım ve özellikle gönderiye bakma süreniz <span class="highlight">(dwell time)</span> bu motorun temel yakıtıdır. Aşağıda popüler platformların çalışma mimarileri listelenmiştir. (İlgili platformun butonuna tıklayınız.)</p>
+	<!-- ================================================================
+     ALGORİTMİK MİMARİ WIDGET
+     murat@kirkyma.uk
+     ================================================================ -->
+
+<div id="algo-widget" style="margin-top: 40px;">
+
+  <!-- Platform sekme butonları -->
+  <div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:24px;">
+    <button class="algo-tab active" data-p="tiktok">TikTok</button>
+    <button class="algo-tab" data-p="instagram">Instagram</button>
+    <button class="algo-tab" data-p="x">X (Twitter)</button>
+    <button class="algo-tab" data-p="facebook">Facebook</button>
+    <button class="algo-tab" data-p="reddit">Reddit</button>
+    <button class="algo-tab" data-p="bluesky">Bluesky</button>
+  </div>
+
+  <!-- ── TİKTOK ───────────────────────────────────────────── -->
+  <div class="algo-panel active" id="ap-tiktok">
+    <p class="algo-intro">TikTok'un "Sizin İçin" (FYP) algoritması, hesap büyüklüğünden bağımsız olarak her videoyu ayrı bir içerik birimi sayar. Her yeni video küçük bir test grubuna gösterilir; etkileşim eşiği aşılırsa kademeli olarak genişleyen kitlelere ulaşır. 10 takipçili yeni bir hesap viral olabilir; ancak tek bir olumsuz geri bildirim dalgası yayılımı anında durdurabilir.</p>
+
+    <h3 class="algo-sub">Dağıtım Hattı — Kademeli Yayılım Modeli</h3>
+    <div class="algo-flow">
+      <div class="algo-node gray">
+        <span class="anode-title">Havuz</span>
+        <span class="anode-desc">Milyonlarca içerik</span>
+      </div>
+      <div class="algo-arrow">→</div>
+      <div class="algo-node red">
+        <span class="anode-title">Test</span>
+        <span class="anode-desc">100–500 kişi</span>
+      </div>
+      <div class="algo-arrow">→</div>
+      <div class="algo-node red">
+        <span class="anode-title">Analiz</span>
+        <span class="anode-desc">Etkileşim ölçümü</span>
+      </div>
+      <div class="algo-arrow">→</div>
+      <div class="algo-node red">
+        <span class="anode-title">Yayılım</span>
+        <span class="anode-desc">Viral eşiği</span>
+      </div>
+      <div class="algo-arrow">→</div>
+      <div class="algo-node gold">
+        <span class="anode-title">FYP</span>
+        <span class="anode-desc">Seçilenler</span>
+      </div>
+    </div>
+
+    <h3 class="algo-sub">Temel Sinyaller</h3>
+    <div class="algo-signals">
+      <div class="sig-row"><span class="sig-name">İzlenme tamamlama</span><div class="sig-bar"><div class="sig-fill" style="width:100%;background:#d4af37"></div></div><span class="sig-tag critical">En kritik</span></div>
+      <div class="sig-row"><span class="sig-name">Yeniden izleme (döngü)</span><div class="sig-bar"><div class="sig-fill" style="width:100%;background:#d4af37"></div></div><span class="sig-tag critical">En kritik</span></div>
+      <div class="sig-row"><span class="sig-name">Paylaşım</span><div class="sig-bar"><div class="sig-fill" style="width:82%;background:#c49a2a"></div></div><span class="sig-tag high">Çok yüksek</span></div>
+      <div class="sig-row"><span class="sig-name">Yorum</span><div class="sig-bar"><div class="sig-fill" style="width:74%;background:#c49a2a"></div></div><span class="sig-tag high">Yüksek</span></div>
+      <div class="sig-row"><span class="sig-name">Beğeni</span><div class="sig-bar"><div class="sig-fill" style="width:55%;background:#a07818"></div></div><span class="sig-tag med">Orta</span></div>
+      <div class="sig-row"><span class="sig-name">Takip eylemi</span><div class="sig-bar"><div class="sig-fill" style="width:50%;background:#a07818"></div></div><span class="sig-tag med">Orta</span></div>
+      <div class="sig-row"><span class="sig-name">"İlginç değil" butonu</span><div class="sig-bar"><div class="sig-fill" style="width:95%;background:#9575b0"></div></div><span class="sig-tag neg">Ağır ceza</span></div>
+      <div class="sig-row"><span class="sig-name">Ses / trend kullanımı</span><div class="sig-bar"><div class="sig-fill" style="width:40%;background:#6a8f6a"></div></div><span class="sig-tag info">İçerik eşleşmesi</span></div>
+    </div>
+
+    <div class="algo-unique">
+      <span class="algo-unique-label">Benzersiz Özellik: Kartopu Sistemi</span>
+      Her video hesap geçmişinden bağımsız değerlendirilir. Yeni bir hesap da iyi etkileşim alırsa milyonlara ulaşabilir. Ancak sistem olumsuz geri bildirime karşı son derece hassastır: "şikayet et" veya "gizle" aksiyonları yayılımı anında frenler. Bu asimetri, içerik kalitesini hesap otoritesinden daha belirleyici kılar.
+    </div>
+  </div>
+
+  <!-- ── İNSTAGRAM ─────────────────────────────────────────── -->
+  <div class="algo-panel" id="ap-instagram">
+    <p class="algo-intro">Instagram, Feed, Reels, Keşfet ve Hikayeler için birbirinden farklı algoritmalar kullanır. 2022 sonrası Reels'in platformun merkezine taşınmasıyla birlikte kaydetme eylemi ve izlenme tamamlama oranı dominant sinyaller haline geldi. Beğeni bu ölçekte çok geride kalır.</p>
+
+    <h3 class="algo-sub">Dağıtım Hattı — Çok Yüzeyli Sıralama</h3>
+    <div class="algo-flow">
+      <div class="algo-node gray">
+        <span class="anode-title">Havuz</span>
+        <span class="anode-desc">Medya adayları</span>
+      </div>
+      <div class="algo-arrow">→</div>
+      <div class="algo-node purple">
+        <span class="anode-title">İlgi Tahmini</span>
+        <span class="anode-desc">Geçmiş davranış</span>
+      </div>
+      <div class="algo-arrow">→</div>
+      <div class="algo-node purple">
+        <span class="anode-title">İlişki Skoru</span>
+        <span class="anode-desc">Etkileşim geçmişi</span>
+      </div>
+      <div class="algo-arrow">→</div>
+      <div class="algo-node gold">
+        <span class="anode-title">Yüzey Akışı</span>
+        <span class="anode-desc">Feed / Reels / Keşfet</span>
+      </div>
+    </div>
+
+    <h3 class="algo-sub">Temel Sinyaller</h3>
+    <div class="algo-signals">
+      <div class="sig-row"><span class="sig-name">Kaydetme</span><div class="sig-bar"><div class="sig-fill" style="width:100%;background:#d4af37"></div></div><span class="sig-tag critical">En güçlü</span></div>
+      <div class="sig-row"><span class="sig-name">İzlenme tamamlama (Reels)</span><div class="sig-bar"><div class="sig-fill" style="width:100%;background:#d4af37"></div></div><span class="sig-tag critical">En güçlü</span></div>
+      <div class="sig-row"><span class="sig-name">DM üzerinden paylaşım</span><div class="sig-bar"><div class="sig-fill" style="width:82%;background:#c49a2a"></div></div><span class="sig-tag high">Çok yüksek</span></div>
+      <div class="sig-row"><span class="sig-name">Yorum</span><div class="sig-bar"><div class="sig-fill" style="width:72%;background:#c49a2a"></div></div><span class="sig-tag high">Yüksek</span></div>
+      <div class="sig-row"><span class="sig-name">Beğeni</span><div class="sig-bar"><div class="sig-fill" style="width:50%;background:#a07818"></div></div><span class="sig-tag med">Orta</span></div>
+      <div class="sig-row"><span class="sig-name">Hesap etkileşim geçmişi</span><div class="sig-bar"><div class="sig-fill" style="width:62%;background:#c49a2a"></div></div><span class="sig-tag high">İlişki sinyali</span></div>
+      <div class="sig-row"><span class="sig-name">Ses / müzik eşleşmesi</span><div class="sig-bar"><div class="sig-fill" style="width:45%;background:#a07818"></div></div><span class="sig-tag med">Reels'te etkili</span></div>
+      <div class="sig-row"><span class="sig-name">Güncellik</span><div class="sig-bar"><div class="sig-fill" style="width:35%;background:#6a7a6a"></div></div><span class="sig-tag info">Düşük–orta</span></div>
+    </div>
+
+    <div class="algo-unique">
+      <span class="algo-unique-label">Benzersiz Özellik: Yüzey Bazlı Algoritmalar</span>
+      Feed, Reels, Keşfet ve Hikayeler tamamen farklı algoritmalar kullanır. Feed'de yakın çevrenizle ilişki sinyali öndeyken, Reels'te tamamlama oranı ve ses eşleşmesi belirleyicidir. Keşfet sekmesi ise hiç etkileşim kurmadığınız hesapların içeriklerini keşfettirmeye optimize edilmiştir — bu yüzden viral yayılım çoğunlukla Keşfet üzerinden gerçekleşir.
+    </div>
+  </div>
+
+  <!-- ── X (TWİTTER) ───────────────────────────────────────── -->
+  <div class="algo-panel" id="ap-x">
+    <p class="algo-intro">X, 2023'te algoritmasını açık kaynak olarak yayımladı — büyük sosyal medya platformları arasında eşi görülmemiş bir şeffaflık adımı. "Sana Özel" akışı, yalnızca takip edilenleri değil; ağınızın etkileşim kurduğu içerikleri de getirir. Sistem, "Elan" adlı çok değişkenli puanlama motoruna dayanır.</p>
+
+    <h3 class="algo-sub">Dağıtım Hattı — "Sana Özel" Akışı</h3>
+    <div class="algo-flow">
+      <div class="algo-node gray">
+        <span class="anode-title">Aday Havuz</span>
+        <span class="anode-desc">Ağ içeriği</span>
+      </div>
+      <div class="algo-arrow">→</div>
+      <div class="algo-node gray">
+        <span class="anode-title">Ağ Analizi</span>
+        <span class="anode-desc">Takipçi sinyalleri</span>
+      </div>
+      <div class="algo-arrow">→</div>
+      <div class="algo-node gray">
+        <span class="anode-title">Puanlama</span>
+        <span class="anode-desc">Elan motoru</span>
+      </div>
+      <div class="algo-arrow">→</div>
+      <div class="algo-node gold">
+        <span class="anode-title">Sana Özel</span>
+        <span class="anode-desc">Kişisel akış</span>
+      </div>
+    </div>
+
+    <h3 class="algo-sub">Temel Sinyaller</h3>
+    <div class="algo-signals">
+      <div class="sig-row"><span class="sig-name">Ağ etkileşim etkisi</span><div class="sig-bar"><div class="sig-fill" style="width:100%;background:#d4af37"></div></div><span class="sig-tag critical">En kritik</span></div>
+      <div class="sig-row"><span class="sig-name">Yanıtlar (reply)</span><div class="sig-bar"><div class="sig-fill" style="width:90%;background:#d4af37"></div></div><span class="sig-tag critical">Çok yüksek</span></div>
+      <div class="sig-row"><span class="sig-name">Retweet</span><div class="sig-bar"><div class="sig-fill" style="width:75%;background:#c49a2a"></div></div><span class="sig-tag high">Yüksek</span></div>
+      <div class="sig-row"><span class="sig-name">Beğeni</span><div class="sig-bar"><div class="sig-fill" style="width:60%;background:#c49a2a"></div></div><span class="sig-tag high">Orta–yüksek</span></div>
+      <div class="sig-row"><span class="sig-name">Yer işareti</span><div class="sig-bar"><div class="sig-fill" style="width:55%;background:#a07818"></div></div><span class="sig-tag med">Orta</span></div>
+      <div class="sig-row"><span class="sig-name">Hesap güvenilirliği</span><div class="sig-bar"><div class="sig-fill" style="width:72%;background:#c49a2a"></div></div><span class="sig-tag high">Kalite filtresi</span></div>
+      <div class="sig-row"><span class="sig-name">X Premium abonelik</span><div class="sig-bar"><div class="sig-fill" style="width:40%;background:#6a7a8a"></div></div><span class="sig-tag info">Görünürlük artışı</span></div>
+      <div class="sig-row"><span class="sig-name">Spam / manipülasyon</span><div class="sig-bar"><div class="sig-fill" style="width:95%;background:#9575b0"></div></div><span class="sig-tag neg">Ağır ceza</span></div>
+    </div>
+
+    <div class="algo-unique">
+      <span class="algo-unique-label">Benzersiz Özellik: Açık Kaynak Elan Motoru</span>
+      X, 2023'te puanlama sisteminin kaynak kodunu GitHub'da yayımladı. Sistem, takipçilerinizin bir tweete verdiği tepkiyi "sosyal etki genişletici" olarak kullanır: ağınızda yankı uyandıran içerikler size de ulaşır. Premium abonelik ise doğrudan görünürlük çarpanı olarak algoritmaya yerleştirilmiştir.
+    </div>
+  </div>
+
+  <!-- ── FACEBOOK ───────────────────────────────────────────── -->
+  <div class="algo-panel" id="ap-facebook">
+    <p class="algo-intro">Facebook 2018'de "Anlamlı Sosyal Etkileşimler" reformuyla algoritmasını köklü biçimde yeniden tasarladı. Bugün yapay zeka destekli sistem, beğeni gibi pasif eylemleri değil; yorum, paylaşım ve uzun süreli tartışmayı — yani gerçek sosyal değeri — ödüllendirir. Organik sayfa erişimi bu reform sonrası dramatik şekilde düştü.</p>
+
+    <h3 class="algo-sub">Dağıtım Hattı — Anlamlı Sosyal Etkileşim Modeli</h3>
+    <div class="algo-flow">
+      <div class="algo-node gray">
+        <span class="anode-title">İçerik Stoku</span>
+        <span class="anode-desc">Paylaşılan içerik</span>
+      </div>
+      <div class="algo-arrow">→</div>
+      <div class="algo-node blue">
+        <span class="anode-title">Kim Paylaştı</span>
+        <span class="anode-desc">Arkadaş vs. sayfa</span>
+      </div>
+      <div class="algo-arrow">→</div>
+      <div class="algo-node blue">
+        <span class="anode-title">Değer Tahmini</span>
+        <span class="anode-desc">Etkileşim tahmini</span>
+      </div>
+      <div class="algo-arrow">→</div>
+      <div class="algo-node gold">
+        <span class="anode-title">Haber Akışı</span>
+        <span class="anode-desc">Kişisel öncelik</span>
+      </div>
+    </div>
+
+    <h3 class="algo-sub">Temel Sinyaller</h3>
+    <div class="algo-signals">
+      <div class="sig-row"><span class="sig-name">Paylaşım (share)</span><div class="sig-bar"><div class="sig-fill" style="width:100%;background:#d4af37"></div></div><span class="sig-tag critical">En kritik</span></div>
+      <div class="sig-row"><span class="sig-name">Arkadaş / aile paylaşımı</span><div class="sig-bar"><div class="sig-fill" style="width:100%;background:#d4af37"></div></div><span class="sig-tag critical">Kaynak kalitesi</span></div>
+      <div class="sig-row"><span class="sig-name">Yorum ve tartışma</span><div class="sig-bar"><div class="sig-fill" style="width:90%;background:#d4af37"></div></div><span class="sig-tag critical">Çok yüksek</span></div>
+      <div class="sig-row"><span class="sig-name">Tepkiler (öfke dahil)</span><div class="sig-bar"><div class="sig-fill" style="width:72%;background:#c49a2a"></div></div><span class="sig-tag high">Yüksek</span></div>
+      <div class="sig-row"><span class="sig-name">Video tamamlama</span><div class="sig-bar"><div class="sig-fill" style="width:58%;background:#a07818"></div></div><span class="sig-tag med">Orta</span></div>
+      <div class="sig-row"><span class="sig-name">Sayfa / grup içeriği</span><div class="sig-bar"><div class="sig-fill" style="width:28%;background:#6a7a6a"></div></div><span class="sig-tag info">Organik düşüş trendi</span></div>
+      <div class="sig-row"><span class="sig-name">Sensasyonel başlık</span><div class="sig-bar"><div class="sig-fill" style="width:95%;background:#9575b0"></div></div><span class="sig-tag neg">Clickbait cezası</span></div>
+      <div class="sig-row"><span class="sig-name">Bağlantı tıklamaları</span><div class="sig-bar"><div class="sig-fill" style="width:38%;background:#6a7a6a"></div></div><span class="sig-tag info">Düşük etki</span></div>
+    </div>
+
+    <div class="algo-unique">
+      <span class="algo-unique-label">Benzersiz Özellik: Clickbait Cezalandırma Sistemi</span>
+      "Bu videoyu izlemeden gidin!" tarzı başlıklar ve içeriği karşılamayan merak uyandırıcı ifadeler, Facebook'un özel ML modelleriyle tespit edilir ve aktif olarak bastırılır. Sağlık dezenformasyonu, seçim manipülasyonu girişimleri ve aşı karşıtı içerikler de sistematik ceza mekanizmalarına tabidir.
+    </div>
+  </div>
+
+  <!-- ── REDDIT ─────────────────────────────────────────────── -->
+  <div class="algo-panel" id="ap-reddit">
+    <p class="algo-intro">Reddit, tek bir algoritma yerine kullanıcının seçebildiği birden fazla sıralama modu sunar: Hot, Top, Rising, New, Controversial ve Best. Hot algoritması matematiksel olarak şeffaftır; formülü açık kaynaklıdır. Sistem, zaman ile oy kalitesini logaritmik bir denge içinde birleştirir.</p>
+
+    <h3 class="algo-sub">Dağıtım Hattı — Hot Modu</h3>
+    <div class="algo-flow">
+      <div class="algo-node gray">
+        <span class="anode-title">Gönderi</span>
+        <span class="anode-desc">Yeni içerik</span>
+      </div>
+      <div class="algo-arrow">→</div>
+      <div class="algo-node orange">
+        <span class="anode-title">Oy Skoru</span>
+        <span class="anode-desc">Wilson güveni</span>
+      </div>
+      <div class="algo-arrow">→</div>
+      <div class="algo-node orange">
+        <span class="anode-title">Zaman Azalması</span>
+        <span class="anode-desc">Logaritmik düşüş</span>
+      </div>
+      <div class="algo-arrow">→</div>
+      <div class="algo-node gold">
+        <span class="anode-title">Sıralama</span>
+        <span class="anode-desc">Hot / Top / Rising</span>
+      </div>
+    </div>
+
+    <div class="algo-formula">
+      <span class="algo-formula-label">Hot Skor Formülü (Açık Kaynak)</span>
+      score = log₁₀(max(|upvotes − downvotes|, 1)) + (unix_zaman − 1134028003) / 45000
+    </div>
+
+    <h3 class="algo-sub">Temel Sinyaller</h3>
+    <div class="algo-signals">
+      <div class="sig-row"><span class="sig-name">Upvote / downvote oranı (Olumu oy / Olumsuz oy oranı)</span><div class="sig-bar"><div class="sig-fill" style="width:100%;background:#d4af37"></div></div><span class="sig-tag critical">Wilson güven skoru</span></div>
+      <div class="sig-row"><span class="sig-name">Gönderinin yaşı</span><div class="sig-bar"><div class="sig-fill" style="width:85%;background:#c49a2a"></div></div><span class="sig-tag high">Logaritmik zaman</span></div>
+      <div class="sig-row"><span class="sig-name">Toplam oy hacmi</span><div class="sig-bar"><div class="sig-fill" style="width:70%;background:#c49a2a"></div></div><span class="sig-tag high">İstatistiksel güven</span></div>
+      <div class="sig-row"><span class="sig-name">Yorum sayısı</span><div class="sig-bar"><div class="sig-fill" style="width:50%;background:#a07818"></div></div><span class="sig-tag med">Best modunda etkili</span></div>
+      <div class="sig-row"><span class="sig-name">Subreddit kuralları</span><div class="sig-bar"><div class="sig-fill" style="width:80%;background:#c49a2a"></div></div><span class="sig-tag high">Moderatör filtresi</span></div>
+      <div class="sig-row"><span class="sig-name">Raporlama oranı</span><div class="sig-bar"><div class="sig-fill" style="width:90%;background:#9575b0"></div></div><span class="sig-tag neg">Negatif sinyal</span></div>
+      <div class="sig-row"><span class="sig-name">Controversial skoru</span><div class="sig-bar"><div class="sig-fill" style="width:60%;background:#a07818"></div></div><span class="sig-tag med">Ayrı sıralama modu</span></div>
+      <div class="sig-row"><span class="sig-name">Ödül (Gold, Platin)</span><div class="sig-bar"><div class="sig-fill" style="width:30%;background:#6a7a6a"></div></div><span class="sig-tag info">Düşük doğrudan etki</span></div>
+    </div>
+
+    <div class="algo-unique">
+      <span class="algo-unique-label">Benzersiz Özellik: Wilson Güven Aralığı</span>
+      Reddit, basit oy oranı yerine istatistiksel güven aralığını hesaplar. 10 upvote / 0 downvote ile 1000 upvote / 100 downvote farklı muamele görür: az oylanan içeriklerde %100 upvote oranına rağmen belirsizlik yüksektir. Wilson skoru bu belirsizliği hesaba katarak gerçek kaliteyi ölçer. Formül tamamen açık kaynaklıdır.
+    </div>
+  </div>
+
+  <!-- ── BLUESKY ─────────────────────────────────────────────── -->
+  <div class="algo-panel" id="ap-bluesky">
+    <p class="algo-intro">Bluesky, AT (Authenticated Transfer) Protokolü üzerine kurulu merkezi olmayan bir sosyal ağdır. Diğer platformlardan en temel farkı: kullanıcı hangi algoritmayı kullanacağını seçer — ya da topluluk tarafından yazılmış özel bir algoritma indirir. Platform algoritmayı dayatmaz, reklamla finanse edilmez.</p>
+
+    <h3 class="algo-sub">AT Protocol Mimarisi — Merkezsiz Akış</h3>
+    <div class="algo-flow">
+      <div class="algo-node gray">
+        <span class="anode-title">Firehose</span>
+        <span class="anode-desc">AT Protocol akışı</span>
+      </div>
+      <div class="algo-arrow">→</div>
+      <div class="algo-node green">
+        <span class="anode-title">Veri Sunucusu</span>
+        <span class="anode-desc">Kişisel depo (PDS)</span>
+      </div>
+      <div class="algo-arrow">→</div>
+      <div class="algo-node green">
+        <span class="anode-title">Feed Oluşturucu</span>
+        <span class="anode-desc">Seçilen algoritma</span>
+      </div>
+      <div class="algo-arrow">→</div>
+      <div class="algo-node gold">
+        <span class="anode-title">Kişisel Akış</span>
+        <span class="anode-desc">Kullanıcı kontrolü</span>
+      </div>
+    </div>
+
+    <h3 class="algo-sub">Temel Sinyaller (Varsayılan Discover Feed)</h3>
+    <div class="algo-signals">
+      <div class="sig-row"><span class="sig-name">Kullanıcı tercihi</span><div class="sig-bar"><div class="sig-fill" style="width:100%;background:#d4af37"></div></div><span class="sig-tag critical">En güçlü kontrol</span></div>
+      <div class="sig-row"><span class="sig-name">Güvenilen ağ beğenileri</span><div class="sig-bar"><div class="sig-fill" style="width:80%;background:#c49a2a"></div></div><span class="sig-tag high">Sosyal güven sinyali</span></div>
+      <div class="sig-row"><span class="sig-name">Zaman (kronoloji)</span><div class="sig-bar"><div class="sig-fill" style="width:75%;background:#c49a2a"></div></div><span class="sig-tag high">Varsayılanda güçlü</span></div>
+      <div class="sig-row"><span class="sig-name">Konu ve etiket eşleşmesi</span><div class="sig-bar"><div class="sig-fill" style="width:60%;background:#a07818"></div></div><span class="sig-tag med">Orta etki</span></div>
+      <div class="sig-row"><span class="sig-name">Repostlar</span><div class="sig-bar"><div class="sig-fill" style="width:52%;background:#a07818"></div></div><span class="sig-tag med">Orta etki</span></div>
+      <div class="sig-row"><span class="sig-name">Etkileşim oranı</span><div class="sig-bar"><div class="sig-fill" style="width:48%;background:#6a8f6a"></div></div><span class="sig-tag info">Feed'e göre değişir</span></div>
+      <div class="sig-row"><span class="sig-name">Reklam / tanıtım</span><div class="sig-bar"><div class="sig-fill" style="width:0%;background:#555"></div></div><span class="sig-tag info">Şu an mevcut değil</span></div>
+      <div class="sig-row"><span class="sig-name">Açık kaynak şeffaflık</span><div class="sig-bar"><div class="sig-fill" style="width:100%;background:#d4af37"></div></div><span class="sig-tag critical">Temel tasarım prensibi</span></div>
+    </div>
+
+    <div class="algo-unique">
+      <span class="algo-unique-label">Benzersiz Özellik: Algoritmik Seçim Özgürlüğü</span>
+      Bluesky'da "Discover", "Chronological" veya "Popular with Friends" gibi hazır feed'ler arasında geçiş yapabilirsiniz. Bunların ötesinde, topluluk tarafından yazılmış yüzlerce özel algoritma kullanılabilir. AT Protocol, verilerinizin size ait olduğunu garanti eder: hesabınızı kaybetmeden başka bir sunucuya taşıyabilirsiniz.
+    </div>
+  </div>
+
+</div><!-- / #algo-widget -->
+
+<style>
+/* ── GENEL WIDGET STİLLERİ ─────────────────────────────────────── */
+#algo-widget {
+  font-family: 'Poppins', sans-serif;
+}
+
+/* Sekmeler */
+.algo-tab {
+  background: transparent;
+  border: 1px solid rgba(212,175,55,0.3);
+  color: #a0a0a0;
+  padding: 8px 16px;
+  border-radius: 20px;
+  font-family: 'Cinzel', serif;
+  font-size: 0.78rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  letter-spacing: 0.5px;
+}
+.algo-tab:hover {
+  border-color: rgba(212,175,55,0.7);
+  color: #d4af37;
+}
+.algo-tab.active {
+  background: rgba(212,175,55,0.12);
+  border-color: #d4af37;
+  color: #d4af37;
+}
+
+/* Paneller */
+.algo-panel { display: none; }
+.algo-panel.active { display: block; }
+
+/* Giriş metni */
+.algo-intro {
+  font-family: 'Lora', serif;
+  font-size: 1rem;
+  color: #c0c0c0;
+  line-height: 1.8;
+  margin-bottom: 24px;
+  padding: 16px 20px;
+  background: rgba(212,175,55,0.04);
+  border-left: 3px solid rgba(212,175,55,0.4);
+  border-radius: 0 10px 10px 0;
+}
+
+/* Alt başlık */
+.algo-sub {
+  font-family: 'Cinzel', serif !important;
+  font-size: 1rem !important;
+  color: #d4af37 !important;
+  margin: 24px 0 12px !important;
+  letter-spacing: 0.5px;
+  border-bottom: none !important;
+  padding-bottom: 0 !important;
+}
+
+/* Akış diyagramı */
+.algo-flow {
+  display: flex;
+  align-items: stretch;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 8px;
+}
+.algo-node {
+  flex: 1;
+  min-width: 90px;
+  border: 1px solid;
+  border-radius: 10px;
+  padding: 12px 10px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.algo-node.gray  { background: rgba(255,255,255,0.03); border-color: rgba(255,255,255,0.12); }
+.algo-node.gold  { background: rgba(212,175,55,0.14);  border-color: rgba(212,175,55,0.6);  }
+.algo-node.red   { background: rgba(210,84,48,0.1);    border-color: rgba(210,84,48,0.4);   }
+.algo-node.purple{ background: rgba(127,119,221,0.1);  border-color: rgba(127,119,221,0.4); }
+.algo-node.blue  { background: rgba(56,138,221,0.1);   border-color: rgba(56,138,221,0.35); }
+.algo-node.orange{ background: rgba(186,117,23,0.12);  border-color: rgba(186,117,23,0.4);  }
+.algo-node.green { background: rgba(29,158,117,0.1);   border-color: rgba(29,158,117,0.35); }
+
+.anode-title {
+  font-family: 'Cinzel', serif;
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: #f0f0f0;
+  letter-spacing: 0.3px;
+}
+.anode-desc {
+  font-family: 'Poppins', sans-serif;
+  font-size: 0.65rem;
+  color: #888;
+  line-height: 1.3;
+}
+.algo-node.gold .anode-title  { color: #d4af37; }
+.algo-node.gold .anode-desc   { color: #b89a30; }
+
+.algo-arrow {
+  display: flex;
+  align-items: center;
+  color: rgba(212,175,55,0.5);
+  font-size: 1rem;
+  flex-shrink: 0;
+  padding: 0 2px;
+}
+
+/* Sinyal çubukları */
+.algo-signals {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  margin-bottom: 8px;
+}
+.sig-row {
+  display: grid;
+  grid-template-columns: 1fr 120px auto;
+  align-items: center;
+  gap: 10px;
+}
+.sig-name {
+  font-family: 'Poppins', sans-serif;
+  font-size: 0.8rem;
+  color: #c0c0c0;
+}
+.sig-bar {
+  height: 5px;
+  background: rgba(255,255,255,0.07);
+  border-radius: 3px;
+  overflow: hidden;
+}
+.sig-fill {
+  height: 5px;
+  border-radius: 3px;
+  transition: width 0.6s ease;
+}
+.sig-tag {
+  font-family: 'Poppins', sans-serif;
+  font-size: 0.62rem;
+  padding: 2px 8px;
+  border-radius: 10px;
+  white-space: nowrap;
+  text-align: center;
+}
+.sig-tag.critical { background: rgba(212,175,55,0.18); color: #d4af37; border: 1px solid rgba(212,175,55,0.35); }
+.sig-tag.high     { background: rgba(196,154,42,0.12);  color: #c49a2a; border: 1px solid rgba(196,154,42,0.3);  }
+.sig-tag.med      { background: rgba(160,120,24,0.12);  color: #a07818; border: 1px solid rgba(160,120,24,0.3);  }
+.sig-tag.neg      { background: rgba(149,117,176,0.15); color: #9575b0; border: 1px solid rgba(149,117,176,0.3); }
+.sig-tag.info     { background: rgba(255,255,255,0.05); color: #777;    border: 1px solid rgba(255,255,255,0.1); }
+
+/* Formül kutusu */
+.algo-formula {
+  background: rgba(0,0,0,0.35);
+  border: 1px solid rgba(212,175,55,0.2);
+  border-radius: 10px;
+  padding: 14px 18px;
+  margin: 8px 0 16px;
+  font-family: 'Courier New', monospace;
+  font-size: 0.78rem;
+  color: #a0a0a0;
+  line-height: 1.8;
+}
+.algo-formula-label {
+  display: block;
+  font-family: 'Cinzel', serif;
+  font-size: 0.65rem;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: rgba(212,175,55,0.6);
+  margin-bottom: 8px;
+}
+
+/* Benzersiz özellik kutusu */
+.algo-unique {
+  background: rgba(212,175,55,0.05);
+  border-left: 3px solid #d4af37;
+  border-radius: 0 10px 10px 0;
+  padding: 16px 18px;
+  margin-top: 20px;
+  font-family: 'Lora', serif;
+  font-size: 0.95rem;
+  color: #b0b0b0;
+  line-height: 1.75;
+}
+.algo-unique-label {
+  display: block;
+  font-family: 'Cinzel', serif;
+  font-size: 0.72rem;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: #d4af37;
+  margin-bottom: 10px;
+}
+
+/* Mobil uyumu */
+@media (max-width: 600px) {
+  .algo-flow { flex-direction: column; }
+  .algo-arrow { transform: rotate(90deg); align-self: center; }
+  .sig-row { grid-template-columns: 1fr auto; }
+  .sig-bar { display: none; }
+}
+</style>
+
+<script>
+(function(){
+  var tabs  = document.querySelectorAll('.algo-tab');
+  var panels = document.querySelectorAll('.algo-panel');
+  tabs.forEach(function(tab){
+    tab.addEventListener('click', function(){
+      tabs.forEach(function(t){ t.classList.remove('active'); });
+      panels.forEach(function(p){ p.classList.remove('active'); });
+      tab.classList.add('active');
+      var target = document.getElementById('ap-' + tab.dataset.p);
+      if(target) target.classList.add('active');
+    });
+  });
+})();
+</script>
+    </div>
+</section>
+
+        <section id="bubbles">
+    <div class="content-box">
+        <h2>Filtre Balonu ve Yankı Odası</h2>
+        
+        <p><span class="highlight">Yankı Odası (Echo Chamber)</span>, sosyal medya algoritmalarının bizi sürekli olarak kendi görüşlerimize benzer içeriklerle beslemesi sonucu oluşan sanal bir ortamdır. Bu odada farklı fikirler duyulmaz hale gelir, çünkü algoritmalar hoşlanacağımızı düşündüğü şeyleri gösterir.</p>
+        
+        <p>Zamanla kendi doğrularımız sürekli pekişir, karşıt görüşler ya yok sayılır ya da düşmanlaştırılır. <span class="highlight">Filtre balonu</span> bizi farklı bakış açılarından izole ederken, <span class="highlight">yankı odası</span> da aynı sesin defalarca yankılanmasıyla inançlarımızı katılaştırır.</p>
+        
+        <p>Sonuç: Toplumsal kutuplaşma derinleşir, empati azalır ve <span class="highlight">"biz" ve "onlar" ayrımı</span> keskinleşir. Sosyal medya okuryazarlığı, bu yankı odalarının farkına varmak ve bilinçli olarak farklı kaynaklara yönelmekle başlar.</p>
+    </div>
+</section>
+
+        <section id="mining">
+            <div class="content-box">
+                <h2>Veri Madenciliği (Data Mining)</h2>
+<p>Tıkladığınız her şey, konumunuz ve kullandığınız cihaz <span class="highlight">Açık Veri</span> olarak toplanır. Bu veriden yaş, ilgi alanı ve siyasi görüş gibi anlamlı bilgiler çıkarılmasına Veri Çıkarımı denir.</p>
+
+<p>Her tıklamanız, aramanız, beğeniniz ve hatta imlecinizi bir içeriğin üzerinde ne kadar süre tuttuğunuz dijital bir ayak izi olarak kaydedilir. İşte bu devasa veri yığınları, <span class="highlight">Veri Madenciliği</span> teknikleriyle işlenir; yaş aralığınız, ilgi alanlarınız, alışkanlıklarınız, hatta siyasi eğilimleriniz gibi anlamlı örüntülere dönüştürülür. Bu sayede platformlar size özel içerikler sunar, reklamlar hedefinizi tam on ikiden vurur. Peki bedeli? Kişisel mahremiyetiniz, farkında olmadan ticari bir meta haline gelir.</p>
+                <div class="fact-panel" style="text-align: center;">
+                    <p style="font-weight: 700; font-size: 1.2rem; margin-bottom: 0;">"Bir platforma para ödemiyorsanız; satılan ürün siz değil, sizin verinizdir."</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="dezenformasyon">
+            <div class="content-box">
+                <h2>Kasıtlı Yanıltma: Dezenformasyon</h2>
+<p><span class="highlight">Dezenformasyon</span>, gerçeği çarpıtmak veya tamamen uydurmak amacıyla bilerek yayılan yanlış bilgidir; yanlışlıkla paylaşılan bilgiyi ifade eden <span class="highlight">"mezenformasyon"</span>dan bu kasıt unsuru bakımından ayrılır. Tarihsel kökleri propaganda ve siyasi manipülasyona dayansa da dijital çağda sosyal medyanın sunduğu hız ve erişim kolaylığı, dezenformasyonu küresel ölçekte benzeri görülmemiş bir tehdit hâline getirmiştir.</p>
+
+<p>Başlıca kaynakları arasında siyasi çıkar peşindeki aktörler, ekonomik kazanç güden içerik üreticileri ve toplumsal kutuplaşmayı körüklemek isteyen devlet destekli yapılar sayılabilir. <span class="highlight">Yanlış bilginin tekrar tekrar maruz kalma yoluyla gerçekmiş gibi algılanmasını sağlayan "yanılsama gerçekliği etkisi"</span>, dezenformasyonu özellikle tehlikeli kılar; zira bir iddia ne kadar çok görülürse o kadar inandırıcı hissettirir.</p>
+
+<p>Sonuçları yalnızca bireysel inanç düzeyinde kalmaz: aşı karşıtlığı gibi sağlık krizlerini derinleştiren tutumlardan seçimleri etkileyen kampanyalara, kurumlara duyulan güvenin erimesine kadar geniş bir yıkım alanı oluşturur. Bununla mücadelede <span class="highlight">medya okuryazarlığı, bağımsız doğrulama kuruluşları ve platform düzeyindeki algoritmik denetim</span> kritik önem taşır; ancak hiçbir önlem tek başına yeterli değildir. Nihayetinde dezenformasyona karşı en kalıcı savunma, <span class="highlight">eleştirel düşünme becerisini toplumun her kesimine kazandıran bir eğitim anlayışıdır</span>.</p>
+            </div>
+        </section>
+
+        <section id="mezenformasyon">
+            <div class="content-box">
+                <h2>Masum Hata: Mezenformasyon</h2>
+<p><span class="highlight">Mezenformasyon</span>, yanlış ya da yanıltıcı bilginin zarar verme kastı taşımaksızın paylaşılmasını ifade eder; onu dezenformasyondan ayıran temel fark tam da bu <span class="highlight">niyet yokluğudur</span>. Kaynağında çoğunlukla eksik bağlam, yanlış anlama veya güvenilir sanılan bir kişiden duyulmuş yarım bilgi yatar — paylaşan kişi aktardığı içeriğin doğru olduğuna gerçekten inanmaktadır.</p>
+
+<p>Sosyal medya bu olguyu dramatik biçimde büyütmüştür; bir gönderiyi doğrulamak yerine hızla iletmek, platformların teşvik ettiği davranış kalıbının tam da merkezinde yer almaktadır. Sonuçları, kasıtlı dezenformasyondan aşağı kalır nitelikte değildir: <span class="highlight">sağlık krizlerinde yanlış tedavi yöntemlerinin yayılması, afet anlarında kaynağı belirsiz tahliye talimatlarının kafa karışıklığı yaratması ya da finansal piyasalarda asılsız haberlerin panik dalgası oluşturması</span> bunun somut örnekleridir.</p>
+
+<p>Mezenformasyonun sinsi yanı, iyi niyetli insanlar aracılığıyla yayılmasıdır; bu durum hem kaynağını izlemeyi güçleştirir hem de alıcının şüphe eşiğini düşürür. Çözümün odağında <span class="highlight">bireysel sorumluluk bilinci</span> durur: paylaşmadan önce duraksama, kaynağı sorgulama ve güvenilirliği teyit etme alışkanlığı. Mezenformasyon bize, kötü niyetin yokluğunun zararı ortadan kaldırmadığını; bilgiyle ilişkimizde özenin bir tercih değil, zorunluluk olduğunu hatırlatır.</p>
+            </div>
+        </section>
+
+        <!-- 2.3 DEEPFAKE VE YZ İÇERİĞİ -->
+        <section id="deepfake">
+    <div class="content-box">
+        <h2>Deepfake ve Yapay Zeka İçeriği</h2>
+        
+        <h3>1) Deepfake Nedir?</h3>
+        <p>İngilizce deep learning (derin öğrenme) ve fake (sahte) kelimelerinin birleşimiyle oluşan deepfake (derin kurgu ya da derin sahte) için farklı Türkçe çeviriler kullanılmaktaysa da genel kabul görmüş bir karşılığı bulunmadığından burada da "deepfake" olarak kullanılacaktır. Deepfake, insanların yüz, hareket ve sesini gerçeğe uygun olacak şekilde taklit etmek veya değiştirmek için yapay zekâ teknikleri aracılığıyla fotoğrafların, videoların veya seslerin kullanılmasıdır. Bu yöntem ile oldukça gerçekçi içeriklerin oluşturabilmesi için görece az sayıda video, fotoğraf veya ses kaydı kullanılması yeterli olabilmektedir.</p>
+
+        <h3>2) Deepfake Ne İşe Yarıyor?</h3>
+        <p>Deepfake içerikler sinema sektörü gibi alanların yanı sıra, kişisel amaçlar, reklam, itibarsızlaştırma, finansal veya siyasi yarar elde etme gibi konularda kullanılabilmektedir. Deepfake teknolojisiyle ünlü tablolarda yer alan portrelerin mimikleri hareket ettirilebilmekte veya hayatta olmayan ünlü bir kişi yeniden seyirciyle buluşturulabilmektedir.</p>
+
+        <h3>3) Deepfake Nasıl Bir Tehdit Oluşturuyor?</h3>
+        <p>Deepfake teknolojisinin insanlar için bir tehdit niteliği taşımasının sebebi kişisel verilerin bir sürece tabi tutularak manipüle edilmesidir. Deepfake'in sahte video ve sahte sesler oluşturarak manipülasyon yapma, finansal zarar oluşturma, siber zorbalık, dolandırıcılık gibi potansiyel tehlike tarafı günümüzde gitgide daha yaygın hale gelmektedir. Özellikle teknolojik olarak dezavantajlı konumda bulunan çocuklar ve yaşlılar, şantaj ve tehdit ile çıkar sağlama amacı güden saldırganlar için önemli bir hedef konumundadır.</p>
+        <p>Ses ve görüntü gibi kişisel veriler alınıp başka kişisel verilerle karıştırılarak gerçeklikten uzak bir kişisel veri ortaya çıkarılmaktadır. Gerçek olmayan ama içinde gerçek kişisel veri bulunduran karma bir içerik elde edilmiş olur. Elde edilen sahte içerikle, gerçek bir kişisel veri gibi insanları aldatmak mümkün hale gelmektedir. Bu anlamda deepfake içeriklerde kişisel verilere yönelik suç ve kabahatler de ortaya çıkabilmektedir.</p>
+
+        <h3>4) Deepfake Nasıl Tespit Edilir?</h3>
+        <p>Bir içeriğin deepfake olduğunu anlamanın bazı yolları vardır. Çeşitli kaynaklardan elde edilen bilgilere göre deepfake içeriğe dair aşağıdaki sorular bir ipucu olabilir:</p>
+        <ul>
+            <li>Videodaki kişinin doğal olmayan göz hareketleri var mı veya göz kırpıyor mu?</li>
+            <li>İçerikteki yüz pürüzsüz veya çok kırışık görünüyor mu?</li>
+            <li>İçerikteki kişide gözlük varsa gözlükte parlama var mı ya da kişi hareket ettiğinde parlamanın açısı değişiyor mu?</li>
+            <li>Görüntüdeki kişinin yüz ifadesi söyledikleriyle aynı duyguyu yansıtıyor mu?</li>
+            <li>Baş ve vücut birbiriyle uyumlu hareket halinde mi?</li>
+            <li>Saçlardaki tutamlar birbiriyle uyumsuz ya da donuk mu?</li>
+            <li>Dişlerde tüm dişlerin ana hatları var mı?</li>
+            <li>Yavaşlatıldığında doğal olmayan görüntüler ortaya çıkıyor mu?</li>
+            <li>Bir soru sorulduğunda mantıklı bir cevap verebiliyor mu?</li>
+            <li>Ses tonunda robotik bir ifade var mı?</li>
+        </ul>
+
+        <h3>5) Deepfake Teknolojisinin Tehditlerine Karşı Ne Yapılmalıdır?</h3>
+        <p>Deepfake içerikler ile birlikte yanlış bilginin yayılmasının önüne geçmek veya kişilerin zarara uğramasını önlemek için en önemli görev gerçek kişilere düşmektedir. Öncelikle, kişiler kişisel verilerinin paylaşımına dikkat etmelidir. Unutulmamalıdır ki deepfake içerikler için en çok kullanılan kaynaklar sosyal medya vb. platformlardır. Örnek olarak deepfake videoların genellikle yüz ve ses verisi kullanılarak oluşturulması düşünüldüğünde, kişilerin sosyal medyada yüzünün ve sesinin göründüğü içerikleri paylaşmasıyla ilgili bir hassasiyet taşıması önem arz edecektir. Bunlarla birlikte deepfake içeriklerin varlığı ve tehditleri hakkında bilgi sahibi olmak ve farkındalık oluşturmak da önemlidir. Deepfake videoları tespit etmek için sunulan bazı araçlardan faydalanmak da videoların tespit edilebilmesine imkân tanıyabilir.</p>
+        <p>Birçok deepfake uygulaması ücretli ya da ücretsiz bir şekilde kullanılabilmektedir. Bu yazılım ve uygulamaların kullanım alanlarının sınırlandırılması ve kullanıcıların kullanım amaçlarının kontrol edilmesi gerekmektedir. Herkes tarafından kolayca kullanılmamalıdır.</p>
+        <p>Deepfake teknolojisinden korunmak için kurumlar; ağ ve siber güvenlik operasyonlarını etkili bir şekilde yönetmeli, merkezi bir raporlama ve izleme birimi oluşturmalı, şirket içi iletişim kanallarını geliştirmeli ve halkla ilişkiler departmanıyla bağlantıyı koparmamalıdır.</p>
+        <p>Teknolojinin beraberinde getirdiği risk ve tehditleri bertaraf etmek adına yine teknolojinin kendisine ihtiyaç duyulmaktadır. Bu noktada özellikle sosyal medya ve içerik sağlayıcı platformlarda karakter ya da kimlik hırsızlığı amacıyla deepfake teknolojisinin kullanılmasının engellenmesini sağlayacak anti-deepfake yazılımlarının geliştirilmesi gerekmektedir. Söz konusu yazılımlar ve çözümler dijital kimliğe sahip olan herkes tarafından aktif olarak kullanılmalıdır. Bunların yanında siber güvenlik şirketleri;</p>
+        <ul>
+            <li>Deepfake ile oluşturulan içerikleri tespit edecek araçların geliştirilmesi,</li>
+            <li>Deepfake videolarının incelenmesi,</li>
+            <li>Deepfake içerikleri orijinal video veya fotoğraf vb. içeriklerden ayırmak için deepfake içeriğinde kullanılan orijinal içeriklerin referans olması için veri tabanlarının oluşturulması,</li>
+            <li>Deepfake teknolojisine ilişkin kullanıcıların farkındalığının artırılması,</li>
+            <li>Deepfake ile gerçekleştirilebilecek siber saldırılara karşı savunma yöntemlerinin geliştirilmesi</li>
+        </ul>
+        <p>gibi çeşitli önlemler alabilirler.</p>
+		<p class="source">Kaynak: <a href="https://www.kvkk.gov.tr/SharedFolderServer/CMSFiles/015794c4-061b-4560-a0b2-e372ee536642.pdf" target="_blank" rel="noopener noreferrer">https://www.kvkk.gov.tr/SharedFolderServer/CMSFiles/015794c4-061b-4560-a0b2-e372ee536642.pdf</a></p>
+    </div>
+</section>
+
+        <!-- 2.4 SİBER ZORBALIK -->
+        <section id="siber-zorbalik">
+    <div class="content-box">
+        <h2>Siber Zorbalık</h2>
+
+        <p>Günümüzde internet sosyal hayatın bir parçası olarak hayatımıza birçok faydalar ve yenilikler getirmiştir. Getirdiği faydaların ve kolaylıkların yanı sıra, internetin bilinçsiz kullanımı bireysel ve toplumsal hayata yönelik tehditler de barındırmaktadır.</p>
+
+        <p>Web ve iletişim teknolojisinde yaşanan hızlı gelişmelerle birlikte insanlar arasındaki iletişim ve ilişki sanal ortamlara taşınmıştır. İnsanların birbirleriyle tanışması, iletişime geçmesi, içerik paylaşımında bulunması, tartışma ortamı oluşturması ve ortak ilgi alanları etrafında gruplar oluşturması sürekli gelişen web teknolojisiyle birlikte oluşan bir durumdur. Sosyal paylaşım ağlarının dünya ile birlikte ülkemizde de kullanıcı sayısı hızlı bir şekilde artmakta, gerçek ve sanal dünya ayrımı giderek ortadan kalkmaktadır. Bu artış ile birlikte internet ve sosyal ağlar, bilinmeyen, fark edilemeyecek veya algılaması zor, pek çok tehdit ve tehlikeyi de beraberinde getirmiştir.</p>
+
+        <p>Bu tehlikelerden biri olan "<strong>siber zorbalık</strong>"; utanç verici kaba davranışların, küfürlü konuşmaların ve başkalarına karşı düşmanca çevrimiçi ileti, tehdit, taciz ve negatif yorumların, izinsiz fotoğraf paylaşımının, e-posta, web siteleri, sosyal ağlar ve mesajlaşmalar aracılığı ile kasıtlı olarak gerçekleştirilmesi eylemidir. Bir başka deyişle, kullanıcılara karşı teknik veya ilişkisel tarzda zarar verecek bilgi ve iletişim teknolojilerini kullanarak yapılan paylaşımlar ve davranışlar siber zorbalık kapsamına girer. Elektronik ortamlarda yapılan zorbalık "<strong>elektronik zorbalık</strong>", "<strong>sanal zorbalık</strong>" veya "<strong>siber zorbalık</strong>" olarak da adlandırılır.</p>
+
+        <p>Sanal ortamlarda kullanıcıların davranış biçimleri gerçek hayattan farklıdır. Kullanıcılar bu ortamda sanal kimlikler oluşturmakta, duygu, düşünce ve çeşitli bilgileri tanınma korkusu yaşamadan rahatlıkla paylaşabilmektedir. Bunun bir sonucu olarak dedikodular, tehditler ve uygunsuz içerikler internette çok hızlı bir şekilde yayılmakta ve genç nesli hem <strong>siber zorba</strong> hem de <strong>siber mağdur</strong> yapabilmektedir.</p>
+
+        <p>Dijital oyunların içerisinde yer alan şiddet ya da sosyal ağlarda maruz kalınan siber zorbalığın ise, özellikle çocukların fiziksel ve ruhsal gelişimine karşı olumsuz bir etkisi vardır. Siber zorbalıkta saldırgan ile saldırıya uğrayan arasında fiziksel bir temas olmamasına karşın saldırıya uğrayan kişi psikolojik açıdan zarar görür.</p>
+
+        <p>İnternet ortamında kullanıcıların en fazla sorun yaşadıkları zorbalık, yabancılarla tanışma, dolandırıcılığa ya da istismara maruz kalma ile bilinçsiz veri paylaşımı konularında yaşanmaktadır.</p>
+
+        <h3>Hangi Eylemler Siber Zorbalık Kapsamına Girer?</h3>
+        <p>Aşağıda siber zorbalık kapsamına giren davranışlar sıralanmıştır. Çevrimiçi ortamlarda kendiniz, bir yakınınız veya çocuğunuz bu durumlara maruz kalıyorsa siber zorbalıkla karşı karşıyasınız demektir.</p>
+        <ul>
+            <li><span class="highlight">Dedikodu:</span> Kamuoyunda spekülasyon oluşturma. Çevrimiçi ortamlarda hakkınızda kasıtlı ve alenen dedikodu yapılması.</li>
+            <li><span class="highlight">Dışlama:</span> Bir grup arkadaştan bir kişiyi ayırma. Özellikle okulda başlayan ve siber ortamda devam eden dışlanma.</li>
+            <li><span class="highlight">Taciz:</span> Sürekli ve kasıtlı olarak yapılan zarar verici ve rahatsız edici davranışlar.</li>
+            <li><span class="highlight">Takip:</span> Her an izlenildiğini hissetme. İnternette başlayıp, gerçek hayata yansıyan takip ediliyormuş hissi.</li>
+            <li><span class="highlight">Trollemek:</span> Kasten ve maksatlı olarak yapılan provokasyon (kışkırtma) ve örtülü hakaret, sabote.</li>
+            <li><span class="highlight">Yorumlar:</span> Yazı, fotoğraf, video yoluyla yapılan hakaret ve küfür içeren negatif iletiler. Saygısızlık: İletişimde haddi aşmak ve bunu devam ettirmek.</li>
+            <li><span class="highlight">Sahte (Fake) Hesap:</span> Kurban adına sahte hesaplar oluşturarak ve bu oluşturulan sahte hesaplar yoluyla tehdit ve zorbalığı sürdürmek.</li>
+            <li><span class="highlight">Kandırma:</span> Başkalarının çeşitli, gizli bilgilerini yayınlayarak ve bunları çarpıtarak insanları aldatmak, dolandırmak.</li>
+            <li><span class="highlight">Manipüle Etme</span> Kurbanın kendisi gibi davranmak.</li>
+        </ul>
+
+        <h3>Siber Zorbalıktan Korunmanın İpuçları Nelerdir?</h3>
+        <ul>
+            <li>Her şeyden önce iletişim araçları ve internet bilinçli kullanılmalıdır.</li>
+            <li>Ele geçirilmesi ve tahmin edilmesi zor kullanıcı şifresi belirlenmelidir.</li>
+            <li>Güvenlik (antivirüs vb.) yazılımları güncel olmalıdır.</li>
+            <li>Yüz yüze ilişkilerdeki etik kurallar sanal ortamda da aynıyla uygulanmalıdır.</li>
+            <li>Tanımadığınız kişilerden gelen mesajları okumamak, onaylamamak, paylaşmamak ve engellemek sizi her zaman daha güvenli kılar.</li>
+            <li>Kişisel bilgileriniz size özeldir, başkalarıyla paylaşılmamalıdır.</li>
+            <li>Web sitelerini gezinirken şüpheci olun, bilginin kaynağını araştırın ve kişisel bilgilerinizi her web sitesinde paylaşmayın.</li>
+            <li>Size gelen kimliği bilinmeyen maillere dikkat edin. Sahte hesap olma ihtimalini göz önünde bulundurun ve bu gibi durumlarda dikkatli olun.</li>
+            <li>Gerçek hayattaki davranış biçimi sanal ortamda da korunmalı ve siber zorbalığın suç olduğu bilinmelidir.</li>
+        </ul>
+
+        <p>Yukarıda sayılanlara ilave olarak, internet kullanıcıları "öz denetimin" kendilerinde olduğunu bilmeli ve bu bilinçle hareket etmelidirler. Böylece sanal ortamın tehdit ve saldırılarına maruz kalma ihtimali, sahip olunan bu bilinçle yok denecek kadar azalacaktır.</p>
+
+        <p>Siber zorbalığa maruz kalan kullanıcı hukukî yollardan hakkını aramak için ilk olarak adli makamlara suç duyurusunda bulunup yasal süreci başlatabilmektedir. Bunun yanında özellikle sosyal paylaşım siteleri ve benzeri internet siteleri üzerinden siber zorbalık, kişilik hakkı ihlali, özel hayatın gizliğini ihlal eden içeriklerle karşılaşılmış olması durumunda "uyar-kaldır" yöntemiyle yasadışı veya zararlı içeriğin kaldırılmasına yönelik bildirimler önce içerik veya erişim sağlayıcıya iletilerek ilgili içeriğin kaldırılması için ihtarda bulunulmalıdır. İlgili sitelerin bildirim seçeneğinden şikâyet süreci başlatılarak sorunun giderilmesi talep edilebilmektedir. İnternet sitelerinin bilgilerine ulaşmak için <a href="https://www.internetyardim.org.tr/icerik-sikayet-surecleri" target="_blank" rel="noopener noreferrer" style="color: var(--gold);">https://www.internetyardim.org.tr/icerik-sikayet-surecleri</a> adresinde bulunan site bilgileri sorgu sayfasından yararlanılabilir. Bu adreste yayınlanan "İnternet İçerik Şikâyet Süreçleri ve İletişim Bilgileri" linkinden popüler sosyal ağların iletişim bilgileri ve izlenmesi gereken yol internet kullanıcılarına sunulmuştur.</p>
+
+        <p class="source">Kaynak: <a href="https://www.guvenliweb.org.tr/dokuman-detay/siber-zorbalik" target="_blank" rel="noopener noreferrer">https://www.guvenliweb.org.tr/dokuman-detay/siber-zorbalik</a></p>
+    </div>
+</section>
+
+        <!-- VAKA ANALİZLERİ (AKORDİYONLU) -->
+        <section id="vaka-analizleri">
+            <div class="content-box">
+                <h2>Vaka Analizleri</h2>
+                <p style="font-size: 1rem; font-style: italic; margin-bottom: 40px;">Gerçek olaylardan esinlenerek hazırlanmış bu senaryolar, dezenformasyonun farklı alanlarda nasıl yayıldığını ve toplumsal etkilerini gösterir.</p>
+                
+                <!-- Vaka 1 - Göçmen Suçu -->
+                <details>
+                    <summary><span class="accordion-title">Vaka Senaryosu 1: "Göçmen Suçu" (Toplumsal Olay)</span></summary>
+                    <div class="accordion-content">
+                        
+                        <div class="timeline-item">
+                            <div class="timeline-time"><i class="fa-regular fa-clock"></i> GÜN 1 - SAAT 15:30</div>
+                            <h3>Gerçek Olay: Bir Kapkaççı Olayı</h3>
+                            <p><span class="actor-badge">GERÇEK</span> Merkez İlçe, Sosyal Medya Parkı yakınlarında üniversite öğrencisi <strong>Zeynep Akın</strong>'ın (21) cep telefonu çalınır. Kapkaççı kaçmaya çalışır, Zeynep takip ederken çıkan arbedede hafif yaralanır (başına 3 dikiş atılır). Suçlunun kimliği belirsizdir. Polis 10 dakika sonra gelir ama fail yakalanamaz. Telefon bulunup Zeynep'e geri verilir.</p>
+                            <div class="stats-grid">
+                                <div class="stat-item"><span class="stat-number">3</span> <span class="stat-label">Dikiş</span></div>
+                                <div class="stat-item"><span class="stat-number">10'</span> <span class="stat-label">Polis Tepki Süresi</span></div>
+                            </div>
+                        </div>
+
+                        <div class="timeline-item">
+                            <div class="timeline-time"><i class="fa-regular fa-clock"></i> SAAT 17:00</div>
+                            <h3>İlk Sosyal Medya Paylaşımı (Haklı Korku)</h3>
+                            <p><span class="actor-badge">@ZeynepAkınÖğrenci</span> (3.000 takipçi) olayın sıcaklığıyla bir tweet atar: <em>"Bugün Park'ta bir kapkaççının saldırısına maruz kaldım! 😭 Cep telefonum çalınan kişi beni hayatta itti. Başım kan içinde kaldı, 3 dikiş atıldı. UYARIN: Merkez İlçe'de son günlerde hırsızlık olayları arttı. Kimse yalnız gezmesin! Polis nerede?? Başarısız! #GüvenAhanda #PolisAraştırmalı"</em></p>
+                            <div class="stats-grid">
+                                <div class="stat-item"><span class="stat-number">2B</span> <span class="stat-label">RT</span></div>
+                                <div class="stat-item"><span class="stat-number">5B</span> <span class="stat-label">Beğeni</span></div>
+                                <div class="stat-item"><span class="stat-number">600</span> <span class="stat-label">Yorum</span></div>
+                            </div>
+                        </div>
+						<div class="timeline-item">
+                            <div class="timeline-time"><i class="fa-regular fa-clock"></i> SAAT 17:45</div>
+                            <h3>Yanlış Söylenti Başlıyor</h3>
+                            <p><span class="actor-badge">@GüvenlikMehaber</span> (15.000 takipçi, propaganda eğilimli) doğrulamadan söylentiyi yayar: <em>"TEHLİKE! ⚠️ MERKEZ İLÇE'DE SURİYELİ ÇETELER! Park'ta saldırıya maruz kalan üniversite öğrencisini çalıntı telefon için kırıp döven SUÇLULAR, Suriyeli göçmen çetesi olduğu öğrenilmiştir! POLIS SUSUYOR MU?? Bölgede Suriyeli nüfus son 2 yılda 3 KATLANDI! BU ÜLKEDE ARTIK GÜVENLIK YOK! Halkımız bilmeli: Kimin yaptığını! #ÜlkeninKöpekleri #SuriyeliÇetesi #GüvenlikKrizidir"</em></p>
+                            <div class="warning-box">
+                                <h4><i class="fa-solid fa-triangle-exclamation"></i> Paylaşımın Problemleri</h4>
+                                <ul style="list-style-type: none; padding-left: 0;">
+                                    <li>❌ Suçlunun kimliği henüz bilinmiyor.</li>
+                                    <li>❌ "Suriyeli" olduğu kanıtlanmadı.</li>
+                                    <li>❌ Tamamen söylentiye dayalı.</li>
+                                    <li>❌ Kasıtlı olarak bir grubu hedef alıyor.</li>
+                                </ul>
+                            </div>
+                            <div class="stats-grid">
+                                <div class="stat-item"><span class="stat-number">8B</span> <span class="stat-label">RT</span></div>
+                                <div class="stat-item"><span class="stat-number">25B</span> <span class="stat-label">Beğeni</span></div>
+                                <div class="stat-item"><span class="stat-number">3B</span> <span class="stat-label">Nefret Yorumu</span></div>
+                            </div>
+                        </div>
+
+                        <div class="timeline-item">
+                            <div class="timeline-time"><i class="fa-regular fa-clock"></i> SAAT 18:30</div>
+                            <h3>Politikacılar Devreye Giriyor</h3>
+                            <p><span class="actor-badge">@BurakYıldızMV</span> (200.000 takipçi, resmi hesap) bir milletvekili, olayı doğrulamadan siyasi kart olarak kullanır: <em>"SKANDAL! Merkez İlçe'de bir kez daha göçmen suç çetesinin saldırısına maruz kalan vatandaşımıza başsağlığı diliyorum. Bu HÜKÜMET sınırları açtı, suçluları denetlemiyor! Gençlerimiz tehlikede! Seçim yapılmalı!"</em></p>
+                            <div class="stats-grid">
+                                <div class="stat-item"><span class="stat-number">40B</span> <span class="stat-label">RT</span></div>
+                                <div class="stat-item"><span class="stat-number">120B</span> <span class="stat-label">Beğeni</span></div>
+                            </div>
+                        </div>
+
+                        <div class="timeline-item">
+                            <div class="timeline-time"><i class="fa-regular fa-clock"></i> SAAT 19:00 - 20:30</div>
+                            <h3>Medya ve Sokak Çağrıları</h3>
+                            <p><span class="actor-badge">HABER SİTELERİ</span> Tabloidimsi siteler "Merkez İlçe'de Suriyeli Çetesinin Saldırısı!" şeklinde haberler girer.</p>
+                            <p><span class="actor-badge">SOSYAL MEDYA</span> Olay sosyal medyadan sokağa taşar. Facebook gruplarında "Cuma Günü SAAT 7'DE MERKEZ PARKTA EYLEM!" başlıkları atılır.</p>
+                        </div>
+
+                        <div class="timeline-item">
+                            <div class="timeline-time"><i class="fa-regular fa-clock"></i> SAAT 21:00</div>
+                            <h3>Polis Açıklaması (Gecikmiş)</h3>
+                            <p><span class="actor-badge">EMNİYET</span> Emniyet Müdürlüğü resmi açıklama yapar: <em>"Suçlunun kimliği henüz tespit edilmemiştir. Milliyeti bilinmemektedir. Basında yayılan 'Suriyeli çetesi' haberleri TAMAMEN YALANDIR."</em> Ancak bu açıklama viral olan söylentinin gölgesinde kalır.</p>
+                        </div>
+
+                        <div class="timeline-item">
+                            <div class="timeline-time"><i class="fa-regular fa-clock"></i> GÜN 2 – SAAT 15:00</div>
+                            <h3>Sokakta Tezahür ve Gerginlik</h3>
+                            <p><span class="actor-badge">SOKAK</span> Eylem hazırlayan 200 kişilik grup Merkez Camii yakınlarında toplanır. "GÖÇMENLERE HAYIR" pankartları açılır. Camiye çıkan Suriyeli göçmenler korkuyla evlerine döner, bazıları polis eşliğinde çıkarılır.</p>
+                            <p><span class="actor-badge">TEHDİTLER</span> Suriyeli Dernekleri, üyelerine yönelik "Evini yakarız", "Ülkene dön" gibi 47 farklı tehdit aldıklarını polise bildirir.</p>
+                        </div>
+
+                        <div class="timeline-item">
+                            <div class="timeline-time"><i class="fa-regular fa-clock"></i> GÜN 3 – SAAT 10:00</div>
+                            <h3>Gerçek Suçlu Yakalanıyor</h3>
+                            <p><span class="actor-badge">EMNİYET</span> Suçlu tespit edilir: <strong>Murat Demir, Yaş 28, Milliyeti TÜRK.</strong> Ön raporda şahsın 4 hırsızlık kaydı olduğu ve ideolojik bağlantısı olmadığı belirtilir. Söylentiyi yayanlara karşı yasal işlem başlatılır.</p>
+                        </div>
+
+                        <div class="timeline-item">
+                            <div class="timeline-time"><i class="fa-regular fa-clock"></i> GÜN 3 – SAAT 11:30</div>
+                            <h3>Partizan Tepkiler ve Düzeltme</h3>
+                            <p><span class="actor-badge">KOMPLO</span> Söylentiye inananlar gerçeği kabullenmez: <em>"Adı Murat Demir yazıyor ama devlet gizliyor! Gerçek suçlu Suriyeli!"</em></p>
+                            <p><span class="actor-badge">İTİRAF</span> @GüvenlikMehaber: <em>"Yanıldık. Suçlu Türk çıktı. Özür dilerim."</em> Ancak haber sitelerinin zayıf düzeltmeleri (eski başlığı silip yeni girmeleri) arama motoru önbelleklerinde eski yalanın kalmasına neden olur.</p>
+                        </div>
+
+                        <div class="timeline-item">
+                            <div class="timeline-time"><i class="fa-regular fa-clock"></i> GÜN 5 – HASAR RAPORU</div>
+                            <h3>Toplumsal Etki Analizi</h3>
+                            <div class="impact-grid">
+                                <div class="impact-card"><i class="fa-solid fa-users-rays"></i> <strong>Kutuplaşma:</strong> "Biz ve Onlar" ayrımı keskinleşti, toplumsal güven sarsıldı.</div>
+                                <div class="impact-card"><i class="fa-solid fa-store-slash"></i> <strong>Ekonomi:</strong> Hedef alınan göçmen esnafın işleri %40 düştü.</div>
+                                <div class="impact-card"><i class="fa-solid fa-brain"></i> <strong>Psikoloji:</strong> Göçmenlerde depresyon ve sosyal kaygı, Türk nüfusta kurumlara güvensizlik arttı.</div>
+                                <div class="impact-card"><i class="fa-solid fa-user-injured"></i> <strong>Zeynep (Mağdur):</strong> Olayın siyasallaşmasından dolayı travma yaşadı, "Ben sadece telefonu çalınan biriyim" diyerek tepki gösterdi.</div>
+                            </div>
+                        </div>
+
+                        <div class="timeline-item">
+                            <div class="timeline-time"><i class="fa-regular fa-clock"></i> DEZENFORMASYONUN BİLEŞENLERİ</div>
+                            <h3>Nasıl Yayıldı?</h3>
+                            <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 10px;">
+                                <div class="mini-card"><strong>Gerçek Çekirdek</strong> Hırsızlık olayı gerçektir.</div>
+                                <div class="mini-card"><strong>Bağlam Çarpıtması</strong> Sıradan hırsızlık "çete saldırısı"na dönüştürüldü.</div>
+                                <div class="mini-card"><strong>Milliyet Varsayımı</strong> Kimlik bilinmiyorken Suriyeli olduğu varsayıldı.</div>
+                                <div class="mini-card"><strong>Siyasilleştirme</strong> Siyasi çıkar için kart olarak kullanıldı.</div>
+                                <div class="mini-card"><strong>Duygusal Yükseltme</strong> "Gençlerimiz tehlikede!" ile korku körüklendi.</div>
+                                <div class="mini-card"><strong>Komplo Teorisi</strong> Gerçek ortaya çıkınca "Devlet gizliyor" denildi.</div>
+                            </div>
+                        </div>
+
+                        <div class="fact-panel" style="margin-top: 40px;">
+                            <h4 style="color: var(--gold); font-family: 'Cinzel', serif; margin-bottom: 15px;"><i class="fa-solid fa-check-circle"></i> Dezenformasyona Karşı Doğru Adımlar</h4>
+                            <ul style="list-style-type: none; padding-left: 0;">
+                                <li style="margin-bottom: 10px;">✅ <strong>Kaynağı Sorgula:</strong> Suçlunun kimliği kesin mi? Resmî açıklama var mı?</li>
+                                <li style="margin-bottom: 10px;">✅ <strong>Siyasallaştırmaya Diren:</strong> Duyguları yönetmek için mi paylaşılmış kontrol et.</li>
+                                <li style="margin-bottom: 10px;">✅ <strong>Olayı Bireyselleştir:</strong> Bir kişinin suçunu tüm bir gruba veya ırka mal etme.</li>
+                                <li style="margin-bottom: 10px;">✅ <strong>Resmî Bekleyiş:</strong> Kesin bilgi ve polis açıklaması için 48-72 saat bekle.</li>
+                                <li style="margin-bottom: 10px;">✅ <strong>Hatanı Düzelt:</strong> Yanlış paylaştıysan silip aynı mecradan özür dile.</li>
+                            </ul>
+                            <div style="margin-top: 20px;">
+                                <h4 style="color: #ff6b6b; font-family: 'Cinzel', serif; margin-bottom: 15px;"><i class="fa-solid fa-circle-xmark"></i> Yanlış Adımlar</h4>
+                                <ul style="list-style-type: none; padding-left: 0;">
+                                    <li style="margin-bottom: 10px;">❌ İddiaları doğrulamadan öfkeyle paylaşmak.</li>
+                                    <li style="margin-bottom: 10px;">❌ Bir gruba yönelik genelleyici nefret söylemlerini desteklemek.</li>
+                                    <li style="margin-bottom: 10px;">❌ Resmî yalanlamaları "komplo" diyerek görmezden gelmek.</li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <div class="warning-box" style="margin-top: 30px;">
+                            <h4><i class="fa-solid fa-triangle-exclamation"></i> UNUTMAYIN</h4>
+                            <p>Dezenformasyon sadece siyasi bir mesele değildir; toplumsal nefrete, şiddete ve masum insanların zarar görmesine yol açabilir. Hedef genellikle savunmasız gruplardır. Sosyal medya okuryazarlığı bir tercih değil, toplumsal barışı korumak için bir zorunluluktur.</p>
+                        </div>
+                    </div>
+                </details>
+
+                <!-- Vaka 2 - Mucizevi İlaç -->
+                <details>
+                    <summary><span class="accordion-title">Vaka Senaryosu 2: "Mucizevi İlaç" (Dezenformasyon)</span></summary>
+                    <div class="accordion-content">
+                        
+                        <div class="timeline-item">
+                            <div class="timeline-time"><i class="fa-regular fa-clock"></i> GÜN 1 - SAAT 10:30</div>
+                            <h3>Sosyal Medyada Viral Başlangıç</h3>
+                            <p><span class="actor-badge">@SağlıkGurusi_İbrahim</span> (120.000 takipçi) tıbbi eğitimi olmayan bir "sağlık koçu" beyaz önlük giyerek bir TikTok videosu paylaşır: <em>"KANSER, DIYABET VE KALP HASTALIKLARINI 3 HAFTADA TEDAVİ EDEN FORMÜL! Big Pharma bunu gizliyor! Limon, sarımsak, tarçın... TABLETLERI ATMA! DOKTORA GİTME! Kitabımı al, danışmanlık hizmetime katıl."</em></p>
+                            <div class="stats-grid">
+                                <div class="stat-item"><span class="stat-number">2.4M</span> <span class="stat-label">Görüntülenme</span></div>
+                                <div class="stat-item"><span class="stat-number">180B</span> <span class="stat-label">Beğeni</span></div>
+                                <div class="stat-item"><span class="stat-number">12B</span> <span class="stat-label">Paylaşım</span></div>
+                            </div>
+                        </div>
+
+                        <div class="timeline-item">
+                            <div class="timeline-time"><i class="fa-regular fa-clock"></i> GÜN 1 - SAAT 12:00</div>
+                            <h3>Diğer Fenomenler ve "Kanıtlar"</h3>
+                            <p><span class="actor-badge">@BitkiselTerapistAylin</span> (85.000 takipçi) ürünü öven bir paylaşım yapar: <em>"Denedim, enerjim arttı, sinüzitim bitti! İbrahim haklı!"</em></p>
+                            <p><span class="actor-badge">YOUTUBE</span> "GerçekBilgiPaylaşanlar" kanalı asılsız gizli araştırma tabloları göstererek komplo teorisini besler: <em>"Amerika'da gizli araştırmalar yapıldı, ilaç şirketleri yasaklamak istiyor!"</em></p>
+                        </div>
+
+                        <div class="timeline-item">
+                            <div class="timeline-time"><i class="fa-regular fa-clock"></i> GÜN 2 – SAAT 09:00</div>
+                            <h3>Grup Psikolojisi ve Sahte Başarılar</h3>
+                            <p><span class="actor-badge">FACEBOOK</span> 32.000 üyeli destek gruplarında asılsız hasta hikayeleri dolaşıma sokulur. <em>"Ahmet B: Diyabet ilacını bıraktım, şekerim normal!"</em> ve tehlikeli bir uyarı yapılır: <em>"DOKTORA GİTMEYİN! Seni korkutup formülü bıraktıracaklar!"</em></p>
+                            <p><span class="actor-badge">TİKTOK</span> Sahte hesaplar gözyaşları içinde "Kanserim 2 haftada remisyona girdi" temalı videolar çeker.</p>
+                        </div>
+
+                        <div class="timeline-item">
+                            <div class="timeline-time"><i class="fa-regular fa-clock"></i> GÜN 4</div>
+                            <h3>Resmî Mücadele Başlıyor (Çok Geç)</h3>
+                            <p><span class="actor-badge">TÜRK ONKOLOJİ DERNEĞİ</span> ve <span class="actor-badge">SAĞLIK BAKANLIĞI</span> peş peşe açıklamalar yapar: <em>"Bu formülün hiçbir bilimsel kanıtı yoktur. İlaçların bırakılması ölümcül sonuçlar doğurur."</em> Ancak haber siteleri tıklanma uğruna bu uyarıları "Mucizevi Formüle Doktor Uyarısı - Hastalar İyileştiklerini İddia Ediyor" şeklinde iki taraflı vererek bilimi komployla eş değer tutar.</p>
+                        </div>
+
+                        <div class="timeline-item">
+                            <div class="timeline-time"><i class="fa-regular fa-clock"></i> GÜN 5</div>
+                            <h3>Acı Sonuç: İlk Ölüm Vakası</h3>
+                            <p><span class="actor-badge">HABER</span> 34 yaşındaki Tip 1 diyabet hastası Merve Yılmaz, sosyal medyadaki videolara inanarak insülini bırakır. 2 hafta sonra diyabetik komaya girer ve hayatını kaybeder. Annesi: <em>"Instagrama zarar verdirmek için ölmüştü"</em>.</p>
+                            <p><span class="actor-badge">KRİTİK VAKA</span> Meme kanseri tedavisi gören 62 yaşındaki Fatma Yıldız kemoterapiyi bırakır. 6 hafta sonra kanser kemiğe sıçrar, artık terminal evrededir.</p>
+                        </div>
+
+                        <div class="timeline-item">
+                            <div class="timeline-time"><i class="fa-regular fa-clock"></i> GÜN 7 - 15</div>
+                            <h3>Hukuk, Suçlamalar ve Davalar</h3>
+                            <p><span class="actor-badge">SAVCILIK</span> Soruşturma başlar. Sahte doktor İbrahim için TCK 104 (Ruhsal Sağlığa Zarar) ve 106'dan (Ölüme Sebebiyet) hapis istenir. Aile, Facebook (Meta) şirketine ve İbrahim'e 3 milyon TL'lik tazminat davası açar.</p>
+                            <p><span class="actor-badge">SAVUNMALAR</span> İbrahim: <em>"Ben kimseye öl demedim, kendi kararlarıydı."</em> Meta: <em>"İçerikleri yapay zeka denetliyor, yanlış pozitifi önlemek için orta yol buluyoruz."</em></p>
+                        </div>
+
+                        <div class="timeline-item">
+                            <div class="timeline-time"><i class="fa-regular fa-clock"></i> GÜN 10 – HASAR RAPORU</div>
+                            <h3>Sağlık ve Ekonomi Üzerindeki Etki</h3>
+                            <div class="impact-grid">
+                                <div class="impact-card"><i class="fa-solid fa-bed-pulse"></i> <strong>Sağlık Bilançosu:</strong> 510 hasta tedavisini bıraktı. 49 kişi yoğun bakıma yattı, toplam 12 can kaybı yaşandı.</div>
+                                <div class="impact-card"><i class="fa-solid fa-money-bill-wave"></i> <strong>Ekonomik Hasar:</strong> Acil servis, yoğun bakım ve hatalı karar kaynaklı tedavi masrafları sağlık sistemine 31.15 milyon TL ek yük getirdi.</div>
+                                <div class="impact-card"><i class="fa-solid fa-brain"></i> <strong>Psikolojik Hasar:</strong> Hastalarda suçluluk ve depresyon; sağlık çalışanlarında "neden engel olamadık" travması oluştu.</div>
+                            </div>
+                        </div>
+
+                        <div class="timeline-item">
+                            <div class="timeline-time"><i class="fa-regular fa-clock"></i> AYLAR SONRA</div>
+                            <h3>Mahkeme Kararı</h3>
+                            <p><span class="actor-badge">KARAR</span> Sahte guru İbrahim'e 3 yıl hapis (2 yıl ertelendi), 30.000 TL ceza ve sosyal medya yasağı. Sosyal medya şirketi tıbbi içeriği denetleme şartı ve aileye 3.25 milyon TL tazminat ödemeye mahkum edildi. Ancak zararlı videolar farklı isimlerle hala elden ele dolaşmaktadır.</p>
+                        </div>
+
+                        <div class="timeline-item">
+                            <div class="timeline-time"><i class="fa-regular fa-clock"></i> DEZENFORMASYONUN BİLEŞENLERİ</div>
+                            <h3>Nasıl İkna Ettiler?</h3>
+                            <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 10px;">
+                                <div class="mini-card"><strong>Otorite Taklidi</strong> Beyaz önlük giyerek sahte doktor imajı yaratıldı.</div>
+                                <div class="mini-card"><strong>Komplo Teorisi</strong> "Big Pharma gerçeği gizliyor" algısı işlendi.</div>
+                                <div class="mini-card"><strong>Duygusal Çekicilik</strong> "Mucize", "3 haftada iyileş" vaatleri sunuldu.</div>
+                                <div class="mini-card"><strong>Ticari Çıkar</strong> Alt metinde kitap ve danışmanlık satıldı.</div>
+                                <div class="mini-card"><strong>Sahte Sosyal Kanıt</strong> Sahte veya yanıltıcı "Ben de iyileştim" hikayeleri kullanıldı.</div>
+                                <div class="mini-card"><strong>Denetim Reddi</strong> "Doktora gitmeyin, sizi hasta tutarlar" denilerek tıp reddedildi.</div>
+                            </div>
+                        </div>
+
+                        <div class="fact-panel" style="margin-top: 40px;">
+                            <h4 style="color: var(--gold); font-family: 'Cinzel', serif; margin-bottom: 15px;"><i class="fa-solid fa-check-circle"></i> Tıbbi Bilgilerde Doğru Adımlar</h4>
+                            <ul style="list-style-type: none; padding-left: 0;">
+                                <li style="margin-bottom: 10px;">✅ <strong>Kaynağın Kredibilitesi:</strong> Kişinin tıp diploması, uzmanlığı ve resmî yetkisi var mı kontrol et.</li>
+                                <li style="margin-bottom: 10px;">✅ <strong>Bilimsel Kanıt:</strong> Bilimsel, hakemli dergilerde yayınlanmış araştırma verisi ara.</li>
+                                <li style="margin-bottom: 10px;">✅ <strong>Doktoruna Danış:</strong> İnternette ne okursan oku, eyleme geçmeden önce kendi doktorunla konuş.</li>
+                                <li style="margin-bottom: 10px;">✅ <strong>Hikayelere Şüpheyle Yaklaş:</strong> "Enerjim arttı" gibi belirtiler plasebo (psikolojik iyileşme hissi) olabilir. Bir kişinin tecrübesi tıp bilimi sayılmaz.</li>
+                            </ul>
+                            <div style="margin-top: 20px;">
+                                <h4 style="color: #ff6b6b; font-family: 'Cinzel', serif; margin-bottom: 15px;"><i class="fa-solid fa-circle-xmark"></i> Yanlış Adımlar</h4>
+                                <ul style="list-style-type: none; padding-left: 0;">
+                                    <li style="margin-bottom: 10px;">❌ "Milyonlar izlemiş demek ki doğru" yanılgısına düşmek.</li>
+                                    <li style="margin-bottom: 10px;">❌ "Hükümet ve doktorlar komplo kuruyor" diyerek tedaviyi aniden kesmek.</li>
+                                    <li style="margin-bottom: 10px;">❌ Modern tıbbı tamamen reddedip sadece kulaktan dolma "doğal" kısımlara bel bağlamak.</li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <div class="warning-box" style="margin-top: 30px;">
+                            <h4><i class="fa-solid fa-triangle-exclamation"></i> UNUTMAYIN</h4>
+                            <p>Sağlık alanındaki dezenformasyon ölümcüldür ve saniyeler içinde yayılırken, bilimin bunu yalanlaması ve hukukun devreye girmesi aylar sürer. İnsan hayatı üzerinden tık ve para kazanmaya çalışanlara karşı en güçlü savunma "Sosyal Medya Okuryazarlığıdır". Asla doktorunuzun tavsiyesinin dışına çıkmayın.</p>
+                        </div>
+                    </div>
+                </details>
+
+                <!-- Vaka 3 - Deprem Yardım Çağrısı (Mezenformasyon) -->
+                <details>
+                    <summary><span class="accordion-title">Vaka Senaryosu 3: "Deprem Yardım Çağrısı" (Mezenformasyon)</span></summary>
+                    <div class="accordion-content">
+                        <div class="timeline-item">
+                            <div class="timeline-time"><i class="fa-regular fa-clock"></i> GÜN 1 – SAAT 04:17</div>
+                            <h3>Deprem Meydana Geliyor</h3>
+                            <p><span class="actor-badge">GERÇEK</span> Merkez üssü Doğu Anadolu, 6.8 büyüklüğünde. Kırsal bölgede 50'den fazla bina yıkılır, çok sayıda kişi enkaz altındadır. Resmî kurtarma ekipleri bölgeye yönlendirilir, ancak ulaşım zorlukları nedeniyle yardım gecikir.</p>
+                        </div>
+
+                        <div class="timeline-item">
+                            <div class="timeline-time"><i class="fa-regular fa-clock"></i> SAAT 09:15</div>
+                            <h3>Mezenformasyonun Başlangıcı</h3>
+                            <p><span class="actor-badge">WHATSAPP</span> "Köylüler Dayanışma" grubunda Ali Rıza (52, emekli) iyi niyetle şu mesajı paylaşır: <em>"Çayırlı köyünde 10'dan fazla ev yıkılmış, enkaz altında kalanlar var. Köye ulaşım yolu kapalı, ekipler henüz gelmemiş. Acil yardım çağrısı!"</em> Bilgi doğrulanmamıştır.</p>
+                        </div>
+
+                        <div class="timeline-item">
+                            <div class="timeline-time"><i class="fa-regular fa-clock"></i> SAAT 10:30</div>
+                            <h3>Twitter'da Viral Oluyor</h3>
+                            <p><span class="actor-badge">@YardimSeferberlik</span> (25B takipçi) WhatsApp'taki mesajı doğrulamadan tweetler. "Çayırlı köyü yardım bekliyor, 10 ev yıkıldı, enkaz altında çok sayıda kişi var."</p>
+                            <div class="stats-grid">
+                                <div class="stat-item"><span class="stat-number">4.5B</span> <span class="stat-label">RT</span></div>
+                                <div class="stat-item"><span class="stat-number">12B</span> <span class="stat-label">beğeni</span></div>
+                                <div class="stat-item"><span class="stat-number">3.2B</span> <span class="stat-label">yorum</span></div>
+                            </div>
+                        </div>
+
+                        <div class="timeline-item">
+                            <div class="timeline-time"><i class="fa-regular fa-clock"></i> SAAT 12:00</div>
+                            <h3>Televizyon Kanalları Duyuruyor</h3>
+                            <p><span class="actor-badge">ULUSAL TV</span> "Sosyal medyada gelen bilgilere göre Çayırlı köyü büyük hasar görmüş, yardım bekleniyor." Haber doğrulanmadan yayınlanır, yardım malzemesi toplanmaya başlanır.</p>
+                        </div>
+
+                        <div class="timeline-item">
+                            <div class="timeline-time"><i class="fa-regular fa-clock"></i> SAAT 15:30</div>
+                            <h3>AFAD Açıklama Yapıyor (Gecikmiş)</h3>
+                            <p><span class="actor-badge">RESMÎ</span> AFAD: "Çayırlı köyüyle ilgili sosyal medyada dolaşan yardım çağrısı doğru değildir. Ekiplerimiz köye ulaşmış, herhangi bir yıkım olmadığı tespit edilmiştir." Ancak bu açıklama ilk tweet'in çok gerisinde kalır.</p>
+                        </div>
+
+                        <div class="timeline-item">
+                            <div class="timeline-time"><i class="fa-regular fa-clock"></i> SAAT 17:00</div>
+                            <h3>Gerçek Mağduriyet Başlıyor</h3>
+                            <p><span class="actor-badge">SÖĞÜTLÜ KÖYÜ</span> Asıl yardım bekleyen köy Çayırlı değil, 20 km ötedeki Söğütlü'dür. Burada 8 ev yıkılmış, enkaz altında kalanlar vardır. Ancak ekipler yanlış bilgi nedeniyle Söğütlü'ye yönlendirilmemiştir. Muhtar @SogutluMuhtari tweet atar: "Biz Çayırlı değiliz! Söğütlü köyü yıkıldı, enkaz altında kalanlar var. Lütfen ekipler bize gelsin!" Tweet yalnızca 300 RT alır.</p>
+                        </div>
+
+                        <div class="timeline-item">
+                            <div class="timeline-time"><i class="fa-regular fa-clock"></i> GÜN 2 – SAAT 10:00</div>
+                            <h3>Hasar Raporu</h3>
+                            <div class="impact-grid">
+                                <div class="impact-card"><i class="fa-solid fa-house-crack"></i> <strong>Söğütlü:</strong> 8 ev yıkık, 12 kişi enkazdan çıkarıldı (3 ağır yaralı), 2 kişi hayatını kaybetti.</div>
+                                <div class="impact-card"><i class="fa-solid fa-house"></i> <strong>Çayırlı:</strong> Yıkım yok, sadece 3 evde hafif hasar.</div>
+                            </div>
+                            <div class="warning-box">
+                                <h4><i class="fa-solid fa-triangle-exclamation"></i> Kritik Not</h4>
+                                <p>Kurtarma ekipleri yanlış bilgi nedeniyle geç geldiği için Söğütlü'de 2 kişi hayatını kaybetti.</p>
+                            </div>
+                        </div>
+
+                        <div class="timeline-item">
+                            <div class="timeline-time"><i class="fa-regular fa-clock"></i> GÜN 3</div>
+                            <h3>İlk Fark Edenler Özür Diliyor</h3>
+                            <p><span class="actor-badge">@YardimSeferberlik</span> "Dün paylaştığımız Çayırlı yardım çağrısı yanlışmış. Doğrulamadan paylaştık, özür dileriz. Gerçek mağdurlar Söğütlü köyü." Ancak düzeltme çok az etkileşim alır.</p>
+                        </div>
+
+                        <div class="timeline-item">
+                            <div class="timeline-time"><i class="fa-regular fa-clock"></i> GÜN 5 – MEZENFORMASYONUN ANATOMİSİ</div>
+                            <h3>Olayın Bileşenleri</h3>
+                            <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 10px;">
+                                <div class="mini-card"><strong>Gerçek Çekirdek</strong> Deprem oldu, yardım çağrıları yapılıyor.</div>
+                                <div class="mini-card"><strong>Bağlam Hatası</strong> Köy ismi karıştırıldı (Çayırlı/Söğütlü).</div>
+                                <div class="mini-card"><strong>Doğrulama Eksikliği</strong> İlk kaynak duyduğunu teyit etmedi.</div>
+                                <div class="mini-card"><strong>Hızlı Yayılma</strong> Yardım grupları iyi niyetle paylaştı.</div>
+                                <div class="mini-card"><strong>Medya Desteği</strong> Televizyon doğrulamadan haberi geçti.</div>
+                                <div class="mini-card"><strong>Geciken Düzeltme</strong> AFAD açıklaması saatler sonra geldi.</div>
+                                <div class="mini-card"><strong>İkincil Mağduriyet</strong> Gerçek ihtiyaç sahibi köy yardımdan mahrum kaldı.</div>
+                            </div>
+                        </div>
+
+                        <div class="timeline-item">
+                            <div class="timeline-time"><i class="fa-regular fa-clock"></i> TOPLUMSAL ETKİ ANALİZİ</div>
+                            <h3>Mikro ve Makro Etkiler</h3>
+                            <div class="impact-grid">
+                                <div class="impact-card"><i class="fa-solid fa-user"></i> <strong>Ali Rıza:</strong> İyi niyetli paylaşım yüzünden büyük üzüntü.</div>
+                                <div class="impact-card"><i class="fa-solid fa-people-group"></i> <strong>Söğütlü halkı:</strong> Yardımın geç gelmesi nedeniyle 2 kişi öldü.</div>
+                                <div class="impact-card"><i class="fa-solid fa-building"></i> <strong>Kurumlara güven:</strong> AFAD'ın geç açıklaması güveni sarstı.</div>
+                                <div class="impact-card"><i class="fa-solid fa-mobile"></i> <strong>Sosyal medya:</strong> Deprem anında güvenilmez algısı yayıldı.</div>
+                                <div class="impact-card"><i class="fa-solid fa-truck"></i> <strong>Kaynak israfı:</strong> Ekipler yanlış bölgeye yönlendirildi.</div>
+                            </div>
+                        </div>
+
+                        <div class="fact-panel" style="margin-top: 40px;">
+                            <h4 style="color: var(--gold); font-family: 'Cinzel', serif; margin-bottom: 15px;"><i class="fa-solid fa-check-circle"></i> Mezenformasyonu Önlemek İçin Doğru Adımlar</h4>
+                            <ul style="list-style-type: none; padding-left: 0;">
+                                <li style="margin-bottom: 10px;">✅ Paylaşmadan önce dur, kaynağı sorgula.</li>
+                                <li style="margin-bottom: 10px;">✅ Resmî kaynakları takip et (AFAD, valilik vb.).</li>
+                                <li style="margin-bottom: 10px;">✅ Teyit mekanizmalarını kullan (teyit.org, doğrulukpayı.com).</li>
+                                <li style="margin-bottom: 10px;">✅ Yerel haberleri ve muhtar hesaplarını izle.</li>
+                                <li style="margin-bottom: 10px;">✅ Hata yaparsan özür dile ve aynı mecrada düzelt.</li>
+                            </ul>
+                            <div style="margin-top: 20px;">
+                                <h4 style="color: #ff6b6b; font-family: 'Cinzel', serif; margin-bottom: 15px;"><i class="fa-solid fa-circle-xmark"></i> Yanlış Adımlar</h4>
+                                <ul style="list-style-type: none; padding-left: 0;">
+                                    <li style="margin-bottom: 10px;">❌ "Acil duyulmalı" diye doğrulamadan paylaşmak.</li>
+                                    <li style="margin-bottom: 10px;">❌ "Herkes paylaşıyor, demek ki doğru" mantığı.</li>
+                                    <li style="margin-bottom: 10px;">❌ Düzeltmeyi küçük bir notla geçiştirmek.</li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <div class="warning-box" style="margin-top: 30px;">
+                            <h4><i class="fa-solid fa-triangle-exclamation"></i> UNUTMAYIN</h4>
+                            <p>İyi niyetle yapılan paylaşımlar bile hayat kaybına yol açabilir. Bilgiyle ilişkimizde özen, bir erdem değil, sorumluluktur. Acil durumlarda soğukkanlılığı koruyun, bilgiyi teyit edin ve resmî kaynaklara yönelin.</p>
+                        </div>
+                    </div>
+                </details>
+				<!-- Vaka 5 - "Müdür Böyle Dedi" — Bir Öğretmenin Kariyer Cinayeti -->
+<details>
+    <summary><span class="accordion-title">Vaka Senaryosu 4: "Müdür Böyle Dedi" (DeepFake)</span></summary>
+    <div class="accordion-content">
+
+        <div class="timeline-item">
+            <div class="timeline-time"><i class="fa-regular fa-clock"></i> CUMA – SAAT 21:03</div>
+            <h3>Ses Kaydı Okul WhatsApp Grubuna Düşüyor</h3>
+            <p><span class="actor-badge">WHATSAPP</span> 52 saniyelik bir ses kaydı, önce okul veliler grubuna, ardından öğretmenler grubuna, son olarak öğrencilerin kendi gruplarına düşer. Kaydın, <strong>18 yıllık müdür yardımcısı Ahmet Kahraman’a</strong> ait olduğu iddia edilmektedir. Kayıt, bazı öğrenciler ve veliler hakkında son derece ağır, aşağılayıcı ve kişisel hakaret içeren ifadeler barındırmaktadır. Ses tonu, aksanı ve konuşma ritmi Ahmet Kahraman ile birebir uyuşmaktadır.</p>
+            <div class="stats-grid">
+                <div class="stat-item"><span class="stat-number">52 sn.</span> <span class="stat-label">Ses kaydı</span></div>
+                <div class="stat-item"><span class="stat-number">3</span> <span class="stat-label">Farklı WhatsApp grubu</span></div>
+                <div class="stat-item"><span class="stat-number">630+</span> <span class="stat-label">İlk dinlenme sayısı</span></div>
+            </div>
+        </div>
+
+        <div class="timeline-item">
+            <div class="timeline-time"><i class="fa-regular fa-clock"></i> SAAT 21:45</div>
+            <h3>Sosyal Medyaya Taşınıyor</h3>
+            <p><span class="actor-badge">X (TWITTER)</span> Bir veli kaydı X’te paylaşır: <em>“Çocuklarımızın müdürü böyle konuşuyor. Bu kişi okul yönetiminde olamaz.”</em> Kayıt 40 dakika içinde <strong>12.000 dinlenmeye</strong> ulaşır. Velilerin bir kısmı sert bildirgeler yazarken, diğerleri “Bu ses tanındı, Ahmet Bey bu” yorumlarını arka arkaya paylaşır. Doğrulama yapılmamıştır.</p>
+            <div class="stats-grid">
+                <div class="stat-item"><span class="stat-number">12.000</span> <span class="stat-label">Dinlenme</span></div>
+                <div class="stat-item"><span class="stat-number">40 dk.</span> <span class="stat-label">Yayılma süresi</span></div>
+                <div class="stat-item"><span class="stat-number">0</span> <span class="stat-label">Doğrulama</span></div>
+            </div>
+        </div>
+
+        <div class="timeline-item">
+            <div class="timeline-time"><i class="fa-regular fa-clock"></i> SAAT 22:30</div>
+            <h3>Ahmet Kahraman Durumu Öğreniyor</h3>
+            <p><span class="actor-badge">MAĞDUR</span> Ahmet Kahraman, eşinin “Bu sen misin?” sorusuyla gösterdiği WhatsApp mesajıyla olayı öğrenir. Kaydı dinler; yüzünde beklenmedik bir etki oluşur: ses kendisine ait gibi gelir. Tonlama, konuşma hızı, aksanı tanır. <em>“Bu benim sesim ama bu sözleri ben hiç söylemedim.”</em></p>
+        </div>
+
+        <div class="timeline-item">
+            <div class="timeline-time"><i class="fa-regular fa-clock"></i> CUMARTESİ – SAAT 09:00</div>
+            <h3>Okul Müdürü Görevden Uzaklaştırıyor</h3>
+            <p><span class="actor-badge">İLÇE MİLLÎ EĞİTİM MÜDÜRLÜĞÜ</span> Sosyal medyadaki yayılım nedeniyle Ahmet Kahraman’ı “inceleme süreci tamamlanana kadar” idari izne ayırır. 18 yıllık deneyimli bir öğretmen, bir sabah içinde ofisini boşaltır.</p>
+        </div>
+
+        <div class="timeline-item">
+            <div class="timeline-time"><i class="fa-regular fa-clock"></i> CUMARTESİ – SAAT 14:00</div>
+            <h3>Dijital Ses Analizi</h3>
+            <p><span class="actor-badge">ADLİ BİLİŞİM</span> Ahmet Kahraman’ın avukatı, Ankara’daki bir ses analizi uzmanına başvurur. Uzman 3 saat içinde bulgularını iletir:</p>
+            <div class="stats-grid">
+                <div class="stat-item"><span class="stat-number">Anormal frekans düzleşmesi</span> <span class="stat-label">Yapay düzleşme noktaları</span></div>
+                <div class="stat-item"><span class="stat-number">Sıfır doğal titreme</span> <span class="stat-label">Jitter / shimmer değerleri</span></div>
+                <div class="stat-item"><span class="stat-number">YZ sentezi</span> <span class="stat-label">Sosyal medya videolarından klonlanmış</span></div>
+            </div>
+            <p>Uzman raporu: Kaydın frekans spektrumu doğal konuşmada bulunmayan yapay düzleşme noktaları içeriyor. Bazı hecelerde doğal ses titremesinin (jitter ve shimmer değerlerinin) neredeyse sıfıra düştüğü tespit edildi. Kullanılan YZ modeli, büyük olasılıkla Kahraman’ın sosyal medya videolarından elde edilen ses örnekleriyle eğitilmiş. Kaydın hazırlanmasının yaklaşık 2-4 saat süreceği tahmin edildi.</p>
+        </div>
+
+        <div class="timeline-item">
+            <div class="timeline-time"><i class="fa-regular fa-clock"></i> PAZARTESİ – SAAT 10:00</div>
+            <h3>Resmî Yalanlamaya Rağmen</h3>
+            <p><span class="actor-badge">RESMÎ AÇIKLAMA</span> İlçe MEM, ses analizine dayanarak Ahmet Kahraman’ın görevine iade edildiğini açıklar. Konu yerel basında yer alır. Ancak sosyal medyada durum farklıdır: ilk paylaşımların altındaki yorumlar <em>“Kaydı doğruladınız mı?”</em> sorusuna <em>“Kendisi itiraf etti zaten”</em> cevabını almaya devam eder. Birden fazla veli çocuğunu okuldan almıştır.</p>
+        </div>
+
+        <div class="timeline-item">
+            <div class="timeline-time"><i class="fa-regular fa-clock"></i> HASAR RAPORU</div>
+            <h3>Sonuçlar ve Toplumsal Etki</h3>
+            <div class="impact-grid">
+                <div class="impact-card"><i class="fa-solid fa-user"></i> <strong>Ahmet Kahraman:</strong> 11 gün görevden uzak kaldı. Mahalle esnafının yanında durmayan bakışlarına maruz kaldı. Eşinin işi bulunan şehirde sosyal çevreleri zedelendi. “Sesin tam olarak bana ait olmadığı bir zaman dilimine kadar hiç kimse bana inanmadı.”</div>
+                <div class="impact-card"><i class="fa-solid fa-school"></i> <strong>Okul:</strong> 7 öğrenci velisi tarafından başka okullara nakledildi. Okul yönetimine duyulan güven sarsıldı.</div>
+                <div class="impact-card"><i class="fa-solid fa-scale-balanced"></i> <strong>Fail:</strong> Belirli bir velinin, okulun bir kararına itiraz etmek için rekabet amacıyla hazırlattığı anlaşıldı. Savcılığa suç duyurusunda bulunuldu; <strong>TCK 125 (hakaret), TCK 134 (özel hayat gizliliği ihlali) ve TCK 286</strong> kapsamında soruşturma başlatıldı.</div>
+                <div class="impact-card"><i class="fa-solid fa-chart-line"></i> <strong>Ses kaydı:</strong> Göreve iade haberi 3.200 etkileşim alırken, sahte ses kaydı <strong>74.000 kez</strong> dinlenmiş durumda. Düzeltme, sahte içeriğin yanında gölgede kaldı.</div>
+            </div>
+        </div>
+
+        <div class="timeline-item">
+            <div class="timeline-time"><i class="fa-regular fa-clock"></i> DEEPFAKE / YZ NASIL İKNA ETTİ?</div>
+            <h3>Vakanın Bileşenleri</h3>
+            <div class="impact-grid">
+                <div class="impact-card"><i class="fa-solid fa-microphone-lines"></i> <strong>Ses Tanınırlığının Yıkılması:</strong> İnsanlar tanınmış bir sesi duyduğunda inanma eğilimindedir; ses YZ’si bu sezgisel güveni tam hedefler.</div>
+                <div class="impact-card"><i class="fa-solid fa-database"></i> <strong>Açık Profil Hammaddesi:</strong> Sosyal medyadaki açık profil videoları ve ses örnekleri, YZ’nin bir kişiyi klonlaması için yeterli hammaddeyi sunar.</div>
+                <div class="impact-card"><i class="fa-solid fa-face-angry"></i> <strong>Duygusal Tetikleyici İçerik:</strong> Çocuklarını aşağılayan bir yönetici ifadesi, en duygusal tepkiye zemin hazırlar; doğrulama için süre bırakmaz.</div>
+                <div class="impact-card"><i class="fa-solid fa-users"></i> <strong>Platform Onaylama Yanılsaması:</strong> Birden fazla farklı gruptan birbirine eklenmiş onaylar, kayda meşru bir sosyal kanıt kılıfı biçer.</div>
+                <div class="impact-card"><i class="fa-solid fa-chart-simple"></i> <strong>Düzeltmenin Asimetrik Yayılımı:</strong> Sahte kayıt ve düzelti arasındaki 74.000’e 3.200 oranı, dijital yalanlamanın yapısal sınırını gözler önüne serer.</div>
+            </div>
+        </div>
+
+        <div class="fact-panel" style="margin-top: 40px;">
+            <h4 style="color: var(--gold); font-family: 'Cinzel', serif; margin-bottom: 15px;"><i class="fa-solid fa-check-circle"></i> Doğru Adımlar</h4>
+            <ul style="list-style-type: none; padding-left: 0;">
+                <li style="margin-bottom: 10px;">✅ Bir ses kaydının sahte olup olmadığını anlamak için herkesin erişimine açık <strong>InVID, FakeCatcher veya Adobe Content Authenticity</strong> gibi araçları kullan.</li>
+                <li style="margin-bottom: 10px;">✅ Kaydı paylaşan hesabı incele: ne zaman açılmış, tarafsız mı, daha önce benzer içerik paylaşmış mı?</li>
+                <li style="margin-bottom: 10px;">✅ Özellikle çocukları, öğretmenleri veya kamu görevlilerini hedef alan ses veya video iddiaları için resmî açıklama çıkana kadar paylaşmaktan kaçın.</li>
+                <li style="margin-bottom: 10px;">✅ Kaynaktan emin olmadığın bir içerik seni duygusal olarak kışkırtıyorsa bu tam da manipülasyon için tasarlanmış bir işarettir.</li>
+                <li style="margin-bottom: 10px;">✅ Yanlış paylaştıysan aynı mecrada ve aynı etkiyle düzeltme yap; “ben de inanmıştım” notuyla küçük bir yorum yetmez.</li>
+            </ul>
+            <div style="margin-top: 20px;">
+                <h4 style="color: #ff6b6b; font-family: 'Cinzel', serif; margin-bottom: 15px;"><i class="fa-solid fa-circle-xmark"></i> Yanlış Adımlar</h4>
+                <ul style="list-style-type: none; padding-left: 0;">
+                    <li style="margin-bottom: 10px;">❌ “Ses aynen aynıydı, sahte olamaz” diyerek sezgisel tanınırlığa güvenmek.</li>
+                    <li style="margin-bottom: 10px;">❌ Düzeltme haberi çıkınca “sonuçta doğru olsaydı ne olurdu” diyerek geçiştirmek.</li>
+                    <li style="margin-bottom: 10px;">❌ Sahte içeriği “uyarı amaçlı” da olsa doğrulama yapmadan paylaşmak.</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="warning-box" style="margin-top: 30px;">
+            <h4><i class="fa-solid fa-triangle-exclamation"></i> UNUTMAYIN</h4>
+            <p><strong>Bir insanın sesi artık onun söylediklerinin kanıtı sayılamaz.</strong> YZ ses klonlama teknolojisi, halka açık birkaç dakikalık ses örneğinden inandırıcı sahte konuşmalar üretebilmektedir. Bu gerçek, herkesi potansiyel bir deepfake mağduru yapmaktadır: bir öğretmeni, bir aile büyüğünü, bir arkadaşınızı. <strong>Ses duymak yetmez; kaynağı sorgulamak, doğrulamak ve 48 saat beklemek artık bir zorunluluktur.</strong></p>
+        </div>
+
+    </div>
+</details>
+				<!-- Vaka 4 - "Seni Bulacağız" — Oyuncu Kimliğini Yıkma ve Doxxing -->
+<details>
+    <summary><span class="accordion-title">Vaka Senaryosu 5: "Seni Bulacağız!" (Siber Zorbalık)</span></summary>
+    <div class="accordion-content">
+
+        <div class="timeline-item">
+            <div class="timeline-time"><i class="fa-regular fa-clock"></i> CUMARTESİ – SAAT 22:47</div>
+            <h3>Turnuva Sonrası İlk Mesajlar</h3>
+            <p><span class="actor-badge">@Baran_Sahin_YT</span> (11.000 abone) yerel bir espor turnuvasında takım kaptanı olarak birincilik alır. Eve döndüğünde YouTube kanalında bir yorum dikkatini çeker: <em>“Hak etmedin. Hileci. Yarına öğrenirsin.”</em> Yorumu siler, hesabı engeller ve geceyi normal geçirir. Ancak bu, koordineli bir saldırının ilk işaretidir.</p>
+            <div class="stats-grid">
+                <div class="stat-item"><span class="stat-number">340</span> <span class="stat-label">Yorum (çoğu tebrik)</span></div>
+                <div class="stat-item"><span class="stat-number">1</span> <span class="stat-label">Doğrudan tehdit</span></div>
+                <div class="stat-item"><span class="stat-number">Engelleme</span> <span class="stat-label">Baran’ın ilk tepkisi</span></div>
+            </div>
+        </div>
+
+        <div class="timeline-item">
+            <div class="timeline-time"><i class="fa-regular fa-clock"></i> PAZAR – SAAT 08:30</div>
+            <h3>Koordineli Saldırı Başlıyor</h3>
+            <p><span class="actor-badge">DİSCORD SUNUCUSU</span> Kaybeden takımın destekçileri, “Baran’a saldırı” adlı özel bir sunucuda organize olur. Sabah Baran’ın telefonu titremeye başlar: YouTube, Discord, Instagram ve X (eski Twitter) üzerinden aynı anda yüzlerce bildirim gelir.</p>
+            <div class="stats-grid">
+                <div class="stat-item"><span class="stat-number">890</span> <span class="stat-label">Olumsuz yorum</span></div>
+                <div class="stat-item"><span class="stat-number">120</span> <span class="stat-label">Dislike bombası</span></div>
+                <div class="stat-item"><span class="stat-number">15</span> <span class="stat-label">“Spam” bildirimi</span></div>
+                <div class="stat-item"><span class="stat-number">4</span> <span class="stat-label">Platform eşzamanlı</span></div>
+            </div>
+            <p>Hedef gösterilen içerikler arasında “Hileci”, “Hak etmeden kazanan”, “Ailesinin parası sayesinde”, “Kanalını kapatalım” gibi mesajlar vardır.</p>
+        </div>
+
+        <div class="timeline-item">
+            <div class="timeline-time"><i class="fa-regular fa-clock"></i> PAZAR – SAAT 11:15</div>
+            <h3>Doxxing: Gerçek Kimlik İfşa Ediliyor</h3>
+            <p><span class="actor-badge">İFŞA</span> Discord sunucusunda biri turnuva kayıt formunu ele geçirir. Baran’ın <strong>tam adı, okulu ve mahallesinin adı</strong> paylaşılır: <em>“Gerçek adı Baran Şahin. Şehirde X Lisesi’nde okuyor. Mahallesinde bulabilirsiniz.”</em> Bilgiler birkaç saat içinde Discord’tan X’e, oradan Reddit’e yayılır.</p>
+            <div class="warning-box" style="margin-top: 10px;">
+                <h4><i class="fa-solid fa-triangle-exclamation"></i> Kritik An</h4>
+                <p>Doxxing, dijital tartışmayı fiziksel tehlikeye dönüştüren sınır ihlalidir. Baran’ın adı, okulu ve mahallesi artık binlerce kişinin elindedir.</p>
+            </div>
+        </div>
+
+        <div class="timeline-item">
+            <div class="timeline-time"><i class="fa-regular fa-clock"></i> PAZAR – SAAT 14:00</div>
+            <h3>Okula Sahte İhbar</h3>
+            <p><span class="actor-badge">SAHTE İHBAR</span> Bir Discord üyesi, Baran’ın okulunu arayarak öğrencinin “okulda başkalarını tehdit ettiği” yönünde asılsız bir şikayette bulunur. Okul yönetimi hafta sonu dahi açık olan hattan ihbarı alır ve pazartesi günü için soruşturma başlatılacağını bildirir.</p>
+        </div>
+
+        <div class="timeline-item">
+            <div class="timeline-time"><i class="fa-regular fa-clock"></i> PAZAR – SAAT 16:30</div>
+            <h3>Aile Harekete Geçiyor</h3>
+            <p><span class="actor-badge">HUKUKİ SÜREÇ BAŞLATILDI</span> Baran’ın babası durumu fark eder. Discord ekran görüntüleri, X paylaşımları ve sahte ihbar kaydı toplanır. Emniyet Müdürlüğü Siber Suçlar Birimi’ne başvurulur. Ekipler Discord sunucu logları ve telefon kayıtları için resmî yazışma başlatır.</p>
+        </div>
+
+        <div class="timeline-item">
+            <div class="timeline-time"><i class="fa-regular fa-clock"></i> PAZARTESİ – SAAT 09:00</div>
+            <h3>Okul Müdürü Sahte İhbarı Anlıyor</h3>
+            <p><span class="actor-badge">OKUL</span> Baran ve ailesi müdürle görüşür. Sahte ihbar derhal anlaşılır; müdür ifade verir ve okul, sahte ihbar nedeniyle suç duyurusuna destek olacağını bildirir.</p>
+        </div>
+
+        <div class="timeline-item">
+            <div class="timeline-time"><i class="fa-regular fa-clock"></i> 2 HAFTA SONRA</div>
+            <h3>Hukuki Süreç ve Failler</h3>
+            <p><span class="actor-badge">ADLİ SORUŞTURMA</span> Discord sunucusunun kurucusu ve doxxing’i gerçekleştiren 2 kullanıcı tespit edilir. Biri Baran ile aynı şehirdedir. Şüphelilere <strong>TCK 134 (özel hayatın gizliliğini ihlal), TCK 106 (tehdit) ve TCK 158 (dolandırıcılık – sahte ihbar)</strong> kapsamında işlem başlatılır. Faillerin tamamı reşit olmadığı için dosyalar çocuk mahkemesine sevk edilir.</p>
+            <div class="stats-grid">
+                <div class="stat-item"><span class="stat-number">3</span> <span class="stat-label">Fail tespit edildi</span></div>
+                <div class="stat-item"><span class="stat-number">3</span> <span class="stat-label">Farklı suç tanımı</span></div>
+                <div class="stat-item"><span class="stat-number">Çocuk Mahkemesi</span> <span class="stat-label">Yargılama yeri</span></div>
+            </div>
+        </div>
+
+        <div class="timeline-item">
+            <div class="timeline-time"><i class="fa-regular fa-clock"></i> HASAR RAPORU</div>
+            <h3>Sonuçlar ve Toplumsal Etki</h3>
+            <div class="impact-grid">
+                <div class="impact-card"><i class="fa-solid fa-user"></i> <strong>Baran:</strong> 3 gün yayın yapamadı. “Kanalımı silmeyi düşündüm.” Sonra “Doxxing nedir, nasıl korunursunuz?” başlıklı bir video yayınladı. Video 45.000 izlenmeye ulaştı.</div>
+                <div class="impact-card"><i class="fa-brands fa-youtube"></i> <strong>YouTube:</strong> Koordineli dislike ve yorum saldırısını tespit ederek otomatik filtre devreye soktu.</div>
+                <div class="impact-card"><i class="fa-solid fa-trophy"></i> <strong>Turnuva Organizasyonu:</strong> Kayıt formlarını şifrelemeye geçti, kişisel veri ifşasına karşı yeni bir protokol oluşturdu.</div>
+                <div class="impact-card"><i class="fa-solid fa-chart-line"></i> <strong>Baran’ın kanalı:</strong> Saldırı haberinin ardından abone sayısı 11.000’den 28.000’e çıktı. Toplumun desteği arttı.</div>
+            </div>
+        </div>
+
+        <div class="timeline-item">
+            <div class="timeline-time"><i class="fa-regular fa-clock"></i> SİBER ZORBALIĞIN BİLEŞENLERİ</div>
+            <h3>Bu Saldırı Neden Bu Kadar Yıkıcı Oldu?</h3>
+            <div class="impact-grid">
+                <div class="impact-card"><i class="fa-solid fa-user-secret"></i> <strong>Anonim Güvenlik Yanılsaması:</strong> Discord’un şifre korumalı sunucularında yapılan paylaşımların takip edilemeyeceği yanılgısı koordineli saldırıyı cesaretlendirdi.</div>
+                <div class="impact-card"><i class="fa-solid fa-arrow-right-arrow-left"></i> <strong>Platform Geçişleri:</strong> Discord’dan X’e, X’ten Reddit’e geçen doxxing bilgisi her platformda yeni bir izleyici kitlesiyle karşılaştı.</div>
+                <div class="impact-card"><i class="fa-solid fa-building"></i> <strong>Sahte Kurumsal Doğrulama:</strong> Okula yapılan sahte ihbar, kurumsal gücün silah olarak kullanılmasının klasik bir örneğiydi.</div>
+                <div class="impact-card"><i class="fa-solid fa-database"></i> <strong>Kişisel Veri Hammaddesi:</strong> Turnuva kayıt formu, genelde güvenli sanılan ancak hedef odaklı saldırıda açık veri kaynağına dönüşen bir boşluk yarattı.</div>
+                <div class="impact-card"><i class="fa-solid fa-chart-simple"></i> <strong>Büyük Sayı Etkisi:</strong> 890 yorum, 120 dislike – her biri ayrı bir birey gibi görünse de koordineli hareket tek bir iradenin ürünüydü.</div>
+            </div>
+        </div>
+
+        <div class="fact-panel" style="margin-top: 40px;">
+            <h4 style="color: var(--gold); font-family: 'Cinzel', serif; margin-bottom: 15px;"><i class="fa-solid fa-check-circle"></i> Doğru Adımlar</h4>
+            <ul style="list-style-type: none; padding-left: 0;">
+                <li style="margin-bottom: 10px;">✅ Turnuva veya etkinlik kayıt formlarında gerçek okul adı ve mahalle bilgisi paylaşırken bu verilerin ifşa riskini düşün; mümkünse sadece şehir düzeyi bilgi vermek yeterlidir.</li>
+                <li style="margin-bottom: 10px;">✅ Koordineli saldırı yaşıyorsan “koordineli taciz” kategorisinde platforma toplu bildir yap; bu, tekil yorum bildiriminden daha hızlı sonuç verir.</li>
+                <li style="margin-bottom: 10px;">✅ Doxxing gerçekleştiyse: içeriğe bağlı olarak Cumhuriyet savcılığı, emniyet siber suçlar birimi ve ilgili platform olmak üzere üç kanalı eşzamanlı kullan.</li>
+                <li style="margin-bottom: 10px;">✅ Delilleri silme; ekran görüntüleri, URL’ler ve zaman damgaları hukuki süreç için kritik öneme sahiptir.</li>
+                <li style="margin-bottom: 10px;">✅ Sahte ihbar için kuruma bilgi ver; okul, iş yeri veya herhangi bir kurum sahte ihbarı öğrendiklerinde çoğu zaman mağdurun yanında yer alır.</li>
+            </ul>
+            <div style="margin-top: 20px;">
+                <h4 style="color: #ff6b6b; font-family: 'Cinzel', serif; margin-bottom: 15px;"><i class="fa-solid fa-circle-xmark"></i> Yanlış Adımlar</h4>
+                <ul style="list-style-type: none; padding-left: 0;">
+                    <li style="margin-bottom: 10px;">❌ Saldırıyı görmezden gelip “zaten biter” diye beklemek; koordineli saldırılar kendi kendine durmaz.</li>
+                    <li style="margin-bottom: 10px;">❌ “Ben zaten gizli hesap kullanıyorum, bulamazlar” diyerek aşırı güvende hissetmek.</li>
+                    <li style="margin-bottom: 10px;">❌ Saldırıyla aynı şiddette karşılık vermek; bu hem hukuki risk yaratır hem de saldırıya ek kitlesellik kazandırır.</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="warning-box" style="margin-top: 30px;">
+            <h4><i class="fa-solid fa-triangle-exclamation"></i> UNUTMAYIN</h4>
+            <p><strong>Doxxing</strong>, dijital bir tartışmayı fiziksel tehlikeye dönüştüren sınır ihlalidir. Birinin adını, okulunu, adresini ya da aile bilgilerini kamuya açacak şekilde paylaşmak, o kişiyi görünmez kılar ve gündelik hayatını tehdit altına sokar. Oyun veya turnuva gibi görünürde zararsız ortamlar, saldırganlar için yeterince gerçek ve kullanışlı veriler içermektedir. <strong>Dijital gizlilik bir seçenek değil; kişisel güvenliği doğrudan koruyan bir sigortadır.</strong></p>
+        </div>
+
+    </div>
+</details>
+            </div>
+        </section>
+
+        <!-- 4. BİREY VE SAĞLIK — Sosyal Medya ve Ruh Sağlığı -->
+        <section id="ruh-sagligi">
+    <div class="content-box">
+        <h2>Sosyal Medya ve Ruh Sağlığı</h2>
+
+        <p>Sosyal medyanın gençlerin ruh sağlığı üzerinde hem olumlu hem de olumsuz yönde güçlü etkileri bulunmaktadır. Bu etkiler, çocukların ve ergenlerin platformlarda geçirdikleri süre, tükettikleri içerik türleri ve uyku ya da fiziksel aktivite gibi temel sağlıklı alışkanlıkların ne ölçüde bölündüğü gibi pek çok karmaşık faktöre bağlı olarak şekillenmektedir. Ayrıca, 10-19 yaş arası ergenlik, beyin gelişiminin (özellikle kimlik oluşumu, dürtü kontrolü ve sosyal ödüllere hassasiyet açısından) çok hassas olduğu bir dönem olduğundan sosyal medyanın etkilerine daha açıktırlar.</p>
+
+        <h3>Sosyal Medyanın Olumlu Etkileri:</h3>
+        <ul>
+            <li><strong>Bağlantı ve Topluluk Hissi:</strong> Sosyal medya, benzer kimliklere, yeteneklere ve ilgi alanlarına sahip kişilerle bağ kurma imkanı sunar. Gençlerin internet üzerinden arkadaşlıklar kurmasını ve sürdürmesini sağlayarak olumlu etkileşimler için fırsat yaratır.</li>
+            <li><strong>Sosyal Destek ve Stresi Azaltma:</strong> Özellikle ırksal, etnik ve cinsel kimlikleri (örneğin LGBTQ+ gençler) nedeniyle ötekileştirilmiş gençler için akran desteği sağlayarak stresin olumsuz etkilerini azaltıcı bir bariyer görevi görebilir. Gençlerin büyük çoğunluğu (%80'i) arkadaşlarının hayatında neler olup bittiğiyle daha fazla bağlantıda hissettiklerini ve %67'si zor zamanlarda kendilerini destekleyecek insanlar olduğunu hissettiklerini belirtmektedir.</li>
+            <li><strong>Kendini İfade Etme ve Bilgiye Erişim:</strong> Sosyal medya, gençlere yaratıcılıklarını gösterebilecekleri bir alan (%71) ve önemli bilgilere erişim imkanı sunar.</li>
+            <li><strong>Ruh Sağlığı Hizmetlerine Yönlendirme:</strong> Dijital tabanlı ruh sağlığı müdahaleleri, gençleri yardım arama davranışlarına teşvik edebilir ve profesyonel psikolojik bakım başlatmak için bir basamak görevi görebilir.</li>
+        </ul>
+
+        <h3>Sosyal Medyanın Olumsuz Etkileri:</h3>
+        <ul>
+            <li><strong>Depresyon ve Anksiyete Riskinde Artış:</strong> Günde 3 saatten fazla sosyal medya kullanan ergenlerin, depresyon ve anksiyete semptomları da dahil olmak üzere kötü ruh sağlığı sonuçları yaşama riski <strong>iki katına çıkmaktadır</strong>. Sosyal medyanın bir aydan kısa süreliğine sınırlandırılması ya da tamamen kapatılması durumunda, depresyon şiddetinde önemli bir azalma ve yaşam doyumunda artış görülmüştür.</li>
+            <li><strong>Zararlı İçeriklere Maruziyet:</strong> Gençler sosyal medyada intihar, kendine zarar verme ve tehlikeli risk alma davranışlarını gösteren içeriklere kolayca erişebilmektedir. Bu durum, bu tür ölümcül eylemleri normalleştirebilmektedir.</li>
+            <li><strong>Vücut Algısında Bozulma ve Yeme Bozuklukları:</strong> Sosyal medya üzerinden yapılan kıyaslamalar, özellikle ergenlik çağındaki kızlarda <strong>vücut memnuniyetsizliği, yeme bozuklukları ve düşük özgüven</strong> ile ilişkilidir. Ergenlerin yaklaşık yarısı (%46), sosyal medyanın kendi vücut imajları hakkında daha kötü hissetmelerine neden olduğunu belirtmektedir.</li>
+            <li><strong>Siber Zorbalık, Nefret Söylemi ve İstismar:</strong> Ergenlerin yaklaşık üçte ikisi (%64) sosyal medyada nefret içerikli söylemlere sıklıkla maruz kalmaktadır. Siber zorbalık çocuklarda depresyonla tutarlı bir şekilde ilişkilendirilirken, platformlar çocukları cinsel istismara, şantaja veya uyuşturucu satışına yönelten kötü niyetli kişiler (predatörler) için bir buluşma noktası olabilmektedir.</li>
+            <li><strong>Aşırı Kullanım ve Bağımlılık Benzeri Davranışlar:</strong> Sürekli bildirimler, sonsuz kaydırma özelliği ve "beğeni" gibi metrikler kullanıcı etkileşimini en üst düzeye çıkarmak için tasarlanmıştır ve beynin ödül merkezini aşırı uyararak bağımlılığa giden yolları tetikleyebilir.</li>
+            <li><strong>Uyku ve Dikkat Sorunları:</strong> Sorunlu ve kontrolsüz kullanım gençlerin uyku kalitesinin düşmesine, uyku sürelerinin kısalmasına neden olmaktadır. Kötü uyku da beyin gelişimindeki değişimler ve intihar düşünceleri ile bağlantılıdır. Ayrıca, sosyal medya kaynaklı <strong>"Gelişmeleri Kaçırma Korkusu" (FOMO)</strong> ve yüksek frekanslı kullanım, Dikkat Eksikliği/Hiperaktivite Bozukluğu (DEHB) semptomlarının yanı sıra artan depresyon, nörotisizm ve anksiyete ile ilişkilendirilmektedir.</li>
+        </ul>
+
+        <div class="fact-panel">
+            <h4 style="color: var(--gold); font-family: 'Cinzel', serif;">Sosyal medya bağımlılığının belirtileri nelerdir?</h4>
+            <p>Sosyal medyanın "aşırı ve problemli kullanımı" ile bağımlılık benzeri yolları tetikleyen durumların temel göstergeleri ve sonuçları şu şekilde ortaya konulmaktadır:</p>
+            <ul>
+                <li><strong>Kontrol Edilemeyen ve Kompulsif Kullanım:</strong> Kişinin sosyal medyayı aşırı, dürtüsel (kompulsif) ve kontrol edilemez bir şekilde kullanması en temel sorunlu kullanım göstergesidir. Araştırmalara göre, sosyal medya kullanımının yaklaşık üçte biri alışkanlık oluşumuyla daha da büyüyen <strong>özdenetim (kendini kontrol etme) zorluklarından</strong> kaynaklanmaktadır.</li>
+                <li><strong>Bırakmada Zorluk ve Bağımlılık Hissi:</strong> Ergenlerin yarısından fazlası sosyal medyadan vazgeçmenin kendileri için zor olacağını ifade etmektedir. Yapılan bir ankete göre, 11-15 yaş arası kız çocuklarının üçte biri veya daha fazlası kendilerini bir sosyal medya platformuna doğrudan <strong>"bağımlı" hissettiklerini</strong> söylemektedir.</li>
+                <li><strong>Gelişmeleri Kaçırma Korkusu (FOMO):</strong> Başkalarının dahil olduğu ödüllendirici deneyimlerde yer alamama kaygısı olarak tanımlanan "Gelişmeleri Kaçırma Korkusu", sosyal medya kullanımının tetiklediği önemli bir sorundur ve sıklıkla anksiyete, depresyon ve nörotisizm ile ilişkilendirilmektedir.</li>
+                <li><strong>Beynin Ödül Merkezinde Uyarılma ve Fiziksel Değişimler:</strong> Sosyal medya platformlarındaki bildirimler, otomatik oynatma, sonsuz kaydırma ve "beğeni" gibi özellikler, beynin ödül merkezini aşırı uyararak <strong>bağımlılıkla kıyaslanabilecek nörolojik yolları tetikleyebilir</strong>. Küçük çaplı çalışmalar, sık ve problemli sosyal medya kullanan kişilerin beyin yapılarında, <strong>madde veya kumar bağımlılığı olan bireylerdekine benzer değişiklikler</strong> yaşanabildiğini göstermektedir.</li>
+                <li><strong>Temel Sağlıklı Alışkanlıkların Bozulması:</strong> Problemli kullanımın en belirgin sonuçlarından biri, gençlerin sağlıklı gelişimi için hayati öneme sahip olan uykunun bozulmasıdır. Aşırı kullanım tutarlı bir şekilde düşük uyku kalitesi, uyku süresinin kısalması ve uyku güçlükleri ile bağlantılıdır.</li>
+                <li><strong>Dikkat Eksikliği ve Duygusal Sorunlar:</strong> Aşırı ve problemli sosyal medya kullanımı; ergenlerde dışlanmışlık hissi, depresyon ve Dikkat Eksikliği/Hiperaktivite Bozukluğu (DEHB) semptomlarının ortaya çıkması veya artmasıyla ilişkilendirilmektedir.</li>
+            </ul>
+        </div>
+
+        <div class="fact-panel">
+            <h4 style="color: var(--gold); font-family: 'Cinzel', serif;">Ebeveynler çocuklarını sosyal medyanın zararlarından korumak için hangi adımları atabilir?</h4>
+            <ul>
+                <li><strong>Bir aile medya planı oluşturun:</strong> Ekran ve çevrimiçi geçirilen süreyi dengeleme, içerik sınırları belirleme ve kişisel bilgileri paylaşmama gibi konularda açık aile sohbetleri yaparak evde sağlıklı teknoloji sınırları ve kuralları oluşturun.</li>
+                <li><strong>Teknolojiden arındırılmış alanlar yaratın ve yüz yüze ilişkileri teşvik edin:</strong> Elektronik cihazların uykuyu bölmesini engellemek için yatmadan en az 1 saat önce ve gece boyunca telefon, tablet ve bilgisayar kullanımını kısıtlayın. Sosyal bağları güçlendirmek için aile yemeklerini ve yüz yüze buluşmaları cihazdan arındırılmış şekilde geçirin ve çocuklarınızı çevrimdışı, yüz yüze arkadaşlıklar kurmaya teşvik edin.</li>
+                <li><strong>Sorumlu sosyal medya kullanımında rol model olun:</strong> Çocuklar genellikle çevrelerinde gördükleri alışkanlıkları öğrenirler; bu nedenle kendi sosyal medya kullanımınızı sınırlayarak, çocuğunuz hakkında bilgi veya içerik paylaşırken dikkatli davranarak ve kendi hesaplarınızda olumlu davranışlar sergileyerek onlara iyi bir örnek olun.</li>
+                <li><strong>Çocukları teknoloji konusunda eğitin ve güçlendirin:</strong> Çocuklarla yaşlarına uygun bir şekilde sosyal medyanın faydaları ve riskleri ile gizliliğe saygı duyma ve kişisel bilgileri korumanın önemi hakkında konuşun. Kimlerle bağlantı kurdukları, gizlilik ayarları ve çevrimiçi deneyimleri hakkında düzenli sohbetler edin ve zorlandıklarında yardım istemeleri konusunda onları cesaretlendirin.</li>
+                <li><strong>Siber zorbalığı ve çevrimiçi istismarı bildirin:</strong> Çocuğunuzla şikayet seçenekleri hakkında konuşun ve taciz edildiklerini ya da kendilerinden özel görüntü isteyen/cinsel eylemlerde bulunmalarını talep eden bir yetişkin tarafından rahatsız edildiklerini söylerlerse <strong>yargılamadan destek olun</strong>. Siber zorbalık ve istismar durumlarını okula, ilgili çevrimiçi platforma veya yerel emniyet güçlerine bildirin.</li>
+                <li><strong>Diğer ebeveynlerle işbirliği yapın:</strong> Sağlıklı sosyal medya kullanımı konusunda ortak normlar ve uygulamalar oluşturmak için diğer ebeveynlerle iletişimde kalın. Bu tür ortak hareketler, çocukların sosyal medya kullanımı üzerinde topluca sınırlar belirlemeyi ve bu sınırları uygulamayı çok daha kolay hale getirir.</li>
+            </ul>
+        </div>
+
+        <p class="source">Kaynaklar: <a href="https://www.hhs.gov/sites/default/files/sg-youth-mental-health-social-media-advisory.pdf" target="_blank" rel="noopener noreferrer">https://www.hhs.gov/sites/default/files/sg-youth-mental-health-social-media-advisory.pdf</a> – <a href="https://www.hhs.gov/surgeongeneral/reports-and-publications/youth-mental-health/social-media/index.html" target="_blank" rel="noopener noreferrer">https://www.hhs.gov/surgeongeneral/reports-and-publications/youth-mental-health/social-media/index.html</a></p>
+    </div>
+</section>
+<!-- 5.1 Podcastler (yeni modern oynatıcı) -->
+<section id="podcasts">
+    <div class="content-box">
+        <h2>Podcastler</h2>
+        <p style="font-size: 1rem; margin-bottom: 30px;">Sosyal medya okuryazarlığı, dijital güvenlik ve farkındalık konularında hazırlanmış sesli içerikler. Her bir bölümü dinleyerek konuları daha derinlemesine keşfedebilirsiniz.</p>
+
+        <div class="podcast-list">
+            <!-- Podcast 1 -->
+            <div class="podcast-card">
+                <div class="podcast-meta">
+                    <span class="podcast-number">01</span>
+                    <span class="podcast-duration">53 dk</span>
+                </div>
+                <h3 class="podcast-title">Algoritmalar</h3>
+                <p class="podcast-description">Yeni Medya 451’in bu bölümünde Can Öz ve Ümit Alan, büyük “algoritma” dosyasını açıyorlar. Otorite, algoritmaya mı geçiyor? Algoritma taraflı mı? Haber dili ve gazetecilik, algoritmalardan nasıl etkileniyor? “Öfkeli akış” ne demek? Algoritmaların akışına kapılıp gitmenin ne zararı var? Yankı odalarımızdan nasıl çıkacağız? Beğen tuşunun icadından robotların istilasına, Asimov’dan Harari’ye referanslarla ilerleyen bir bölüm…</p>
+                
+                <div class="custom-audio-player" data-audio="https://depo.kirkyama.uk/Podcast/Sosyal%20Medya/Yeni%20Medya%20451%20%233%20Algoritmalar.mp3">
+                    <div class="player-controls">
+                        <button class="play-pause-btn" aria-label="Oynat/Durdur">
+                            <i class="fa-solid fa-play"></i>
+                        </button>
+                        <div class="progress-container">
+                            <div class="progress-bar">
+                                <div class="progress-fill"></div>
+                            </div>
+                            <div class="time-display">
+                                <span class="current-time">0:00</span> / <span class="duration">0:00</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="podcast-credit">Boğaziçi Koleji Medya Okuryazarlığı Dersi</div>
+            </div>
+
+            <!-- Podcast 2 -->
+            <div class="podcast-card">
+                <div class="podcast-meta">
+                    <span class="podcast-number">02</span>
+                    <span class="podcast-duration">40 dk</span>
+                </div>
+                <h3 class="podcast-title">Siber Zorbalık</h3>
+                <p class="podcast-description">Can Öz ve Ümit Alan, Yeni Medya 451’in bu bölümünde Siber Zorbalık konusunu ele alıyorlar. Siber zorbalık, karşımıza hangi formlarda çıkıyor? Bununla mücadele etmenin önerilen yöntemleri nelerdir? Eğitimciler nelere dikkat etmeli? Bu sorulara yanıt ararken siber zorbalıkta disinhibisyon olgusundan, okul bahçesi zorbalığıyla benzer dinamiklerden, çocuklar için “akran desteği programlarının” öneminden de söz ediyoruz.</p>
+                
+                <div class="custom-audio-player" data-audio="https://depo.kirkyama.uk/Podcast/Sosyal%20Medya/Yeni%20Medya%20451%20%239%20Siber%20Zorbal%C4%B1k.mp3">
+                    <div class="player-controls">
+                        <button class="play-pause-btn" aria-label="Oynat/Durdur">
+                            <i class="fa-solid fa-play"></i>
+                        </button>
+                        <div class="progress-container">
+                            <div class="progress-bar">
+                                <div class="progress-fill"></div>
+                            </div>
+                            <div class="time-display">
+                                <span class="current-time">0:00</span> / <span class="duration">0:00</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="podcast-credit">Boğaziçi Koleji Medya Okuryazarlığı Dersi</div>
+            </div>
+
+            <!-- Podcast 3 -->
+            <div class="podcast-card">
+                <div class="podcast-meta">
+                    <span class="podcast-number">03</span>
+                    <span class="podcast-duration">56 dk</span>
+                </div>
+                <h3 class="podcast-title">Dijital Emek</h3>
+                <p class="podcast-description">Hepimiz, kimler için ücretsiz çalışıyoruz? Sosyal medya platformları bizim üzerimizden ne kazanıyorlar? İzleyici emeğinden dijital emeğe nasıl geçtik? Üretketici nedir, bu neyi değiştirir? Marx bu işe ne derdi?</p>
+                
+                <div class="custom-audio-player" data-audio="https://depo.kirkyama.uk/Podcast/Sosyal%20Medya/Yeni%20Medya%20451%20%235%20Dijital%20Emek.mp3">
+                    <div class="player-controls">
+                        <button class="play-pause-btn" aria-label="Oynat/Durdur">
+                            <i class="fa-solid fa-play"></i>
+                        </button>
+                        <div class="progress-container">
+                            <div class="progress-bar">
+                                <div class="progress-fill"></div>
+                            </div>
+                            <div class="time-display">
+                                <span class="current-time">0:00</span> / <span class="duration">0:00</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="podcast-credit">Boğaziçi Koleji Medya Okuryazarlığı Dersi</div>
+            </div>
+        </div>
+</section>
+        <!-- GÜVENLİK REHBERİ -->
+        <section id="safety">
+            <div class="content-box">
+                <h2>Güvenlik Rehberi</h2>
+                <div class="safety-grid">
+                    <div class="mini-card"><strong>Empati Yapın</strong> Karşınızda bir ekran değil, bir insan olduğunu unutmayın.</div>
+                    <div class="mini-card"><strong>Teyit Edin</strong> Bilgiyi doğrulamadan paylaşarak kirliliğe ortak olmayın.</div>
+                    <div class="mini-card"><strong>Ayak İzini Yönetin</strong> Paylaştığınız her şeyin internette ebediyen kalabileceğini bilin.</div>
+                    <div class="mini-card"><strong>Güçlü Parola Kullanın</strong> Büyük-küçük harf, rakam ve sembol içeren, tahmin edilmesi zor parolalar oluşturun ve her platformda farklı parola kullanın.</div>
+                    <div class="mini-card"><strong>İki Faktörlü Kimlik Doğrulama</strong> Hesaplarınızda 2FA'yı etkinleştirerek, parolanız çalınsa bile hesabınızı koruyun.</div>
+                    <div class="mini-card"><strong>Gizlilik Ayarlarını Kontrol Edin</strong> Sosyal medya hesaplarınızın gizlilik ayarlarını düzenli olarak gözden geçirin ve paylaşımlarınızı yalnızca güvendiğiniz kişilerle sınırlayın.</div>
+                    <div class="mini-card"><strong>Tanımadığınız Kişileri Eklemeyin</strong> Gerçek hayatta tanımadığınız kişilerden gelen arkadaşlık isteklerini kabul etmeyin.</div>
+                    <div class="mini-card"><strong>Bağlantılara Tıklamadan Önce Düşünün</strong> Şüpheli e-postalar, mesajlar veya reklamlardaki bağlantılara tıklamadan önce URL'yi kontrol edin ve güvenilirliğini teyit edin.</div>
+                    <div class="mini-card"><strong>Kişisel Bilgilerinizi Paylaşmayın</strong> Adres, telefon numarası, TC kimlik no, banka bilgileri gibi hassas verileri sosyal medyada paylaşmayın.</div>
+                    <div class="mini-card"><strong>Güncel Kalın</strong> İşletim sisteminizi, uygulamalarınızı ve antivirüs yazılımınızı güncel tutarak güvenlik açıklarını kapatın.</div>
+                    <div class="mini-card"><strong>Herkese Açık Wi-Fi'lerde Dikkatli Olun</strong> Açık Wi-Fi ağlarında bankacılık gibi hassas işlemler yapmayın, VPN kullanmayı tercih edin.</div>
+                    <div class="mini-card"><strong>Konum Paylaşımını Kısıtlayın</strong> Sosyal medyada anlık konum paylaşımı yapmak yerine, mekandan ayrıldıktan sonra paylaşmayı tercih edin.</div>
+                    <div class="mini-card"><strong>Çocuklarınızı Bilinçlendirin</strong> Ailenizdeki çocuklara internetin risklerini anlatın, onların çevrimiçi etkinliklerini takip edin ve güvenli kullanım alışkanlıkları kazandırın.</div>
+                    <div class="mini-card"><strong>Şüpheli İçerikleri Bildirin</strong> Karşılaştığınız taciz, dolandırıcılık veya nefret söylemi içeren hesapları platforma bildirin.</div>
+                    <div class="mini-card"><strong>Düzenli Yedekleme Yapın</strong> Önemli verilerinizi harici disk veya bulut depolama ile yedekleyerek olası fidye yazılımlarına karşı korunun.</div>
+                    <div class="mini-card"><strong>Dijital Ayak İzinizi Yönetin</strong> İnternette bıraktığınız izlerin farkında olun, eski hesaplarınızı silin ve hakkınızdaki bilgileri düzenli olarak arayın.</div>
+                    <div class="mini-card"><strong>Dolandırıcılık Mesajlarına Karşı Dikkatli Olun</strong> "Ödül kazandınız", "acil yardım" gibi mesajlara şüpheyle yaklaşın ve asla kişisel bilgi vermeyin.</div>
+                    <div class="mini-card"><strong>Uygulama İzinlerini Kontrol Edin</strong> Telefonunuza yüklediğiniz uygulamaların hangi izinleri istediğini inceleyin ve gereksiz izinleri reddedin.</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- DİJİTAL SÖZLÜK -->
+        <section id="concepts">
+            <div class="content-box">
+                <h2>Dijital Sözlük</h2>
+                <p>Medya ve sosyal medya dünyasının temel kavramlarını keşfetmek için kartlara dokunun.</p>
+                <button class="mobile-concept-toggle" id="conceptToggle">Kavramları Göster <i class="fa-solid fa-chevron-down"></i></button>
+                <div class="concept-grid" id="concept-grid"></div>
+            </div>
+        </section>
+
+        <!-- FOOTER -->
+        <footer>
+            <span class="footer-text">Bu rehber 11. Sınıf Medya Okuryazarlığı dersi kapsamında Murat Mutlu tarafından hazırlanmıştır.</span>
+            <a href="/cdn-cgi/l/email-protection#aac7dfd8cbdeeac1c3d8c1d3cbc7cb84dfc1" class="footer-icon" title="Bize Yazın">
+                <i class="fa-solid fa-envelope"></i>
+            </a>
+        </footer>
+    </main>
+
+    <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+        // HİYERARŞİK MENÜ AÇMA/KAPAMA
+        function toggleNavGroup(header) {
+            header.classList.toggle('open');
+            const subItems = header.nextElementSibling;
+            subItems.classList.toggle('open');
+        }
+
+        // Tüm kavramları içeren dizi (CSV'lerden derlenmiş 28 kavram)
+        const concepts = [
+            // dijital-medya-nedir.csv
+            { term: "Dijital Medya", definition: "İnternet ortamında kullanılan iletişim araçlarıdır. Somut iletişim araçlarından soyutlaşan bir formdur.", importance: "Örnekler: Sosyal Medya platformları, İnternet gazeteleri, Online ders platformları" },
+            { term: "Sosyal Medya", definition: "Kullanıcıların içerik üretebildikleri ve diğer kullanıcılar ile paylaşabildikleri bir alt grup dijital medya araçlarıdır.", importance: "Örnekler: Facebook, Instagram, Twitter" },
+            { term: "Dijitalleşme", definition: "Maddi bir forma sahip olan iletişim araçlarının elektronik ortama taşınması sürecidir.", importance: "Örnek: Kağıt-kalem yerine bilgisayar kullanılması, gazetenin internete taşınması" },
+            { term: "İnteraktif İletişim", definition: "Sosyal medya platformlarında kullanıcıların aktif olarak bilgi alışverişi yapabilmesine verilen isimdir.", importance: "Örnek: Facebook'ta paylaşım yapma, Instagram'da yorum yapma" },
+            { term: "Çevrimiçi (Online) Olma", definition: "Her an her yerden internete erişip, sosyal medyada aktif olabilme durumudur.", importance: "Örnek: Cep telefonlarından sosyal medya platformlarına girme, tabletlerden internet kaynaklı bilgiye erişim" },
+            { term: "Web 2.0", definition: "İnternetin ve web sitelerinin interaktif hale geldiği dönemdir. İçerik oluşturucuların sayısı artmıştır.", importance: "Örnekler: Blogger, Wikipedia" },
+            { term: "Geleneksel Medya", definition: "Dijital olmayan, maddi formda var olan iletişim araçlarıdır.", importance: "Örnekler: Gazete, televizyon, radyo" },
+            { term: "İletişim Araçları", definition: "İnsanların birbiriyle bilgi ve düşünce alışverişinde bulunmak amacıyla kullandıkları araçlardır.", importance: "Örnekler: Telefon, e-posta, mektuplar" },
+            { term: "İletişim Açlığı", definition: "İnsanların bilgi ve düşünce paylaşma ihtiyacına verilen ad.", importance: "Örnek: Sosyal medya kullanma isteği, haberlere anında ulaşma isteği" },
+            { term: "Güvenli Dijital Medya Kullanımı", definition: "Dijital medya araçlarının bilinçli ve korunaklı bir şekilde kullanılmasını ifade eder.", importance: "Örnek: Kişisel bilgilerin korunması, güvenlik ayarlarını kullanma" },
+            // sosyal-medya-okuryazarligi-nedir.csv
+            { term: "Sosyal Medya Okuryazarlığı", definition: "Sosyal mecralardaki içerikleri ve bilgileri anlama, analiz etme, değerlendirme ve üretme becerisidir.", importance: "Önem: Bilinçli bir sosyal medya kullanıcısı olmak ve sahte içerikleri ayırt edebilmek için kritiktir." },
+            { term: "Medya Okuryazarlığı", definition: "Kitle iletişim araçları tarafından sunulan bilgi ve iletileri yorumlama, sorgulama ve anlama becerisini kapsar.", importance: "Önem: Medyanın toplumu nasıl etkilediğini anlamak ve olumsuz etkilerine karşı korunmak için önemlidir." },
+            { term: "Sosyal Medya Mecraları", definition: "Facebook, Twitter, Instagram, Pinterest, LinkedIn ve Google gibi platformlar farklı kullanım ve işlevlere sahiptir.", importance: "Önem: Her platformun kullanım şekillerini ve kurallarını bilme, onları en etkili ve amaca uygun şekilde kullanma becerisini gerektirir." },
+            { term: "İleti ve Enformasyon Bombardımanı", definition: "Televizyon, radyo, sosyal medya ve kişilerarası iletişim aracılığıyla sürekli bilgi ve ileti alımı yaşanmaktadır.", importance: "Önem: Bu durum bilgi ve mesajların nasıl işlendiği, anlaşıldığı ve etkisinin nasıl oluşturulduğu konusunda bilinçlilik gerektirir." },
+            { term: "Doğru ve Yanıltıcı İçerikler", definition: "Sosyal medyadaki gönderiler ve bilgiler doğru olmayabilir veya manipülasyon amacı ile oluşturulmuş olabilir.", importance: "Önem: Bunu tanımak ve bilgiyi sorgulamak adına sosyal medya okuryazarlığı kritik öneme sahiptir." },
+            { term: "E-Ticaret", definition: "İnternet üzerinden yapılan alışveriş veya ticaret faaliyetleri.", importance: "Önem: Sosyal medya üzerinden e-ticaret faaliyetleri için, sosyal medya mecralarının kullanımına aşina olmak gerekiyor." },
+            { term: "Mecra Kullanım Şartları ve Kuralları", definition: "Her sosyal medya mecrasının kullanım ve ihlal şartları vardır.", importance: "Önem: Bu şartlar ve kurallar, sosyal medyayı etkin ve doğru kullanmak için bilinmesi gerekenlerdir." },
+            { term: "Veri Analizi", definition: "Ortalama 3.8 milyar kişinin sosyal medyayı aktif olarak kullanması, sosyal medya araştırmaları ve analizlerinin önemini artırmaktadır.", importance: "Önem: Bu verileri ve trendleri izlemek sosyal medyanın hangi noktada olduğunu ve neye doğru ilerlediğini anlamamızı sağlar." },
+            { term: "Bilinçli Sosyal Medya Kullanıcıları", definition: "Sosyal medyayı bilinçli kullanan kişiler, sahte ve yanıltıcı bilgilere karşı daha güvende olurlar ve daha etkin kullanırlar.", importance: "Önem: Bu durum bireylerin ve toplumun genel bilgi seviyesini ve bilinç seviyesini artırır." },
+            { term: "Manipülasyon ve Yanıltıcı Bilgiler", definition: "Sosyal medyada yanıltıcı ve manipülasyon amaçlı bilgilere karşı dikkatli olunmalıdır.", importance: "Önem: Sosyal medya okuryazarlığı, bu tür bilgilerin ayırt edilmesi ve bilinçli bir sosyal medya kullanıcı olunması açısından önemlidir." },
+            // dijital-okuryazarlik-ile-medya-okuryazarligi-farklari.csv
+            { term: "Medya Okuryazarlığı (Karşılaştırma)", definition: "Medyanın ortaya çıkardığı metin, video, görsel, programları ve kurallarını bilmeyi, çözümlemeyi ve sorgulamayı sağlayan bir yetenek.", importance: "Özellikler: Eleştirel düşünme becerisi, sorgulama yeteneği, medya ürünlerini analiz etme" },
+            { term: "Dijital Okuryazarlık", definition: "Dijitalleşen dünya ve teknolojideki iletişim metotlarının etkin kullanımını ve eleştirebilmeyi sağlayan bir yetenek.", importance: "Özellikler: Bilgiye erişme ve bilgiyi yaratma yeteneği, sosyal medya ve dijital ortamların kullanım hakimiyeti" },
+            { term: "5N1K", definition: "Eleştirel düşünme ve bilgiye ulaşma yöntemi olan, kim, ne, nerede, ne zaman, neden, nasıl sorularını temsil eder.", importance: "Özellikler: Haber niteliği taşıyan bilgilere objektif bakmayı sağlar, bilgiyi tüm yönleriyle irdelemeyi sağlar" },
+            { term: "Kitle İletişim Araçları", definition: "Topluma bilgi, düşünce ve görüşlerin yayılmasını sağlayan araçlar.", importance: "Özellikler: Toplum ile birey veya kurumlar arasında iletişim sağlar, çok sayıda kişiye ulaşma potansiyeli" },
+            { term: "Reklam", definition: "Bir ürün ya da hizmetin tanıtımının yapılması için kullanılan pazarlama teknikleri.", importance: "Özellikler: Hedef kitlenin dikkatini çekme, hikâye ve karakterler ile mesaj verme" },
+            { term: "Haber Bültenleri", definition: "Güncel olayları ve bilgileri halka sunan medya metinleri.", importance: "Özellikler: Gerçek ve objektif olma niteliği, halkın bilgi edinmesini sağlama" },
+            { term: "Sosyal Medya (Karşılaştırma)", definition: "İnternet kullanıcılarının bilgi, görüş ve deneyimlerini paylaştığı platformlar.", importance: "Özellikler: İnteraktif ve dinamik yapı, hızlı ve geniş kitleye ulaşma" },
+            { term: "İnternet Haberciliği", definition: "Haber ve bilgilerin, dijital platformlarda, genellikle internet üzerinden sunulması.", importance: "Özellikler: 24/7 erişim, takipçiyi hedefleyen özelleştirme imkanı sunma" }
+        ];
+
+        // Kartları oluştur
+        const grid = document.getElementById('concept-grid');
+        concepts.forEach(concept => {
+            const wrapper = document.createElement('div');
+            wrapper.className = 'concept-card-wrapper';
+            
+            const card = document.createElement('div');
+            card.className = 'concept-card';
+            card.onclick = function() { this.classList.toggle('flipped'); };
+            
+            const front = document.createElement('div');
+            front.className = 'card-face card-front';
+            front.innerHTML = `<div class="card-term">${concept.term}</div><div style="font-size: 0.7rem; opacity: 0.5;">Dokun <i class="fa-solid fa-rotate"></i></div>`;
+            
+            const back = document.createElement('div');
+            back.className = 'card-face card-back';
+            back.innerHTML = `
+                <div class="card-term">${concept.term}</div>
+                <div class="card-definition">${concept.definition}</div>
+                <div class="card-importance">${concept.importance}</div>
+            `;
+            
+            card.appendChild(front);
+            card.appendChild(back);
+            wrapper.appendChild(card);
+            grid.appendChild(wrapper);
+        });
+
+        // Hamburger menü işlevi
+        const sidebar = document.getElementById('sidebar');
+        const main = document.getElementById('main');
+        const menuToggle = document.getElementById('menuToggle');
+        let sidebarOpen = true;
+
+        function toggleSidebar(e) {
+            if(e) e.stopPropagation();
+            sidebarOpen = !sidebarOpen;
+            if (sidebarOpen) {
+                sidebar.classList.remove('closed');
+                sidebar.classList.add('open');
+                main.classList.remove('sidebar-closed');
+            } else {
+                sidebar.classList.add('closed');
+                sidebar.classList.remove('open');
+                main.classList.add('sidebar-closed');
+            }
+        }
+
+        menuToggle.addEventListener('click', toggleSidebar);
+
+        document.addEventListener('click', (e) => {
+            if (window.innerWidth <= 1024 && sidebarOpen && !sidebar.contains(e.target) && e.target !== menuToggle) {
+                toggleSidebar();
+            }
+        });
+
+        const conceptToggleBtn = document.getElementById('conceptToggle');
+        
+        conceptToggleBtn.addEventListener('click', function() {
+            this.classList.toggle('active');
+            grid.classList.toggle('show');
+            if(this.classList.contains('active')) {
+                this.innerHTML = 'Kavramları Gizle <i class="fa-solid fa-chevron-up"></i>';
+            } else {
+                this.innerHTML = 'Kavramları Göster <i class="fa-solid fa-chevron-down"></i>';
+            }
+        });
+
+        // Mobil görünümde başlangıçta sidebar kapalı olsun
+        if (window.innerWidth <= 1024) {
+            sidebar.classList.add('closed');
+            sidebar.classList.remove('open');
+            main.classList.add('sidebar-closed');
+            sidebarOpen = false;
+        }
+
+        // Pencere boyutu değiştiğinde mobil kontrolü
+        window.addEventListener('resize', () => {
+            if (window.innerWidth <= 1024) {
+                if (sidebarOpen) {
+                    sidebar.classList.add('closed');
+                    sidebar.classList.remove('open');
+                    main.classList.add('sidebar-closed');
+                    sidebarOpen = false;
+                }
+            } else {
+                if (!sidebarOpen) {
+                    sidebar.classList.remove('closed');
+                    sidebar.classList.remove('open');
+                    main.classList.remove('sidebar-closed');
+                    sidebarOpen = true;
+                }
+                grid.classList.remove('show');
+                conceptToggleBtn.classList.remove('active');
+                conceptToggleBtn.innerHTML = 'Kavramları Göster <i class="fa-solid fa-chevron-down"></i>';
+            }
+        });
+
+        // Arka plan görselleri
+        const bgImages = {
+            'intro': 'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?q=80&w=2000',
+            'definition': 'https://images.unsplash.com/photo-1611162617213-7d7a39e9b1d7?q=80&w=2000',
+            'architecture': 'https://images.unsplash.com/photo-1550751827-4bd374c3f58b?q=80&w=2000',
+            'bubbles': 'https://images.unsplash.com/photo-1518770660439-4636190af475?q=80&w=2000',
+            'mining': 'https://plus.unsplash.com/premium_photo-1682001956748-ee56a68d8802?q=80&w=774&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3Dq=80&w=2000',
+            'dezenformasyon': 'https://images.unsplash.com/photo-1504384308090-c894fdcc538d?q=80&w=2000',
+            'mezenformasyon': 'https://plus.unsplash.com/premium_photo-1706911687157-bd8e41504a60?q=80&w=992&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D=80&w=2000',
+            'deepfake': 'https://images.unsplash.com/photo-1677442135703-1787eea5ce01?q=80&w=2000',
+            'siber-zorbalik': 'https://images.unsplash.com/photo-1614064641938-3bbee52942c7?q=80&w=2000',
+            'vaka-analizleri': 'https://images.unsplash.com/photo-1584433144859-1fc3ab64a957?q=80&w=2000',
+            'ruh-sagligi': 'https://images.unsplash.com/photo-1544027993-37dbfe43562a?q=80&w=2000',
+            'podcasts': 'https://images.unsplash.com/photo-1590602847861-f357a9332bbc?q=80&w=2000',
+            'safety': 'https://images.unsplash.com/photo-1563986768609-322da13575f3?q=80&w=2000',
+            'concepts': 'https://images.unsplash.com/photo-1434030216411-0b793f4b4173?q=80&w=2000'
+        };
+
+        const sections = document.querySelectorAll('section');
+        const navLinks = document.querySelectorAll('.nav-link');
+        const bgLayer = document.getElementById('bgLayer');
+
+        window.addEventListener('scroll', () => {
+            let current = "";
+            sections.forEach(sec => {
+                const top = window.scrollY;
+                const offset = sec.offsetTop - 350;
+                const height = sec.offsetHeight;
+                const id = sec.getAttribute('id');
+                if (top >= offset && top < offset + height) {
+                    current = id;
+                    sec.querySelector('.content-box').classList.add('active');
+                    if(bgImages[id]) bgLayer.style.backgroundImage = `url('${bgImages[id]}')`;
+                }
+            });
+            navLinks.forEach(link => {
+                link.classList.remove('active');
+                if (link.getAttribute('href').includes(current)) link.classList.add('active');
+            });
+        });
+
+        // ========== YENİ: ÖZEL SES OYNATICI JAVASCRİPTİ ==========
+        document.querySelectorAll('.custom-audio-player').forEach(container => {
+            const audioSrc = container.getAttribute('data-audio');
+            if (!audioSrc) return;
+
+            const audio = new Audio(audioSrc);
+            audio.preload = 'metadata';
+
+            const playBtn = container.querySelector('.play-pause-btn');
+            const progressBar = container.querySelector('.progress-bar');
+            const progressFill = container.querySelector('.progress-fill');
+            const currentTimeSpan = container.querySelector('.current-time');
+            const durationSpan = container.querySelector('.duration');
+
+            function formatTime(seconds) {
+                if (isNaN(seconds)) return '0:00';
+                const mins = Math.floor(seconds / 60);
+                const secs = Math.floor(seconds % 60);
+                return `${mins}:${secs < 10 ? '0' : ''}${secs}`;
+            }
+
+            audio.addEventListener('loadedmetadata', () => {
+                durationSpan.textContent = formatTime(audio.duration);
+            });
+
+            audio.addEventListener('timeupdate', () => {
+                const percent = (audio.currentTime / audio.duration) * 100;
+                progressFill.style.width = `${percent}%`;
+                currentTimeSpan.textContent = formatTime(audio.currentTime);
+            });
+
+            playBtn.addEventListener('click', () => {
+                if (audio.paused) {
+                    // Diğer oynatıcıları durdur
+                    document.querySelectorAll('.custom-audio-player').forEach(other => {
+                        const otherAudio = other.audioObj;
+                        if (otherAudio && otherAudio !== audio && !otherAudio.paused) {
+                            otherAudio.pause();
+                            const otherBtn = other.querySelector('.play-pause-btn i');
+                            otherBtn.className = 'fa-solid fa-play';
+                        }
+                    });
+                    audio.play();
+                    playBtn.querySelector('i').className = 'fa-solid fa-pause';
+                } else {
+                    audio.pause();
+                    playBtn.querySelector('i').className = 'fa-solid fa-play';
+                }
+            });
+
+            progressBar.addEventListener('click', (e) => {
+                const rect = progressBar.getBoundingClientRect();
+                const clickX = e.clientX - rect.left;
+                const width = rect.width;
+                const seekTo = (clickX / width) * audio.duration;
+                audio.currentTime = seekTo;
+            });
+
+            audio.addEventListener('ended', () => {
+                playBtn.querySelector('i').className = 'fa-solid fa-play';
+                progressFill.style.width = '0%';
+                currentTimeSpan.textContent = '0:00';
+            });
+
+            container.audioObj = audio;
+        });
+    </script>
+</body>
+</html>
