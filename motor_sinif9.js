@@ -194,114 +194,148 @@ const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwIj5rQkpizqiOqJYlUd
             document.body.appendChild(inlineContainer); 
         }
     }
-	function materyalleriYukle(uniteId) {
-        aktifMateryaller = [];
-        
-        if (uniteId === 'u1') {
-            aktifMateryaller = [
-                { baslik: "Tarih Bilimine Giriş", tur: "Video Ders", icon: "fa-film", renk: "#e74c3c", link: "#" },
-                { baslik: "Zaman ve Takvim", tur: "Video Ders", icon: "fa-film", renk: "#e74c3c", link: "#" },
-                { baslik: "Tarihe Yardımcı Bilimler", tur: "Video Ders", icon: "fa-film", renk: "#e74c3c", link: "#" },
-                { baslik: "Göbeklitepe Gizemi", tur: "Belgesel", icon: "fa-film", renk: "#e74c3c", link: "#" },
-                { baslik: "Tarih Yazıcılığı", tur: "Video Ders", icon: "fa-film", renk: "#e74c3c", link: "#" },
-                { baslik: "Bir Savaş Makinesinin Analizi - Roma Ordusu (Kuruluştan İtibaren Tüm Aşamalarıyla) (Kronik Tarih)", tur: "Podcast", icon: "fa-podcast", renk: "#9b59b6", link: "https://depo.kirkyama.uk/Podcast/Kronik%20Tarih/Kronik-Bir%20Sava%C5%9F%20Makinesinin%20Analizi%20-%20Roma%20Ordusu%20(Kurulu%C5%9Ftan%20%C4%B0tibaren%20T%C3%BCm%20A%C5%9Famalar%C4%B1yla).mp3" },
-                { baslik: "Büyük İskender Nasıl Başarılı Oldu 12 Yılda Dünya Tarihini Nasıl Değiştirdi (Kronik Tarih)", tur: "Podcast", icon: "fa-podcast", renk: "#9b59b6", link: "https://depo.kirkyama.uk/Podcast/Kronik%20Tarih/Kronik-B%C3%BCy%C3%BCk%20%C4%B0skender%20Nas%C4%B1l%20Ba%C5%9Far%C4%B1l%C4%B1%20Oldu%2012%20Y%C4%B1lda%20D%C3%BCnya%20Tarihini%20Nas%C4%B1l%20De%C4%9Fi%C5%9Ftirdi.m4a" },
-				{ baslik: "Xenophon-Anabasis-On Binlerin Yürüyüşü (TRT Radyo Tiyatrosu)", tur: "Podcast", icon: "fa-podcast", renk: "#9b59b6", link: "https://depo.kirkyama.uk/Podcast/Radyo%20Tiyatrolar%C4%B1/Xenophon-Anabasis-On%20Binlerin%20Y%C3%BCr%C3%BCy%C3%BC%C5%9F%C3%BC.mp3" },
-				{ baslik: "Hannibal Barca Alpleri Nasıl Geçti - Tarihin En Tehlikeli Askeri Harekatı (Kronik Tarih)", tur: "Podcast", icon: "fa-podcast", renk: "#9b59b6", link: "https://depo.kirkyama.uk/Podcast/Kronik%20Tarih/Kronik-Hannibal%20Barca%20Alpleri%20Nas%C4%B1l%20Ge%C3%A7ti%20-%20Tarihin%20En%20Tehlikeli%20Askeri%20Harekat%C4%B1.mp3" },
-				{ baslik: "Truvalı Helen - İhtirasın, İhanetin ve Savaşın Öyküsü (Kronik Tarih)", tur: "Podcast", icon: "fa-podcast", renk: "#9b59b6", link: "https://depo.kirkyama.uk/Podcast/Kronik%20Tarih/Kronik-Truval%C4%B1%20Helen%20-%20%C4%B0htiras%C4%B1n%2C%20%C4%B0hanetin%20ve%20Sava%C5%9F%C4%B1n%20%C3%96yk%C3%BCs%C3%BC.mp3" },
-				{ baslik: "Podcastİsmi", tur: "Podcast", icon: "fa-podcast", renk: "#9b59b6", link: "PodcastLinki" },
-                { baslik: "Geçmişten Geleceğe", tur: "Podcast", icon: "fa-podcast", renk: "#9b59b6", link: "#" },
-                { baslik: "İnsanlığın Hafızası Tarih", tur: "PDF Not", icon: "fa-file-pdf", renk: "#e67e22", link: "https://depo.kirkyama.uk/PDF/9.%20S%C4%B1n%C4%B1f%20OGM/1-%20%C4%B0nsanl%C4%B1%C4%9F%C4%B1n%20Haf%C4%B1zas%C4%B1%20Tarih.pdf" },
-				{ baslik: "Neden Tarih", tur: "PDF Not", icon: "fa-file-pdf", renk: "#e67e22", link: "https://depo.kirkyama.uk/PDF/9.%20S%C4%B1n%C4%B1f%20OGM/2-%20Neden%20Tarih.pdf" },
-				{ baslik: "Zamanın Taksimi", tur: "PDF Not", icon: "fa-file-pdf", renk: "#e67e22", link: "https://depo.kirkyama.uk/PDF/9.%20S%C4%B1n%C4%B1f%20OGM/3-%20Zaman%C4%B1n%20Taksimi.pdf" },
-				{ baslik: "Notİsmi", tur: "PDF Not", icon: "fa-file-pdf", renk: "#e67e22", link: "NotLinki" },
-				{ baslik: "Notİsmi", tur: "PDF Not", icon: "fa-file-pdf", renk: "#e67e22", link: "NotLinki" },
-				{ baslik: "Notİsmi", tur: "PDF Not", icon: "fa-file-pdf", renk: "#e67e22", link: "NotLinki" },
-				{ baslik: "Tarih Öğrenmenin Faydaları", tur: "Sunu", icon: "fa-chalkboard-user", renk: "#e84393", link: "https://depo.kirkyama.uk/PDF/9.SinifSunular/1.%20%C3%9Cnite/1-Tarih%20%C3%96%C4%9Frenmenin%20Faydalar%C4%B1.pdf" },
-				{ baslik: "Tarih Araştırma ve Yazımında Dijital Dönüşüm", tur: "Sunu", icon: "fa-chalkboard-user", renk: "#e84393", link: "https://depo.kirkyama.uk/PDF/9.SinifSunular/1.%20%C3%9Cnite/2-Dijitalle%C5%9Fme.pdf" },
-                { baslik: "Kavram Haritası", tur: "PDF Not", icon: "fa-file-pdf", renk: "#e67e22", link: "#" },
-                { baslik: "Tarih Çalışma Kağıdı", tur: "PDF Not", icon: "fa-file-pdf", renk: "#e67e22", link: "#" },
-                { baslik: "Zaman Çizelgesi", tur: "İnteraktif Harita", icon: "fa-map-location-dot", renk: "#2ecc71", link: "#" }
-            ];
-        } else if (uniteId === 'u2') {
-            aktifMateryaller = [
-                { baslik: "Mezopotamya Uygarlıkları", tur: "Video Ders", icon: "fa-film", renk: "#e74c3c", link: "https://youtu.be/Z4cZjZZBsjg" },
-                { baslik: "Anadolu Uygarlıkları", tur: "Video Ders", icon: "fa-film", renk: "#e74c3c", link: "https://youtu.be/Xom434ZL6_c" },
-                { baslik: "Doğu Akdeniz, Ege, Yunan ve Makedonya Uygarlıkları", tur: "Video Ders", icon: "fa-film", renk: "#e74c3c", link: "https://youtu.be/ri7U-d9jk-A" },
-				{ baslik: "İran ve Mısır Uygarlıkları", tur: "Video Ders", icon: "fa-film", renk: "#e74c3c", link: "https://youtu.be/Qe3jmh0CR1M" },
-				{ baslik: "Çin ve Hint Uygarlıkları", tur: "Video Ders", icon: "fa-film", renk: "#e74c3c", link: "https://youtu.be/8ABBovKfDes" },
-				{ baslik: "İskitler ve Hunlar", tur: "Video Ders", icon: "fa-film", renk: "#e74c3c", link: "https://youtu.be/jY5sMXqR2o8" },
-				{ baslik: "Roma Uygarlıkları", tur: "Video Ders", icon: "fa-film", renk: "#e74c3c", link: "https://youtu.be/Ke1Y8whiatA" },
-				{ baslik: "Eskiçağ Uygarlıkları (Genel Özet)", tur: "Video Ders", icon: "fa-film", renk: "#e74c3c", link: "https://youtu.be/o8AEWSe5hio" },
-                { baslik: "Sümerlerin İzinde", tur: "Belgesel", icon: "fa-film", renk: "#e74c3c", link: "#" },
-                { baslik: "Antik Mısırın Ünlü Firavunu II. Ramses ve Kadeş Savaşı", tur: "Podcast", icon: "fa-podcast", renk: "#9b59b6", link: "https://depo.kirkyama.uk/kronik-2.ramses%20ve%20kade%C5%9F%20savasi.mp3" },
-                { baslik: "Cengiz Han'ın Komutanları - Bozkırın Demir Adamları (Kronik Tarih)", tur: "Podcast", icon: "fa-podcast", renk: "#9b59b6", link: "https://depo.kirkyama.uk/Podcast/Kronik%20Tarih/Kronik-Cengiz%20Han'%C4%B1n%20Komutanlar%C4%B1%20-%20Bozk%C4%B1r%C4%B1n%20Demir%20Adamlar%C4%B1.mp3" },
-				{ baslik: "Moğolların Askeri Yapısı - Taktik, Organizasyon ve Strateji (Kronik Tarih)", tur: "Podcast", icon: "fa-podcast", renk: "#9b59b6", link: "https://depo.kirkyama.uk/Podcast/Kronik%20Tarih/Kronik-Mo%C4%9Follar%C4%B1n%20Askeri%20Yap%C4%B1s%C4%B1%20-%20Taktik%20%26%20Organizasyon%20%26%20Strateji.mp3" },
-				{ baslik: "Moğolların Savaş Taktikleri - Düşmanlarını Nasıl Yendiler (Kronik Tarih)", tur: "Podcast", icon: "fa-podcast", renk: "#9b59b6", link: "https://depo.kirkyama.uk/Podcast/Kronik%20Tarih/Kronik-Mo%C4%9Follar%C4%B1n%20Sava%C5%9F%20Taktikleri%20-%20D%C3%BC%C5%9Fmanlar%C4%B1n%C4%B1%20Nas%C4%B1l%20Yendiler.mp3" },
-				{ baslik: "Mete Han - Bozkırın Efendisi (Kronik Tarih)", tur: "Podcast", icon: "fa-podcast", renk: "#9b59b6", link: "https://depo.kirkyama.uk/Podcast/Kronik%20Tarih/Kronik-Mete%20Han%20-%20Bozk%C4%B1r%C4%B1n%20Efendisi.mp3" },
-				{ baslik: "Şamanizm Nedir İlkeleri ve Kökenleri (Kronik Tarih)", tur: "Podcast", icon: "fa-podcast", renk: "#9b59b6", link: "https://depo.kirkyama.uk/Podcast/Kronik%20Tarih/Kronik-%C5%9Eamanizm%20Nedir%20%C4%B0lkeleri%20ve%20K%C3%B6kenleri.mp3" },
-				{ baslik: "Papalığın Kuruluşu - Bir Balıkçı Avrupa'nın Kaderini Nasıl Değiştirdi (Kronik Tarih)", tur: "Podcast", icon: "fa-podcast", renk: "#9b59b6", link: "https://depo.kirkyama.uk/Podcast/Kronik%20Tarih/Kronik-Papal%C4%B1%C4%9F%C4%B1n%20Kurulu%C5%9Fu%20-%20Bir%20Bal%C4%B1k%C3%A7%C4%B1%20Avrupa'n%C4%B1n%20Kaderini%20Nas%C4%B1l%20De%C4%9Fi%C5%9Ftirdi.mp3" },
-				{ baslik: "Ortaçağda Bir İlimler Akademisi - Beytü'l Hikme (İslam'ın Altın Çağı) (Kronik Tarih)", tur: "Podcast", icon: "fa-podcast", renk: "#9b59b6", link: "https://depo.kirkyama.uk/Podcast/Kronik%20Tarih/Kronik-Orta%C3%A7a%C4%9Fda%20Bir%20%C4%B0limler%20Akademisi%20-%20Beyt%C3%BC'l%20Hikme%20(%C4%B0slam'%C4%B1n%20Alt%C4%B1n%20%C3%87a%C4%9F%C4%B1).mp3" },
-                { baslik: "İnsanlığın İlk İzleri", tur: "PDF Not", icon: "fa-file-pdf", renk: "#e67e22", link: "https://depo.kirkyama.uk/PDF/9.%20S%C4%B1n%C4%B1f%20OGM/4-%20%C4%B0nsanl%C4%B1%C4%9F%C4%B1n%20%C4%B0lk%20%C4%B0zleri.pdf" },
-                { baslik: "Yazının Gelişimi", tur: "PDF Not", icon: "fa-file-pdf", renk: "#e67e22", link: "https://depo.kirkyama.uk/PDF/9.%20S%C4%B1n%C4%B1f%20OGM/5-%20Yaz%C4%B1n%C4%B1n%20Geli%C5%9Fimi.pdf" },
-				{ baslik: "İlk Çağ'da Yeryüzündeki Belli Başlı Medeniyet Havzaları", tur: "PDF Not", icon: "fa-file-pdf", renk: "#e67e22", link: "https://depo.kirkyama.uk/PDF/9.%20S%C4%B1n%C4%B1f%20OGM/6-%20%C4%B0lk%20%C3%87a%C4%9F'da%20Yery%C3%BCz%C3%BCndeki%20Belli%20Ba%C5%9Fl%C4%B1%20Medeniyet%20Havzalar%C4%B1.pdf" },
-				{ baslik: "İnsan ve Göç", tur: "PDF Not", icon: "fa-file-pdf", renk: "#e67e22", link: "https://depo.kirkyama.uk/PDF/9.%20S%C4%B1n%C4%B1f%20OGM/8-%20%C4%B0nsan%20ve%20G%C3%B6%C3%A7.pdf" },
-				{ baslik: " İlk Çağ'ın Tüccar Toplulukları", tur: "PDF Not", icon: "fa-file-pdf", renk: "#e67e22", link: "https://depo.kirkyama.uk/PDF/9.%20S%C4%B1n%C4%B1f%20OGM/9-%20%C4%B0lk%20%C3%87a%C4%9F'%C4%B1n%20T%C3%BCccar%20Topluluklar%C4%B1.pdf" },
-				{ baslik: "Kabileden Devlete", tur: "PDF Not", icon: "fa-file-pdf", renk: "#e67e22", link: "https://depo.kirkyama.uk/PDF/9.%20S%C4%B1n%C4%B1f%20OGM/10-%20Kabileden%20Devlete.pdf" },
-				{ baslik: "Kanunlar Doğuyor", tur: "PDF Not", icon: "fa-file-pdf", renk: "#e67e22", link: "https://depo.kirkyama.uk/PDF/9.%20S%C4%B1n%C4%B1f%20OGM/11-%20Kanunlar%20Do%C4%9Fuyor.pdf" },
-				{ baslik: "Artı Üründen Sosyal Sınıflara", tur: "PDF Not", icon: "fa-file-pdf", renk: "#e67e22", link: "https://depo.kirkyama.uk/PDF/9.%20S%C4%B1n%C4%B1f%20OGM/14-%20Art%C4%B1%20%C3%9Cr%C3%BCnden%20Sosyal%20S%C4%B1n%C4%B1flara.pdf" },
-				{ baslik: "Mezopotamya Uygarlıkları", tur: "Sunu", icon: "fa-chalkboard-user", renk: "#e84393", link: "https://depo.kirkyama.uk/PDF/9.SinifSunular/2.Unite/1-Mezopotamya%20Uygarl%C4%B1klar%C4%B1.pdf" },
-				{ baslik: "Anadolu Uygarlıkları", tur: "Sunu", icon: "fa-chalkboard-user", renk: "#e84393", link: "https://depo.kirkyama.uk/PDF/9.SinifSunular/2.Unite/2-Anadolu%20ve%20Mezopotamya.pdf" },
-				{ baslik: "Anadolu ve Mezopotamya Uygarlıkları", tur: "Sunu", icon: "fa-chalkboard-user", renk: "#e84393", link: "https://depo.kirkyama.uk/PDF/9.SinifSunular/2.Unite/3-Mezopotamya%20ve%20Anadolu.pdf" },
-				{ baslik: "Doğu Akdeniz, Ege, Yunan ve Makedonya Uygarlıkları", tur: "Sunu", icon: "fa-chalkboard-user", renk: "#e84393", link: "https://depo.kirkyama.uk/PDF/9.SinifSunular/2.Unite/4-Do%C4%9Fu%20Akdeniz%2C%20Ege%2C%20Yunan%20ve%20Makedonya%20Uygarl%C4%B1klar%C4%B1.pdf" },
-				{ baslik: "Mısır ve İran Uygarlıkları", tur: "Sunu", icon: "fa-chalkboard-user", renk: "#e84393", link: "https://depo.kirkyama.uk/PDF/9.SinifSunular/2.Unite/5-M%C4%B1s%C4%B1r%20ve%20%C4%B0ran%20Uygarl%C4%B1klar%C4%B1.pdf" },
-				{ baslik: "Çin ve Hint Uygarlıkları", tur: "Sunu", icon: "fa-chalkboard-user", renk: "#e84393", link: "https://depo.kirkyama.uk/PDF/9.SinifSunular/2.Unite/6-%C3%87in%20ve%20Hint%20Uygarl%C4%B1klar%C4%B1.pdf" },
-				{ baslik: "İskitler ve Sakalar", tur: "Sunu", icon: "fa-chalkboard-user", renk: "#e84393", link: "https://depo.kirkyama.uk/PDF/9.SinifSunular/2.Unite/7-%C4%B0skitler%20ve%20Sakalar.pdf" },
-				{ baslik: "Roma Uygarlığı", tur: "Sunu", icon: "fa-chalkboard-user", renk: "#e84393", link: "https://depo.kirkyama.uk/PDF/9.SinifSunular/2.Unite/8-Roma%20Uygarl%C4%B1%C4%9F%C4%B1.pdf" },
-				{ baslik: "Eskiçağ Uygarlıkları Genel Özet", tur: "Sunu", icon: "fa-chalkboard-user", renk: "#e84393", link: "https://depo.kirkyama.uk/PDF/9.SinifSunular/2.Unite/8-Eski%C3%A7a%C4%9F%20Uygarl%C4%B1klar%C4%B1%20Genel%20%C3%96zet.pdf" },
-                { baslik: "İlk Çağ Haritası", tur: "İnteraktif Harita", icon: "fa-map-location-dot", renk: "#2ecc71", link: "#" },
-                { baslik: "Göç Yolları Haritası", tur: "İnteraktif Harita", icon: "fa-map-location-dot", renk: "#2ecc71", link: "#" }
-            ];
-        } else if (uniteId === 'u3') {
-            aktifMateryaller = [
-                { baslik: "Orta Çağ'da Dünya", tur: "Video Ders", icon: "fa-film", renk: "#e74c3c", link: "#" },
-                { baslik: "Kavimler Göçü Etkileri", tur: "Video Ders", icon: "fa-film", renk: "#e74c3c", link: "#" },
-                { baslik: "Feodalizm ve Şövalyeler", tur: "Video Ders", icon: "fa-film", renk: "#e74c3c", link: "#" },
-                { baslik: "Karanlık Çağ Belgeseli", tur: "Belgesel", icon: "fa-film", renk: "#e74c3c", link: "#" },
-				{ baslik: "Podcastİsmi", tur: "Podcast", icon: "fa-podcast", renk: "#9b59b6", link: "PodcastLinki" },
-				{ baslik: "Podcastİsmi", tur: "Podcast", icon: "fa-podcast", renk: "#9b59b6", link: "PodcastLinki" },
-				{ baslik: "Podcastİsmi", tur: "Podcast", icon: "fa-podcast", renk: "#9b59b6", link: "PodcastLinki" },
-				{ baslik: "Podcastİsmi", tur: "Podcast", icon: "fa-podcast", renk: "#9b59b6", link: "PodcastLinki" },
-				{ baslik: "Podcastİsmi", tur: "Podcast", icon: "fa-podcast", renk: "#9b59b6", link: "PodcastLinki" },
-				{ baslik: "Podcastİsmi", tur: "Podcast", icon: "fa-podcast", renk: "#9b59b6", link: "PodcastLinki" },
-                { baslik: "Roma'nın Çöküşü", tur: "Podcast", icon: "fa-podcast", renk: "#9b59b6", link: "#" },
-                { baslik: "Orta Çağ Avrupa'sı", tur: "Podcast", icon: "fa-podcast", renk: "#9b59b6", link: "#" },
-                { baslik: "Ticaret Yolları", tur: "Podcast", icon: "fa-podcast", renk: "#9b59b6", link: "#" },
-				{ baslik: "Kavimler Göçü", tur: "PDF Not", icon: "fa-file-pdf", renk: "#e67e22", link: "https://depo.kirkyama.uk/PDF/9.%20S%C4%B1n%C4%B1f%20OGM/18-%20Kavimler%20G%C3%B6%C3%A7%C3%BC.pdf" },
-				{ baslik: "Orta Çağ'da Siyasi Yapılar", tur: "PDF Not", icon: "fa-file-pdf", renk: "#e67e22", link: "https://depo.kirkyama.uk/PDF/9.%20S%C4%B1n%C4%B1f%20OGM/12-%20Orta%20%C3%87a%C4%9F'da%20Siyasi%20Yap%C4%B1lar.pdf" },
-				{ baslik: "İmparatorluklarda Sosyal, Ekonomik ve Askeri Durum", tur: "PDF Not", icon: "fa-file-pdf", renk: "#e67e22", link: "https://depo.kirkyama.uk/PDF/9.%20S%C4%B1n%C4%B1f%20OGM/13-%20%C4%B0mparatorluklarda%20Sosyal%2C%20Ekonomik%20ve%20Askeri%20Durum.pdf" },
-				{ baslik: "Orta Çağ'da Ticaret", tur: "PDF Not", icon: "fa-file-pdf", renk: "#e67e22", link: "https://depo.kirkyama.uk/PDF/9.%20S%C4%B1n%C4%B1f%20OGM/15-%20Orta%20%C3%87a%C4%9F'da%20Ticaret.pdf" },
-				{ baslik: "Orta Çağ'da Ordu", tur: "PDF Not", icon: "fa-file-pdf", renk: "#e67e22", link: "https://depo.kirkyama.uk/PDF/9.%20S%C4%B1n%C4%B1f%20OGM/29-%20Orta%20%C3%87a%C4%9F'da%20Ordu.pdf" },
-				{ baslik: "Avrasya'da İlk Türk İzleri", tur: "PDF Not", icon: "fa-file-pdf", renk: "#e67e22", link: "https://depo.kirkyama.uk/PDF/9.%20S%C4%B1n%C4%B1f%20OGM/31-%20Avrasya'da%20%C4%B0lk%20T%C3%BCrk%20%C4%B0zleri.pdf" },
-				{ baslik: "Türklerde Coğrafya ile Oluşan Yaşam Tarzı", tur: "PDF Not", icon: "fa-file-pdf", renk: "#e67e22", link: "https://depo.kirkyama.uk/PDF/9.%20S%C4%B1n%C4%B1f%20OGM/17-%20T%C3%BCrklerde%20Co%C4%9Frafya%20ile%20Olu%C5%9Fan%20Ya%C5%9Fam%20Tarz%C4%B1.pdf" },
-				{ baslik: "İlk ve Orta Çağlarda Türk Dünyası", tur: "PDF Not", icon: "fa-file-pdf", renk: "#e67e22", link: "https://depo.kirkyama.uk/PDF/9.%20S%C4%B1n%C4%B1f%20OGM/32-%20%C4%B0lk%20ve%20Orta%20%C3%87a%C4%9Flarda%20T%C3%BCrk%20D%C3%BCnyas%C4%B1.pdf" },
-				{ baslik: "Boylardan Devlete", tur: "PDF Not", icon: "fa-file-pdf", renk: "#e67e22", link: "https://depo.kirkyama.uk/PDF/9.%20S%C4%B1n%C4%B1f%20OGM/16-%20Boylardan%20Devlete.pdf" },
-				{ baslik: "İlk Türk Devletlerinin Çevre Devletlerle İlişkileri", tur: "PDF Not", icon: "fa-file-pdf", renk: "#e67e22", link: "https://depo.kirkyama.uk/PDF/9.%20S%C4%B1n%C4%B1f%20OGM/19-%20%C4%B0lk%20T%C3%BCrk%20Devletlerinin%20%C3%87evre%20Devletlerle%20%C4%B0li%C5%9Fkileri.pdf" },
-				{ baslik: " İlk Türk Devletleri ve Komşuları", tur: "PDF Not", icon: "fa-file-pdf", renk: "#e67e22", link: "https://depo.kirkyama.uk/PDF/9.%20S%C4%B1n%C4%B1f%20OGM/20-%20%C4%B0lk%20T%C3%BCrk%20Devletleri%20ve%20Kom%C5%9Fular%C4%B1.pdf" },
-				{ baslik: "İslamiyet'in Doğduğu Dönemde Dünya", tur: "PDF Not", icon: "fa-file-pdf", renk: "#e67e22", link: "https://depo.kirkyama.uk/PDF/9.%20S%C4%B1n%C4%B1f%20OGM/21-%20%C4%B0slamiyet'in%20Do%C4%9Fdu%C4%9Fu%20D%C3%B6nemde%20D%C3%BCnya.pdf" },
-				{ baslik: " İslamiyet Yayılıyor", tur: "PDF Not", icon: "fa-file-pdf", renk: "#e67e22", link: "https://depo.kirkyama.uk/PDF/9.%20S%C4%B1n%C4%B1f%20OGM/22-%20%C4%B0slamiyet%20Yay%C4%B1l%C4%B1yor.pdf" },
-				{ baslik: "Dört Halife Dönemi", tur: "PDF Not", icon: "fa-file-pdf", renk: "#e67e22", link: "https://depo.kirkyama.uk/PDF/9.%20S%C4%B1n%C4%B1f%20OGM/23-%20D%C3%B6rt%20Halife%20D%C3%B6nemi.pdf" },
-				{ baslik: "Emeviler Devleti (661-750)", tur: "PDF Not", icon: "fa-file-pdf", renk: "#e67e22", link: "https://depo.kirkyama.uk/PDF/9.%20S%C4%B1n%C4%B1f%20OGM/24-%20Emeviler%20Devleti%20(661-750).pdf" },
-				{ baslik: "Abbasi Devleti ve Mısır'da Kurulan Türk-İslam Devletleri", tur: "PDF Not", icon: "fa-file-pdf", renk: "#e67e22", link: "https://depo.kirkyama.uk/PDF/9.%20S%C4%B1n%C4%B1f%20OGM/25-%20Abbasi%20Devleti%20ve%20M%C4%B1s%C4%B1r'da%20Kurulan%20T%C3%BCrk-%C4%B0slam%20Devletleri.pdf" },
-				{ baslik: "Bilim Medeniyeti", tur: "PDF Not", icon: "fa-file-pdf", renk: "#e67e22", link: "https://depo.kirkyama.uk/PDF/9.%20S%C4%B1n%C4%B1f%20OGM/26-%20Bilim%20Medeniyeti.pdf" },
-				{ baslik: "Türklerin İslamiyeti Kabulü", tur: "PDF Not", icon: "fa-file-pdf", renk: "#e67e22", link: "https://depo.kirkyama.uk/PDF/9.%20S%C4%B1n%C4%B1f%20OGM/27-%20T%C3%BCrklerin%20%C4%B0slamiyeti%20Kabul%C3%BC.pdf" },
-				{ baslik: " İslamiyet'in Türk Devlet ve Toplum Yapısına Etkisi", tur: "PDF Not", icon: "fa-file-pdf", renk: "#e67e22", link: "https://depo.kirkyama.uk/PDF/9.%20S%C4%B1n%C4%B1f%20OGM/28-%20%C4%B0slamiyet'in%20T%C3%BCrk%20Devlet%20ve%20Toplum%20Yap%C4%B1s%C4%B1na%20Etkisi.pdf" },
-				{ baslik: "Uygarlıkları", tur: "Sunu", icon: "fa-chalkboard-user", renk: "#e84393", link: "link" },
-                { baslik: "Kavimler Göçü Haritası", tur: "İnteraktif Harita", icon: "fa-map-location-dot", renk: "#2ecc71", link: "#" },
-                { baslik: "İpek ve Baharat Yolu", tur: "İnteraktif Harita", icon: "fa-map-location-dot", renk: "#2ecc71", link: "#" }
-            ];
-        }
+    
+// --- YENİ EKLENEN: HARİTA YÖNETİM MOTORU ---
+let currentMapInstance = null;
+
+function acHarita(haritaId, baslik, element) {
+    if(haritaId === "#") { alert("Öğretmeniniz bu haritayı henüz yüklemedi."); return; }
+
+    const inlineContainer = document.getElementById('inlineMapContainer');
+    const controlsContainer = document.getElementById('mapControlsContainer');
+    
+    if (inlineContainer.previousElementSibling === element && !inlineContainer.classList.contains('hidden')) {
+        haritaKapat(); return;
     }
+
+    document.getElementById('inlineMapBaslik').innerText = baslik;
+    element.parentNode.insertBefore(inlineContainer, element.nextSibling);
+    inlineContainer.classList.remove('hidden');
+
+    if (currentMapInstance) {
+        currentMapInstance.remove();
+        currentMapInstance = null;
+    }
+    
+    controlsContainer.innerHTML = '';
+    controlsContainer.style.display = 'none';
+
+    setTimeout(() => {
+        if (haritaId === 'kavimler_gocu') {
+            cizKavimlerGocu();
+        } else if (haritaId === 'ilk_cag') {
+            alert("İlk Çağ Haritası yapım aşamasındadır.");
+        }
+        inlineContainer.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }, 100);
+}
+
+function haritaKapat() {
+    const inlineContainer = document.getElementById('inlineMapContainer');
+    if (inlineContainer) {
+        inlineContainer.classList.add('hidden');
+        if (currentMapInstance) {
+            currentMapInstance.remove();
+            currentMapInstance = null;
+        }
+        document.body.appendChild(inlineContainer); 
+    }
+}
+
+function cizKavimlerGocu() {
+    const controlsContainer = document.getElementById('mapControlsContainer');
+    controlsContainer.innerHTML = `
+        <div style="text-align: center;">
+            <label for="yearSlider" style="font-size: 1.1em; color: var(--text-color);">
+                <b>Yıl: <span id="yearDisplay" style="color: #2ecc71;">370</span></b>
+            </label><br>
+            <input type="range" id="yearSlider" min="370" max="600" value="370" step="1" style="width: 90%; cursor: pointer; accent-color: #2ecc71;">
+            <p style="font-size: 0.85em; opacity: 0.7; margin-top: 5px;">Zamanı ilerletmek için kaydırıcıyı sağa doğru çekin.</p>
+        </div>
+    `;
+    controlsContainer.style.display = 'block';
+
+    currentMapInstance = L.map('mapCanvas').setView([47.0, 15.0], 4);
+
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        maxZoom: 10,
+        attribution: '© OpenStreetMap'
+    }).addTo(currentMapInstance);
+
+    const kavimlerVerisi = [
+        {
+            isim: "Hunlar", renk: "red", startYear: 375, endYear: 453,
+            bilgi: "Avrupa'ya ilerleyerek büyük göçü başlattılar.",
+            rota: [[48.0, 60.0], [48.5, 53.0], [49.0, 48.0], [48.0, 43.0], [47.5, 38.0], [46.0, 32.0], [47.0, 25.0], [47.0, 19.0]]
+        },
+        {
+            isim: "Vizigotlar", renk: "blue", startYear: 376, endYear: 418,
+            bilgi: "Balkanlardan İtalya'ya geçip Roma'yı yağmaladıktan sonra İspanya'ya ulaştılar.",
+            rota: [[45.0, 28.0], [43.0, 27.0], [41.0, 28.0], [39.0, 22.0], [41.0, 20.0], [43.0, 15.0], [45.0, 12.0], [41.9, 12.5], [44.0, 8.0], [43.0, 4.0], [41.0, -2.0], [39.0, -4.0]]
+        },
+        {
+            isim: "Vandallar", renk: "orange", startYear: 406, endYear: 439,
+            bilgi: "Kuzey Afrika'ya geçip Kartaca merkezli devlet kurdular.",
+            rota: [[52.0, 15.0], [50.0, 10.0], [48.0, 5.0], [45.0, 2.0], [42.0, 0.0], [40.0, -4.0], [36.0, -5.0], [36.8, 10.1]]
+        },
+        {
+            isim: "Ostrogotlar", renk: "purple", startYear: 453, endYear: 493,
+            bilgi: "İtalya'ya yönelerek Batı Roma'nın kalbinde krallık kurdular.",
+            rota: [[47.0, 30.0], [46.0, 25.0], [44.0, 22.0], [45.0, 15.0], [44.0, 11.0], [41.9, 12.5]]
+        },
+        {
+            isim: "Franklar", renk: "green", startYear: 420, endYear: 509,
+            bilgi: "Bugünkü Fransa topraklarına yerleşip güçlü bir krallık kurdular.",
+            rota: [[51.0, 7.0], [50.0, 5.0], [48.8, 2.3], [46.0, 1.0]]
+        }
+    ];
+
+    let kavimCizgileri = {};
+
+    kavimlerVerisi.forEach(kavim => {
+        kavimCizgileri[kavim.isim] = L.polyline([], {color: kavim.renk, weight: 4})
+            .addTo(currentMapInstance)
+            .bindPopup(`<b>${kavim.isim}</b><br>${kavim.bilgi}`);
+    });
+
+    function haritayiYilaGoreGuncelle(guncelYil) {
+        kavimlerVerisi.forEach(kavim => {
+            let gosterilecekRota = [];
+            if (guncelYil >= kavim.endYear) {
+                gosterilecekRota = kavim.rota;
+            } else if (guncelYil > kavim.startYear) {
+                let oran = (guncelYil - kavim.startYear) / (kavim.endYear - kavim.startYear);
+                let hedefIndex = Math.floor(kavim.rota.length * oran);
+                if (hedefIndex === 0 && oran > 0) hedefIndex = 1; 
+                gosterilecekRota = kavim.rota.slice(0, hedefIndex + 1);
+            }
+            kavimCizgileri[kavim.isim].setLatLngs(gosterilecekRota);
+        });
+    }
+
+    document.getElementById('yearSlider').addEventListener('input', function(e) {
+        const secilenYil = parseInt(e.target.value);
+        document.getElementById('yearDisplay').innerText = secilenYil;
+        haritayiYilaGoreGuncelle(secilenYil);
+    });
+
+    haritayiYilaGoreGuncelle(370); 
+    
+    const legend = L.control({position: 'bottomright'});
+    legend.onAdd = function () {
+        const div = L.DomUtil.create('div', 'info legend');
+        div.style.backgroundColor = "rgba(255, 255, 255, 0.9)";
+        div.style.padding = "10px";
+        div.style.borderRadius = "5px";
+        div.innerHTML = '<h4 style="margin: 0 0 5px 0; font-size:14px;">Kavimler</h4>';
+        kavimlerVerisi.forEach(k => {
+            div.innerHTML += `<div style="display:flex; align-items:center; margin-bottom:3px; font-size:12px;"><i style="background: ${k.renk}; width: 15px; height: 3px; display: inline-block; margin-right: 5px;"></i> ${k.isim}</div>`;
+        });
+        return div;
+    };
+    legend.addTo(currentMapInstance);
+}
+// --- HARİTA YÖNETİM MOTORU SONU ---
 	function materyalleriYukle(uniteId) {
         aktifMateryaller = [];
         
@@ -379,12 +413,7 @@ const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwIj5rQkpizqiOqJYlUd
                 { baslik: "Kavimler Göçü Etkileri", tur: "Video Ders", icon: "fa-film", renk: "#e74c3c", link: "#" },
                 { baslik: "Feodalizm ve Şövalyeler", tur: "Video Ders", icon: "fa-film", renk: "#e74c3c", link: "#" },
                 { baslik: "Karanlık Çağ Belgeseli", tur: "Belgesel", icon: "fa-film", renk: "#e74c3c", link: "#" },
-				{ baslik: "Podcastİsmi", tur: "Podcast", icon: "fa-podcast", renk: "#9b59b6", link: "PodcastLinki" },
-				{ baslik: "Podcastİsmi", tur: "Podcast", icon: "fa-podcast", renk: "#9b59b6", link: "PodcastLinki" },
-				{ baslik: "Podcastİsmi", tur: "Podcast", icon: "fa-podcast", renk: "#9b59b6", link: "PodcastLinki" },
-				{ baslik: "Podcastİsmi", tur: "Podcast", icon: "fa-podcast", renk: "#9b59b6", link: "PodcastLinki" },
-				{ baslik: "Podcastİsmi", tur: "Podcast", icon: "fa-podcast", renk: "#9b59b6", link: "PodcastLinki" },
-				{ baslik: "Podcastİsmi", tur: "Podcast", icon: "fa-podcast", renk: "#9b59b6", link: "PodcastLinki" },
+				{ baslik: "Ortaçağ Dünya'sı", tur: "Podcast", icon: "fa-podcast", renk: "#9b59b6", link: "PodcastLinki" },
                 { baslik: "Roma'nın Çöküşü", tur: "Podcast", icon: "fa-podcast", renk: "#9b59b6", link: "#" },
                 { baslik: "Orta Çağ Avrupa'sı", tur: "Podcast", icon: "fa-podcast", renk: "#9b59b6", link: "#" },
                 { baslik: "Ticaret Yolları", tur: "Podcast", icon: "fa-podcast", renk: "#9b59b6", link: "#" },
@@ -408,7 +437,7 @@ const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwIj5rQkpizqiOqJYlUd
 				{ baslik: "Türklerin İslamiyeti Kabulü", tur: "PDF Not", icon: "fa-file-pdf", renk: "#e67e22", link: "https://depo.kirkyama.uk/PDF/9.%20S%C4%B1n%C4%B1f%20OGM/27-%20T%C3%BCrklerin%20%C4%B0slamiyeti%20Kabul%C3%BC.pdf" },
 				{ baslik: " İslamiyet'in Türk Devlet ve Toplum Yapısına Etkisi", tur: "PDF Not", icon: "fa-file-pdf", renk: "#e67e22", link: "https://depo.kirkyama.uk/PDF/9.%20S%C4%B1n%C4%B1f%20OGM/28-%20%C4%B0slamiyet'in%20T%C3%BCrk%20Devlet%20ve%20Toplum%20Yap%C4%B1s%C4%B1na%20Etkisi.pdf" },
 				{ baslik: "Uygarlıkları", tur: "Sunu", icon: "fa-chalkboard-user", renk: "#e84393", link: "link" },
-                { baslik: "Kavimler Göçü Haritası", tur: "İnteraktif Harita", icon: "fa-map-location-dot", renk: "#2ecc71", link: "#" },
+                { baslik: "Kavimler Göçü Haritası", tur: "İnteraktif Harita", icon: "fa-map-location-dot", renk: "#2ecc71", link: "kavimler_gocu" },
                 { baslik: "İpek ve Baharat Yolu", tur: "İnteraktif Harita", icon: "fa-map-location-dot", renk: "#2ecc71", link: "#" }
             ];
         }
@@ -460,6 +489,16 @@ const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwIj5rQkpizqiOqJYlUd
             } else if (m.tur === 'PDF Not' || m.tur === 'Sunu') {
                 matAlani.innerHTML += `
                     <div class="mat-card" style="cursor:pointer;" onclick="oynatPdf('${m.link.replace(/'/g, "\\'")}', '${m.baslik.replace(/'/g, "\\'")}', this)">
+                        <div class="mat-icon" style="color: ${m.renk};"><i class="fa-solid ${m.icon}"></i></div>
+                        <div class="mat-info">
+                            <span class="mat-title">${m.baslik}</span>
+                            <span class="mat-type">${m.tur}</span>
+                        </div>
+                    </div>
+                `;
+            } else if (m.tur === 'İnteraktif Harita') {
+                matAlani.innerHTML += `
+                    <div class="mat-card" style="cursor:pointer;" onclick="acHarita('${m.link.replace(/'/g, "\\'")}', '${m.baslik.replace(/'/g, "\\'")}', this)">
                         <div class="mat-icon" style="color: ${m.renk};"><i class="fa-solid ${m.icon}"></i></div>
                         <div class="mat-info">
                             <span class="mat-title">${m.baslik}</span>
@@ -632,6 +671,16 @@ const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwIj5rQkpizqiOqJYlUd
                 } else if (m.tur === 'PDF Not' || m.tur === 'Sunu') {
                     matAlani.innerHTML += `
                         <div class="mat-card" style="cursor:pointer;" onclick="oynatPdf('${m.link.replace(/'/g, "\\'")}', '${m.baslik.replace(/'/g, "\\'")}', this)">
+                            <div class="mat-icon" style="color: ${m.renk};"><i class="fa-solid ${m.icon}"></i></div>
+                            <div class="mat-info">
+                                <span class="mat-title">${m.baslik}</span>
+                                <span class="mat-type">${m.tur}</span>
+                            </div>
+                        </div>
+                    `;
+                } else if (m.tur === 'İnteraktif Harita') {
+                    matAlani.innerHTML += `
+                        <div class="mat-card" style="cursor:pointer;" onclick="acHarita('${m.link.replace(/'/g, "\\'")}', '${m.baslik.replace(/'/g, "\\'")}', this)">
                             <div class="mat-icon" style="color: ${m.renk};"><i class="fa-solid ${m.icon}"></i></div>
                             <div class="mat-info">
                                 <span class="mat-title">${m.baslik}</span>
