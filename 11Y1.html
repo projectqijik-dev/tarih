@@ -665,13 +665,6 @@ body::before {
   gap: 20px;
   margin: 20px 0;
 }
-@media (max-width: 600px) {
-  .info-row { grid-template-columns: 1fr; }
-  .main-wrap { padding: 24px 16px 60px; }
-  .header-inner { padding: 20px 16px; }
-  .tabs-inner { padding: 0 16px; }
-  .comp-table { font-size: 12px; }
-}
 
 /* STAMP */
 .stamp {
@@ -767,11 +760,38 @@ body::before {
   justify-content: center;
 }
 .scroll-btn:hover { background: var(--blueprint-light); transform: translateY(-2px); }
+
+/* FOOTER EKLENTISI */
+.site-footer {
+  text-align: center;
+  padding: 24px;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 12px;
+  color: var(--muted);
+  border-top: 1px dashed rgba(29,61,107,0.15);
+  margin-top: 40px;
+}
+
+/* EKRANA SIĞMAYAN MOBİL DÜZELTMELER */
+@media (max-width: 600px) {
+  .info-row { grid-template-columns: 1fr; }
+  .main-wrap { padding: 24px 16px 60px; }
+  .header-inner { padding: 20px 16px; }
+  .tabs-inner { padding: 0 16px; }
+  
+  /* Tabloların mobil ekrana tam oturması / yatay kaydırılabilmesi için düzeltme */
+  .comp-table { font-size: 12px; display: block; overflow-x: auto; white-space: nowrap; }
+  
+  /* Diyagramın ekrandan taşmaması için düzeltme */
+  .diagram-box { padding: 20px 10px; }
+  .tri-row { gap: 6px; }
+  .tri-node { min-width: 0; padding: 10px 4px; font-size: 11px; flex: 1; word-wrap: break-word; hyphens: auto; }
+  .tri-node.center { padding: 8px 4px; font-size: 10px; }
+}
 </style>
 </head>
 <body>
 
-<!-- HEADER -->
 <header class="site-header">
   <div class="corner-mark tl"></div>
   <div class="corner-mark tr"></div>
@@ -786,7 +806,6 @@ body::before {
   </div>
 </header>
 
-<!-- TABS -->
 <nav class="nav-tabs">
   <div class="tabs-inner">
     <button class="tab-btn active" onclick="showTab('ozet', this)">⬡ Genel Bakış</button>
@@ -801,7 +820,6 @@ body::before {
 
 <main class="main-wrap">
 
-<!-- ────────────────── GENEL BAKIŞ ────────────────── -->
 <section id="ozet" class="section active">
   <p class="sec-label">// GİRİŞ ANALİZİ</p>
   <h2 class="sec-title">Devrimler Çağında Dünya</h2>
@@ -872,7 +890,6 @@ body::before {
   </div>
 </section>
 
-<!-- ────────────────── İKİZ DEVRİMLER ────────────────── -->
 <section id="devrimler" class="section">
   <p class="sec-label">// BÖLÜM I</p>
   <h2 class="sec-title">İkiz Devrimler ve Sosyal Dönüşüm</h2>
@@ -943,7 +960,6 @@ body::before {
   </div>
 </section>
 
-<!-- ────────────────── SÖMÜRGECİLİK ────────────────── -->
 <section id="somurge" class="section">
   <p class="sec-label">// BÖLÜM II</p>
   <h2 class="sec-title">Sömürgecilik ve Küresel Yansımaları</h2>
@@ -1020,7 +1036,6 @@ body::before {
   </table>
 </section>
 
-<!-- ────────────────── OSMANLI & REFORM ────────────────── -->
 <section id="osmanli" class="section">
   <p class="sec-label">// BÖLÜM III</p>
   <h2 class="sec-title">Osmanlı Modernleşmesi ve Kurumsal Dönüşüm</h2>
@@ -1096,22 +1111,19 @@ body::before {
   </div>
 </section>
 
-<!-- ────────────────── TERİMLER ────────────────── -->
 <section id="sozluk" class="section">
   <p class="sec-label">// KAVRAMSALLAŞTIRMA</p>
   <h2 class="sec-title">Terimler Sözlüğü</h2>
   <p style="font-size:14px;color:var(--muted);margin-bottom:20px;">Bir terime tıklayarak tanımını görüntüleyin.</p>
 
   <div class="terms-grid" id="termsGrid">
-    <!-- JS fills this -->
-  </div>
+    </div>
   <div id="termDef" class="term-def">
     <div class="term-def-title" id="termTitle"></div>
     <p id="termText"></p>
   </div>
 </section>
 
-<!-- ────────────────── KARTLAR ────────────────── -->
 <section id="kartlar" class="section">
   <p class="sec-label">// TEKRAR SİSTEMİ</p>
   <h2 class="sec-title">Flashcard Kartları</h2>
@@ -1143,7 +1155,6 @@ body::before {
   </div>
 </section>
 
-<!-- ────────────────── QUIZ ────────────────── -->
 <section id="quiz" class="section">
   <p class="sec-label">// KENDİNİ SINAYIN</p>
   <h2 class="sec-title">Ünite Sınavı</h2>
@@ -1152,6 +1163,10 @@ body::before {
     <div id="quizArea"></div>
   </div>
 </section>
+
+<footer class="site-footer">
+  Hazırlayan: Murat Mutlu, Boğaziçi MTAL
+</footer>
 
 </main>
 
