@@ -1,8 +1,8 @@
 {
-  "name": "Boğaziçi MTAL Tarih Portalı",
-  "short_name": "Tarih Portalı",
+  "name": "Boğaziçi Tarih",
+  "short_name": "Boğaziçi Tarih",
   "description": "Boğaziçi Koleji Yeni Nesil Tarih Dersi Eğitim Uygulaması",
-  "start_url": "./sinif9.html",
+  "start_url": "./index.html",
   "display": "standalone",
   "background_color": "#121212",
   "theme_color": "#d4af37",
