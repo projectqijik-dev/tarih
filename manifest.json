@@ -1,11 +1,11 @@
 {
   "name": "Boğaziçi Tarih",
   "short_name": "Boğaziçi Tarih",
-  "description": "Boğaziçi Koleji Yeni Nesil Tarih Dersi Eğitim Uygulaması",
+  "description": "Boğaziçi Koleji Tarih Dersi Eğitim Uygulaması",
   "start_url": "./index.html",
   "display": "standalone",
-  "background_color": "#121212",
-  "theme_color": "#d4af37",
+  "background_color": "#ffffff",
+  "theme_color": "#1a1a1a",
   "orientation": "portrait",
   "icons": [
     {
