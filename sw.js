@@ -1,6 +1,6 @@
 // Önbellek (Cache) adı ve versiyonu. 
-// Sitede büyük bir güncelleme yaptığınızda buradaki v1'i v2, v3 olarak değiştirin.
-const CACHE_NAME = 'bogazici-tarih-v1';
+// Sitede büyük bir güncelleme yaptığınızda buradaki v1'i v2, v3 olarak değiştirilecek.
+const CACHE_NAME = 'bogazici-tarih-v2';
 
 // İnternetsiz çalışması için telefonun hafızasına kaydedilecek dosyalar
 const ASSETS_TO_CACHE = [
