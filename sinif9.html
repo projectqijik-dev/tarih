@@ -7,8 +7,13 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Josefin+Sans:wght@300;400;600;700&family=Marcellus&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
-    <link rel="stylesheet" href="https://cdn.plyr.io/3.7.8/plyr.css" />
+<link rel="stylesheet" href="https://cdn.plyr.io/3.7.8/plyr.css" />
     <script src="https://cdn.plyr.io/3.7.8/plyr.js"></script>
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+    <script>
+        pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+    </script>
 
     <link rel="stylesheet" href="sinif9stil.css">
 
@@ -731,12 +736,21 @@
     </div>
 </div>
 
-<div id="inlinePdfContainer" class="hidden" style="width: 100%; margin-top: 15px; margin-bottom: 5px; border-radius: 12px; overflow: hidden; box-shadow: 0 8px 25px rgba(0,0,0,0.1); border: 2px solid #1673a6; background: #fff; animation: fadeIn 0.4s ease; height: 500px; display: flex; flex-direction: column;">
-    <div style="display: flex; justify-content: space-between; align-items: center; padding: 10px 15px; background: #1673a6; color: #fff; flex-shrink: 0;">
-        <h3 id="inlinePdfBaslik" style="margin: 0; font-size: 15px; color: #fff; font-weight: 700; text-align: left;">Doküman</h3>
-        <button onclick="pdfKapat()" style="background: transparent; border: none; color: #fff; cursor: pointer; font-size: 20px; display: flex; align-items: center; justify-content: center;" title="Kapat"><i class="fa-solid fa-xmark"></i></button>
+<div id="inlinePdfContainer" class="hidden" style="width: 100%; margin-top: 15px; margin-bottom: 5px; border-radius: 12px; overflow: hidden; box-shadow: 0 8px 25px rgba(0,0,0,0.1); border: 2px solid #1673a6; background: var(--container-bg); animation: fadeIn 0.4s ease; display: flex; flex-direction: column;">
+    <div style="display: flex; justify-content: space-between; align-items: center; padding: 10px 15px; background: #1673a6; color: #fff; flex-shrink: 0; flex-wrap: wrap; gap: 10px;">
+        <h3 id="inlinePdfBaslik" style="margin: 0; font-size: 15px; color: #fff; font-weight: 700; text-align: left; flex: 1; min-width: 150px;">Doküman</h3>
+        <div style="display: flex; align-items: center; gap: 8px;">
+            <button onclick="onPdfPrev()" style="background: rgba(0,0,0,0.2); border: 1px solid rgba(255,255,255,0.2); color: white; padding: 4px 10px; border-radius: 6px; cursor: pointer; transition: 0.2s;"><i class="fa-solid fa-chevron-left"></i></button>
+            <span id="pdfPageInfo" style="font-size: 13px; font-weight: 600; min-width: 45px; text-align: center;">1 / 1</span>
+            <button onclick="onPdfNext()" style="background: rgba(0,0,0,0.2); border: 1px solid rgba(255,255,255,0.2); color: white; padding: 4px 10px; border-radius: 6px; cursor: pointer; transition: 0.2s;"><i class="fa-solid fa-chevron-right"></i></button>
+            <button onclick="onPdfZoomIn()" style="background: rgba(0,0,0,0.2); border: 1px solid rgba(255,255,255,0.2); color: white; padding: 4px 10px; border-radius: 6px; cursor: pointer; margin-left: 5px; transition: 0.2s;"><i class="fa-solid fa-magnifying-glass-plus"></i></button>
+            <button onclick="onPdfZoomOut()" style="background: rgba(0,0,0,0.2); border: 1px solid rgba(255,255,255,0.2); color: white; padding: 4px 10px; border-radius: 6px; cursor: pointer; transition: 0.2s;"><i class="fa-solid fa-magnifying-glass-minus"></i></button>
+            <button onclick="pdfKapat()" style="background: transparent; border: none; color: #fff; cursor: pointer; font-size: 20px; display: flex; align-items: center; justify-content: center; margin-left: 5px;" title="Kapat"><i class="fa-solid fa-xmark"></i></button>
+        </div>
     </div>
-    <iframe id="pdfIframe" src="" style="width: 100%; height: 100%; border: none; flex: 1;"></iframe>
+    <div id="pdfRenderArea" style="width: 100%; height: 65vh; overflow: auto; display: flex; justify-content: center; background: rgba(0,0,0,0.1); padding: 20px 0;">
+        <canvas id="pdfCanvas" style="box-shadow: 0 4px 15px rgba(0,0,0,0.3); max-width: 100%; height: auto;"></canvas>
+    </div>
 </div>
 
 <div id="inlineMapContainer" class="hidden" style="width: 100%; margin-top: 15px; margin-bottom: 5px; border-radius: 12px; overflow: hidden; box-shadow: 0 8px 25px rgba(0,0,0,0.1); border: 2px solid #2ecc71; background: #fff; animation: fadeIn 0.4s ease; display: flex; flex-direction: column;">
