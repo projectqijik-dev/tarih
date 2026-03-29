@@ -165,6 +165,44 @@ const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwIj5rQkpizqiOqJYlUd
         }
     }
 
+// --- YENİ PDF.JS MOTORU DEĞİŞKENLERİ VE FONKSİYONLARI ---
+    let pdfDoc = null, pageNum = 1, pageRendering = false, pageNumPending = null, pdfScale = 1.2, pdfCanvas = null, pdfCtx = null;
+
+    function renderPdfPage(num) {
+        pageRendering = true;
+        pdfDoc.getPage(num).then(function(page) {
+            let viewport = page.getViewport({scale: pdfScale});
+            const renderArea = document.getElementById('pdfRenderArea');
+            
+            // Mobilde ekrana sığdırmak için akıllı ölçekleme
+            if(renderArea && renderArea.clientWidth < viewport.width) {
+                pdfScale = (renderArea.clientWidth - 40) / (viewport.width / pdfScale);
+                viewport = page.getViewport({scale: pdfScale});
+            }
+
+            pdfCanvas.height = viewport.height;
+            pdfCanvas.width = viewport.width;
+
+            let renderContext = { canvasContext: pdfCtx, viewport: viewport };
+            let renderTask = page.render(renderContext);
+
+            renderTask.promise.then(function() {
+                pageRendering = false;
+                if (pageNumPending !== null) { renderPdfPage(pageNumPending); pageNumPending = null; }
+            });
+        });
+        document.getElementById('pdfPageInfo').textContent = num + ' / ' + pdfDoc.numPages;
+    }
+
+    function queueRenderPage(num) {
+        if (pageRendering) { pageNumPending = num; } else { renderPdfPage(num); }
+    }
+
+    function onPdfPrev() { if (pageNum <= 1) return; pageNum--; queueRenderPage(pageNum); }
+    function onPdfNext() { if (pageNum >= pdfDoc.numPages) return; pageNum++; queueRenderPage(pageNum); }
+    function onPdfZoomIn() { pdfScale += 0.2; queueRenderPage(pageNum); }
+    function onPdfZoomOut() { if (pdfScale <= 0.6) return; pdfScale -= 0.2; queueRenderPage(pageNum); }
+
     function oynatPdf(url, baslik, element) {
         if(url === "#") { alert("Öğretmeniniz bu dokümanı henüz yüklemedi."); return; }
 
@@ -177,12 +215,22 @@ const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwIj5rQkpizqiOqJYlUd
         element.parentNode.insertBefore(inlineContainer, element.nextSibling);
         inlineContainer.classList.remove('hidden');
 
-        let isleyiciUrl = url;
-        if (!url.includes('drive.google.com')) {
-            isleyiciUrl = 'https://docs.google.com/viewer?url=' + encodeURIComponent(url) + '&embedded=true';
-        }
+        pdfCanvas = document.getElementById('pdfCanvas');
+        pdfCtx = pdfCanvas.getContext('2d');
+        pdfCtx.clearRect(0, 0, pdfCanvas.width, pdfCanvas.height);
+        document.getElementById('pdfPageInfo').textContent = "Yükleniyor...";
 
-        document.getElementById('pdfIframe').src = isleyiciUrl;
+        pdfjsLib.getDocument(url).promise.then(function(pdfDoc_) {
+            pdfDoc = pdfDoc_;
+            pageNum = 1;
+            pdfScale = 1.2; // Yakınlaştırmayı sıfırla
+            renderPdfPage(pageNum);
+        }).catch(function(error) {
+            console.error("PDF.js Hatası:", error);
+            alert("PDF yüklenirken bir hata oluştu. Dosya adresi geçersiz veya sunucu erişime kapalı olabilir.");
+            document.getElementById('pdfPageInfo').textContent = "Hata!";
+        });
+
         setTimeout(() => { inlineContainer.scrollIntoView({ behavior: 'smooth', block: 'center' }); }, 100);
     }
 
@@ -190,10 +238,12 @@ const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwIj5rQkpizqiOqJYlUd
         const inlineContainer = document.getElementById('inlinePdfContainer');
         if (inlineContainer) {
             inlineContainer.classList.add('hidden');
-            document.getElementById('pdfIframe').src = ""; 
+            pdfDoc = null; // Belleği temizle
+            if(pdfCtx && pdfCanvas) pdfCtx.clearRect(0, 0, pdfCanvas.width, pdfCanvas.height);
             document.body.appendChild(inlineContainer); 
         }
     }
+    // --- PDF MOTORU SONU ---
     
 // --- DİNAMİK HARİTA YÖNETİM MOTORU ---
 window.currentMapInstance = null;
