@@ -11,24 +11,107 @@
     --plyr-color-main: #1673a6; 
 }
 
-/* --- SADECE SEPYA (OKUMA) MODU --- */
-body.sepia-mode {
-    --bg-color: #f4ecd8;
-    --container-bg: #fdf6e3;
-    --text-color: #5b4636; 
-    --accent-color: #d35400;
-    --card-border: #e0d6b8;
-    --option-hover: #ece2c6;
+/* --- ANTİK MISIR (EGYPT) MODU (KALICI TEMA) --- */
+body.egypt-theme {
+    --bg-color: #0D1117;
+    --container-bg: rgba(20, 25, 30, 0.6); /* Ana menü için cam efekti */
+    --text-color: #F4E4B0; /* Papirüs */
+    --accent-color: #C9A84C; /* Altın/Kum */
+    --card-border: rgba(201, 168, 76, 0.25);
+    --option-hover: rgba(42, 122, 110, 0.15); /* Nil yeşili hover */
+    --plyr-color-main: #C9A84C;
 }
 
-/* --- KARANLIK MOD (DARK MODE) --- */
-body.dark-mode {
-    --bg-color: #121212;
-    --container-bg: #1e1e1e;
-    --text-color: #e0e0e0;
-    --accent-color: #3498db; 
-    --card-border: #333333;
-    --option-hover: #2c2c2c;
+/* ODAK MODU (FOCUS MODE) - Sınav ve Okuma Sırasında */
+body.egypt-theme.focus-mode {
+    --container-bg: #111820; /* Düz renk, saydamlık yok (Göz yormaması için) */
+    --card-border: rgba(201, 168, 76, 0.15);
+}
+
+/* Mısır Teması Klasör ve Kart Özelleştirmeleri (Menü Ekranı İçin) */
+body.egypt-theme .folder-btn,
+body.egypt-theme .intro-box,
+body.egypt-theme .test-item-row,
+body.egypt-theme .mat-card {
+    background: linear-gradient(160deg, rgba(30,24,10,0.85) 0%, rgba(13,17,23,0.95) 100%);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid var(--card-border);
+    box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+}
+
+body.egypt-theme .folder-btn:hover,
+body.egypt-theme .test-item-row:hover,
+body.egypt-theme .mat-card:hover {
+    border-color: var(--accent-color);
+    box-shadow: 0 8px 30px rgba(201, 168, 76, 0.15);
+}
+
+/* Odak Modunda Kartların Saydamlığını İptal Et (Okunabilirliği Artırır) */
+body.egypt-theme.focus-mode .question-card,
+body.egypt-theme.focus-mode .options label {
+    background: #151A22; /* Düz koyu zemin */
+    backdrop-filter: none;
+    box-shadow: none;
+}
+
+/* Mısır Teması İkon ve Etiket Renkleri */
+body.egypt-theme .u1-icon, body.egypt-theme .u2-icon, body.egypt-theme .u3-icon {
+    background: rgba(201, 168, 76, 0.1); color: var(--accent-color);
+}
+
+/* Mısır Teması Butonlar */
+body.egypt-theme .action-btn {
+    background: linear-gradient(135deg, #2A7A6E 0%, #3BA898 100%);
+    color: #F4E4B0;
+    box-shadow: 0 4px 15px rgba(42, 122, 110, 0.3);
+    border: 1px solid rgba(201, 168, 76, 0.3);
+}
+body.egypt-theme .action-btn:hover {
+    background: linear-gradient(135deg, #1f6056 0%, #2A7A6E 100%);
+    box-shadow: 0 6px 20px rgba(42, 122, 110, 0.5);
+}
+
+body.egypt-theme .back-btn {
+    background: var(--option-hover);
+    color: var(--text-color) !important;
+    border: 1px solid var(--card-border);
+}
+body.egypt-theme .back-btn:hover {
+    background: rgba(201, 168, 76, 0.15);
+}
+
+body.egypt-theme .tab-btn.active {
+    background: linear-gradient(135deg, rgba(42,122,110,0.8), rgba(42,122,110,0.5));
+    color: #F4E4B0;
+    border-bottom: 2px solid var(--accent-color);
+    box-shadow: none;
+}
+
+body.egypt-theme .test-item-start-btn {
+    background: rgba(42, 122, 110, 0.15);
+    color: var(--accent-color);
+    border-color: var(--card-border);
+}
+body.egypt-theme .test-item-start-btn:hover {
+    background: var(--accent-color);
+    color: #0D1117;
+}
+
+body.egypt-theme .robot-btn, body.egypt-theme .odev-btn {
+    color: var(--accent-color);
+    border-color: var(--card-border);
+}
+body.egypt-theme .robot-btn:hover, body.egypt-theme .odev-btn:hover {
+    background: rgba(201, 168, 76, 0.1);
+    border-color: var(--accent-color);
+}
+
+body.egypt-theme .nav-dot.answered { background: var(--accent-color); color: #0D1117; border-color: #E8A020; }
+
+body.egypt-theme .sticky-header {
+    background: color-mix(in srgb, #111820 90%, transparent);
+    border-color: var(--card-border);
 }
 
 /* --- GENEL STİL VE MOBILE-FIRST RESET --- */
@@ -78,6 +161,8 @@ h1 {
 /* --- MODERN YUVARLAK BUTONLAR --- */
 .settings-panel {
     display: flex; justify-content: flex-end; gap: 12px; margin-bottom: 20px; flex-wrap: wrap; align-items: center;
+    position: relative; /* Düzeltme: Stacking Context (Katman) oluşturmak için */
+    z-index: 10500; /* Düzeltme: Menünün altta kalmasını engeller */
 }
 .settings-btn {
     background: #ffffff; 
@@ -98,11 +183,6 @@ h1 {
 .settings-btn:hover, .settings-btn:active { 
     transform: translateY(-2px); box-shadow: 0 6px 18px rgba(0,0,0,0.1); 
 }
-
-body.dark-mode .settings-btn { background: #2a2a2a; color: #e0e0e0; box-shadow: 0 4px 14px rgba(0,0,0,0.3); }
-body.dark-mode .settings-btn:hover { background: #3a3a3a; }
-body.sepia-mode .settings-btn { background: #fdf6e3; color: #5b4636; box-shadow: 0 4px 14px rgba(0,0,0,0.05); }
-body.sepia-mode .settings-btn:hover { background: #f4ecd8; }
 
 .floating-btn {
     position: fixed; bottom: 25px; right: 25px;
@@ -324,14 +404,6 @@ textarea { height: 140px; resize: vertical; }
     .test-item-start-btn { border-radius: 25px; padding: 12px 25px; font-size: 15px; }
 }
 
-body.dark-mode .test-item-row { background: #1e1e1e; }
-body.dark-mode .scroll-arrow { background: #2a2a2a; border-color: #444; color: #e0e0e0; }
-body.dark-mode .scroll-arrow:hover { background: var(--accent-color); color: white; border-color: var(--accent-color); }
-
-body.sepia-mode .test-item-row { background: #fdf6e3; }
-body.sepia-mode .scroll-arrow { background: #e8e0cc; border-color: #dcd0b3; color: #d35400; }
-body.sepia-mode .scroll-arrow:hover { background: #d35400; color: white; border-color: #d35400; }
-
 /* GLASSMORPHISM STICKY HEADER */
 .sticky-header { 
     position: sticky; top: 0; z-index: 100; 
@@ -432,14 +504,9 @@ body.sepia-mode .scroll-arrow:hover { background: #d35400; color: white; border-
     transform: translateY(-3px); box-shadow: 0 8px 20px rgba(0,0,0,0.06); border-color: #1673a6; background-color: rgba(22, 115, 166, 0.05); 
 }
 
-body.dark-mode .robot-btn, body.dark-mode .odev-btn { color: #1673a6; border-color: var(--card-border); background: transparent; }
-body.dark-mode .robot-btn:hover, body.dark-mode .odev-btn:hover { border-color: #1673a6; background-color: rgba(22, 115, 166, 0.1); }
-body.sepia-mode .robot-btn, body.sepia-mode .odev-btn { color: #1673a6; border-color: var(--card-border); background: transparent; }
-body.sepia-mode .robot-btn:hover, body.sepia-mode .odev-btn:hover { border-color: #1673a6; background-color: rgba(22, 115, 166, 0.05); }
-
 /* --- YAZDIRMA EKRANI (PRINT CSS) --- */
 @media print {
-    body.dark-mode, body.sepia-mode, body { background: #fff !important; color: #000 !important; }
+    body { background: #fff !important; color: #000 !important; }
     .container { box-shadow: none !important; max-width: 100% !important; padding: 0 !important; margin: 0 !important; }
     .settings-panel, #progress-container, .floating-btn, .action-btn, #navMap, .timer-box { display: none !important; }
     .sticky-header { position: static !important; background: transparent !important; box-shadow: none !important; border: none !important; margin: 0 !important; padding: 0 0 20px 0 !important; }
@@ -542,8 +609,6 @@ audio { width: 100%; height: 40px; outline: none; }
     animation: pulse-red 2s infinite;
     z-index: 5;
 }
-body.dark-mode .notification-badge { border-color: #2a2a2a; }
-body.sepia-mode .notification-badge { border-color: #fdf6e3; }
 
 @keyframes pulse-red {
     0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(231, 76, 60, 0.7); }
@@ -576,7 +641,6 @@ body.sepia-mode .notification-badge { border-color: #fdf6e3; }
 }
 .dropdown-item:hover { background: rgba(22, 115, 166, 0.1); color: #1673a6; transform: translateX(5px); }
 .dropdown-item i { width: 20px; text-align: center; font-size: 16px; }
-body.dark-mode .glass-dropdown { background: rgba(30, 41, 59, 0.95); border-color: rgba(255,255,255,0.1); }
 
 /* İLETİŞİM BUTONU (FLOATING) STİLLERİ */
 #iletisimBtnFloating {
@@ -624,7 +688,6 @@ body.dark-mode .glass-dropdown { background: rgba(30, 41, 59, 0.95); border-colo
     transition: bottom 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); opacity: 0; visibility: hidden;
 }
 .glass-player.active { bottom: 25px; opacity: 1; visibility: visible; }
-body.dark-mode .glass-player { background: rgba(30, 41, 59, 0.85); border: 1px solid rgba(255,255,255,0.1); }
 @keyframes pulse-ring-custom {
     0% { transform: scale(0.8); box-shadow: 0 0 0 0 rgba(155, 89, 182, 0.7); }
     70% { transform: scale(1); box-shadow: 0 0 0 10px rgba(155, 89, 182, 0); }
