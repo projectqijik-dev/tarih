@@ -161,38 +161,44 @@ h1 {
 /* --- MODERN YUVARLAK BUTONLAR --- */
 .settings-panel {
     display: flex; justify-content: flex-end; gap: 12px; margin-bottom: 20px; flex-wrap: wrap; align-items: center;
-    position: relative; /* Düzeltme: Stacking Context (Katman) oluşturmak için */
-    z-index: 10500; /* Düzeltme: Menünün altta kalmasını engeller */
+    position: relative;
+    z-index: 10500;
 }
 .settings-btn {
-    background: #ffffff; 
-    border: none; 
+    background: rgba(13, 17, 23, 0.95) !important; 
+    border: 1px solid rgba(201, 168, 76, 0.4) !important; 
     width: 46px; height: 46px; 
     border-radius: 50%;
     display: flex; align-items: center; justify-content: center;
-    cursor: pointer; font-size: 16px; font-weight: 700; color: var(--text-color); 
-    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1); 
-    box-shadow: 0 4px 14px rgba(0,0,0,0.06); 
+    cursor: pointer; font-size: 16px; font-weight: 700; 
+    color: #C9A84C !important; 
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); 
+    box-shadow: 0 4px 15px rgba(0,0,0,0.5) !important; 
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
 }
 .settings-btn.uzun-buton {
-    width: auto; 
-    border-radius: 25px; 
-    padding: 0 20px; 
-    gap: 8px;
+    width: auto !important; 
+    border-radius: 25px !important; 
+    padding: 0 20px !important; 
+    gap: 8px !important;
 }
 .settings-btn:hover, .settings-btn:active { 
-    transform: translateY(-2px); box-shadow: 0 6px 18px rgba(0,0,0,0.1); 
+    transform: translateY(-3px) !important; 
+    box-shadow: 0 6px 20px rgba(201, 168, 76, 0.3) !important; 
+    background: rgba(201, 168, 76, 0.15) !important;
+    border-color: #C9A84C !important;
+    color: #F4E4B0 !important;
 }
 
 .floating-btn {
     position: fixed; bottom: 25px; right: 25px;
-    background-color: #1673a6; color: white;
-    border-radius: 50%; width: 65px; height: 65px;
-    font-size: 28px; border: none; cursor: pointer; box-shadow: 0 8px 25px rgba(22, 115, 166, 0.4);
+    border-radius: 50%; width: 55px; height: 55px; 
+    font-size: 24px; border: none; cursor: pointer; 
     z-index: 9998; transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     display: flex; align-items: center; justify-content: center;
 }
-.floating-btn:hover, .floating-btn:active { transform: scale(1.15) rotate(-10deg); background-color: #115c89; }
+.floating-btn:hover, .floating-btn:active { transform: scale(1.15) rotate(-10deg); }
 /* --- 2026 GİRİŞ EKRANI FORMLARI --- */
 .login-grid {
     display: grid; grid-template-columns: 1fr; gap: 15px; margin-bottom: 25px;
@@ -643,22 +649,23 @@ audio { width: 100%; height: 40px; outline: none; }
 
 /* İLETİŞİM BUTONU (FLOATING) STİLLERİ */
 #iletisimBtnFloating {
-    background: rgba(22, 115, 166, 0.3) !important;
+    background: rgba(13, 17, 23, 0.85) !important;
     backdrop-filter: blur(8px);
     -webkit-backdrop-filter: blur(8px);
-    border: 1px solid rgba(255, 255, 255, 0.2) !important;
-    color: rgba(255, 255, 255, 0.8) !important;
-    opacity: 0.5;
+    border: 1px solid rgba(201, 168, 76, 0.4) !important;
+    color: var(--accent-color) !important;
+    opacity: 0.7;
     transform: scale(0.9);
     transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) !important;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.05) !important;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.3) !important;
 }
 #iletisimBtnFloating:hover {
     opacity: 1;
-    background: rgba(22, 115, 166, 0.95) !important;
-    color: #fff !important;
+    background: rgba(201, 168, 76, 0.15) !important;
+    color: #F4E4B0 !important;
+    border-color: var(--accent-color) !important;
     transform: scale(1.1);
-    box-shadow: 0 8px 20px rgba(22, 115, 166, 0.3) !important;
+    box-shadow: 0 8px 20px rgba(201, 168, 76, 0.2) !important;
 }
 
 /* MODERN FOOTER STİLLERİ */
@@ -669,10 +676,10 @@ audio { width: 100%; height: 40px; outline: none; }
     color: var(--text-color); font-size: 13px; font-weight: 500;
 }
 .footer-left { display: flex; align-items: center; gap: 10px; }
-.version-badge { background: #1673a6; color: white; padding: 2px 6px; border-radius: 6px; font-size: 11px; font-weight: 700; letter-spacing: 0.5px; }
+.version-badge { background: #0D1117; color: white; padding: 2px 6px; border-radius: 6px; font-size: 11px; font-weight: 700; letter-spacing: 0.5px; }
 .footer-right { display: flex; align-items: center; gap: 15px; opacity: 0.9; }
-.footer-mail-btn { color: #1673a6; font-size: 18px; transition: transform 0.2s; text-decoration: none; display: flex; align-items: center; justify-content: center; width: 30px; height: 30px; background: rgba(22, 115, 166, 0.1); border-radius: 50%; }
-.footer-mail-btn:hover { transform: scale(1.15); background: #1673a6; color: #fff; }
+.footer-mail-btn { color: var(--accent-color); font-size: 18px; transition: transform 0.2s; text-decoration: none; display: flex; align-items: center; justify-content: center; width: 30px; height: 30px; background: rgba(201, 168, 76, 0.1); border-radius: 50%; border: 1px solid rgba(201, 168, 76, 0.2); }
+.footer-mail-btn:hover { transform: scale(1.15); background: var(--accent-color); color: #0D1117; }
 @media (max-width: 768px) {
     .modern-footer { flex-direction: column; text-align: center; gap: 12px; }
     .footer-right { flex-direction: column; gap: 10px; }
