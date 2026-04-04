@@ -217,6 +217,10 @@ function oynatPdf(url, baslik, element) {
         }
 
         document.getElementById('inlinePdfBaslik').innerText = baslik;
+        
+        // İNDİRME BUTONUNUN LİNKİNİ GÜNCELLEME İŞLEMİ
+        document.getElementById('pdfDownloadBtn').href = url;
+        
         element.parentNode.insertBefore(inlineContainer, element.nextSibling);
         inlineContainer.classList.remove('hidden');
 
@@ -228,16 +232,22 @@ function oynatPdf(url, baslik, element) {
         pdfCtx = pdfCanvas.getContext('2d');
         document.getElementById('pdfPageInfo').textContent = "Yükleniyor...";
 
-// PDF.js ile dosyayı açmayı dene
+        // 1. AŞAMA: Dosyayı yeni PDF.js ile açmayı dene
         pdfjsLib.getDocument(url).promise.then(function(pdfDoc_) {
             pdfDoc = pdfDoc_;
             pageNum = 1;
-            pdfScale = 1.2; 
+            pdfScale = 1.2; // Yakınlaştırmayı sıfırla
             renderPdfPage(pageNum);
         }).catch(function(error) {
-            console.error("PDF.js Hatası:", error);
-            alert("PDF yüklenirken bir hata oluştu. Dosya adresi geçersiz veya sunucu (CORS) erişime kapalı olabilir.");
-            document.getElementById('pdfPageInfo').textContent = "Hata!";
+            console.warn("PDF.js Engellendi (CORS veya Yerel Çalışma). Yedek Motora Geçiliyor...", error);
+            document.getElementById('pdfPageInfo').textContent = "Murat PDF Viewer";
+            
+            // 2. AŞAMA (HİBRİT): Hata verirse çaktırmadan Google Viewer'a geç
+            let isleyiciUrl = url;
+            if (!url.includes('drive.google.com')) {
+                isleyiciUrl = 'https://docs.google.com/viewer?url=' + encodeURIComponent(url) + '&embedded=true';
+            }
+            renderArea.innerHTML = '<iframe src="' + isleyiciUrl + '" style="width: 100%; height: 100%; border: none;"></iframe>';
         });
 
         setTimeout(() => { inlineContainer.scrollIntoView({ behavior: 'smooth', block: 'center' }); }, 100);
