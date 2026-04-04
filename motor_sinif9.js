@@ -94,10 +94,15 @@ const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwIj5rQkpizqiOqJYlUd
     function fcGeri() { if(fcCurrentIndex > 0) { fcCurrentIndex--; gosterFlashcard(); } }
     function fcKapat() { document.getElementById('flashcardModal').style.display = 'none'; }
 
-    window.addEventListener('keydown', function(event) {
+window.addEventListener('keydown', function(event) {
         if (event.key === 'Escape') { 
             const modals = document.querySelectorAll('.modal'); 
-            modals.forEach(modal => { if (modal.style.display === 'block') { modal.style.display = 'none'; } }); 
+            modals.forEach(modal => { 
+                if (modal.style.display === 'block') { 
+                    modal.style.display = 'none'; 
+                    if(modal.id === 'haritaModal') haritaKapat(); // Harita belleğini temizle
+                } 
+            }); 
             const fcModal = document.getElementById('flashcardModal');
             if (fcModal && fcModal.style.display === 'block') { fcModal.style.display = 'none'; }
             videoKapat(); 
@@ -203,7 +208,7 @@ const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwIj5rQkpizqiOqJYlUd
     function onPdfZoomIn() { pdfScale += 0.2; queueRenderPage(pageNum); }
     function onPdfZoomOut() { if (pdfScale <= 0.6) return; pdfScale -= 0.2; queueRenderPage(pageNum); }
 
-    function oynatPdf(url, baslik, element) {
+function oynatPdf(url, baslik, element) {
         if(url === "#") { alert("Öğretmeniniz bu dokümanı henüz yüklemedi."); return; }
 
         const inlineContainer = document.getElementById('inlinePdfContainer');
@@ -215,19 +220,23 @@ const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwIj5rQkpizqiOqJYlUd
         element.parentNode.insertBefore(inlineContainer, element.nextSibling);
         inlineContainer.classList.remove('hidden');
 
+        // Her açılışta alanı sıfırla ve Canvas'ı hazırla
+        const renderArea = document.getElementById('pdfRenderArea');
+        renderArea.innerHTML = '<canvas id="pdfCanvas" style="box-shadow: 0 4px 15px rgba(0,0,0,0.3); max-width: 100%; height: auto;"></canvas>';
+        
         pdfCanvas = document.getElementById('pdfCanvas');
         pdfCtx = pdfCanvas.getContext('2d');
-        pdfCtx.clearRect(0, 0, pdfCanvas.width, pdfCanvas.height);
         document.getElementById('pdfPageInfo').textContent = "Yükleniyor...";
 
+// PDF.js ile dosyayı açmayı dene
         pdfjsLib.getDocument(url).promise.then(function(pdfDoc_) {
             pdfDoc = pdfDoc_;
             pageNum = 1;
-            pdfScale = 1.2; // Yakınlaştırmayı sıfırla
+            pdfScale = 1.2; 
             renderPdfPage(pageNum);
         }).catch(function(error) {
             console.error("PDF.js Hatası:", error);
-            alert("PDF yüklenirken bir hata oluştu. Dosya adresi geçersiz veya sunucu erişime kapalı olabilir.");
+            alert("PDF yüklenirken bir hata oluştu. Dosya adresi geçersiz veya sunucu (CORS) erişime kapalı olabilir.");
             document.getElementById('pdfPageInfo').textContent = "Hata!";
         });
 
@@ -239,29 +248,24 @@ const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwIj5rQkpizqiOqJYlUd
         if (inlineContainer) {
             inlineContainer.classList.add('hidden');
             pdfDoc = null; // Belleği temizle
-            if(pdfCtx && pdfCanvas) pdfCtx.clearRect(0, 0, pdfCanvas.width, pdfCanvas.height);
+            const renderArea = document.getElementById('pdfRenderArea');
+            if (renderArea) renderArea.innerHTML = ''; // İçi tamamen temizlensin
             document.body.appendChild(inlineContainer); 
         }
     }
     // --- PDF MOTORU SONU ---
     
-// --- DİNAMİK HARİTA YÖNETİM MOTORU ---
+// --- DİNAMİK HARİTA YÖNETİM MOTORU (MODAL SİSTEMİ) ---
 window.currentMapInstance = null;
 
 function acHarita(haritaId, baslik, element) {
     if(haritaId === "#") { alert("Öğretmeniniz bu haritayı henüz yüklemedi."); return; }
 
-    const inlineContainer = document.getElementById('inlineMapContainer');
+    const modal = document.getElementById('haritaModal');
     const controlsContainer = document.getElementById('mapControlsContainer');
     
-    if (inlineContainer.previousElementSibling === element && !inlineContainer.classList.contains('hidden')) {
-        haritaKapat(); return;
-    }
-
-    document.getElementById('inlineMapBaslik').innerText = baslik;
-    element.parentNode.insertBefore(inlineContainer, element.nextSibling);
-    inlineContainer.classList.remove('hidden');
-
+    document.getElementById('haritaModalBaslik').innerHTML = '<i class="fa-solid fa-map-location-dot"></i> ' + baslik;
+    
     if (window.currentMapInstance) {
         window.currentMapInstance.remove();
         window.currentMapInstance = null;
@@ -269,28 +273,33 @@ function acHarita(haritaId, baslik, element) {
     
     controlsContainer.innerHTML = '';
     controlsContainer.style.display = 'none';
+    
+    modal.style.display = 'block';
 
     setTimeout(() => {
-        // YENİ YAPI: Haritayı sinif9haritalar.js dosyasından bul ve çalıştır
-        if (window.HARITA_MOTORU && typeof window.HARITA_MOTORU[haritaId] === 'function') {
-			// YENİ YAPI: Haritayı sinif9haritalar.js dosyasından bul ve çalıştır
         if (window.HARITA_MOTORU && typeof window.HARITA_MOTORU[haritaId] === 'function') {
             window.HARITA_MOTORU[haritaId]();
             
-            // --- YENİ EKLENEN: OTOMATİK İMZA (WATERMARK) ---
+            // KRİTİK: Modal açıldığında haritanın gri kalmaması için boyutları yeniden hesaplatır
+            if(window.currentMapInstance) {
+                window.currentMapInstance.invalidateSize();
+            }
+            
+            // --- OTOMATİK İMZA (WATERMARK) ---
             if (window.currentMapInstance) {
                 const imza = L.control({position: 'bottomleft'});
                 imza.onAdd = function () {
                     const div = L.DomUtil.create('div', 'harita-imza');
-                    div.style.backgroundColor = "rgba(255, 255, 255, 0.9)";
+                    div.style.backgroundColor = "rgba(13, 17, 23, 0.85)";
                     div.style.padding = "5px 10px";
                     div.style.borderRadius = "8px";
                     div.style.fontWeight = "700";
                     div.style.fontSize = "12px";
-                    div.style.color = "var(--text-color)";
-                    div.style.border = "1px solid var(--card-border)";
-                    div.style.boxShadow = "0 4px 10px rgba(0,0,0,0.1)";
-                    div.innerHTML = '<i class="fa-solid fa-pen-nib" style="color: #2ecc71; margin-right: 5px;"></i> Harita: Murat Mutlu';
+                    div.style.color = "var(--accent-color)";
+                    div.style.border = "1px solid rgba(201,168,76,0.3)";
+                    div.style.boxShadow = "0 4px 10px rgba(0,0,0,0.5)";
+                    div.style.backdropFilter = "blur(4px)";
+                    div.innerHTML = '<i class="fa-solid fa-pen-nib" style="color: var(--accent-color); margin-right: 5px;"></i> Harita: Murat Mutlu';
                     return div;
                 };
                 imza.addTo(window.currentMapInstance);
@@ -299,27 +308,23 @@ function acHarita(haritaId, baslik, element) {
 
         } else {
             alert("Bu harita (" + haritaId + ") sisteme yüklenmemiş veya yapım aşamasındadır.");
+            haritaKapat();
         }
-        } else {
-            alert("Bu harita (" + haritaId + ") sisteme yüklenmemiş veya yapım aşamasındadır.");
-        }
-        inlineContainer.scrollIntoView({ behavior: 'smooth', block: 'center' });
-    }, 100);
+    }, 150); // Modal açılma animasyonunu bekler
 }
 
 function haritaKapat() {
-    const inlineContainer = document.getElementById('inlineMapContainer');
-    if (inlineContainer) {
-        inlineContainer.classList.add('hidden');
+    const modal = document.getElementById('haritaModal');
+    if (modal) {
+        modal.style.display = 'none';
         if (window.currentMapInstance) {
             window.currentMapInstance.remove();
             window.currentMapInstance = null;
         }
-        document.body.appendChild(inlineContainer); 
     }
 }
 // --- HARİTA YÖNETİM MOTORU SONU ---
-	function materyalleriYukle(uniteId) {
+function materyalleriYukle(uniteId) {
         aktifMateryaller = [];
         
         if (uniteId === 'u1') {
@@ -1187,16 +1192,13 @@ function girisBasariliIslemleri(ogr) {
     function saveToLocal() {
         autoSaveData.ihlal = ihlalSayisi; localStorage.setItem('sinavSession', JSON.stringify(autoSaveData));
     }
-
-    function restoreSession(data) {
+function restoreSession(data) {
         document.getElementById("girisEkrani").classList.add("hidden");
         document.getElementById("menuEkrani").classList.remove("hidden");
         ogrenci = data.ogrenci; document.getElementById("kullaniciAdiSpan").innerText = ogrenci.ad;
-        watermarkOlustur(ogrenci.ad + " " + ogrenci.no);
         document.getElementById("btnSozluk").classList.remove("hidden");
         if(document.getElementById("btnDuyuru")) document.getElementById("btnDuyuru").classList.remove("hidden");
     }
-
     function ihlalTakip() { if (!document.hidden) return; ihlalSayisi++; document.title = "⚠️ UYARI (" + ihlalSayisi + ") - Sekme Değiştirildi!"; saveToLocal(); }
 
     function sayacBaslat(saniye) {
@@ -1213,10 +1215,6 @@ function girisBasariliIslemleri(ogr) {
         for (let i = array.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [array[i], array[j]] = [array[j], array[i]]; }
         return array;
     }
-	function watermarkOlustur(text) {
-        
-    }
-
     function ozetGoster() {
         const isKlasik = aktifTest.includes('klasik');
         let sourceSorular = typeof window.allTests !== 'undefined' && window.allTests[aktifTest] ? window.allTests[aktifTest] : [];
@@ -1696,10 +1694,11 @@ function girisBasariliIslemleri(ogr) {
         });
     }
 
-    window.addEventListener('click', function(event) { 
+window.addEventListener('click', function(event) { 
         if (event.target.classList.contains('modal')) { 
             event.target.style.display = 'none'; 
-        } 
+            if(event.target.id === 'haritaModal') haritaKapat(); // Harita belleğini temizle
+        }
         
         /* --- YENİ EKLENEN: MENÜ DIŞINA TIKLANINCA MENÜYÜ KAPATMA MOTORU --- */
         const dropdown = document.getElementById('hamburgerDropdown');
