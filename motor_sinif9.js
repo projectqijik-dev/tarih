@@ -525,45 +525,44 @@ function materyalleriYukle(uniteId) {
         window.scrollTo({top: 0, behavior: 'smooth'});
     }
 
-    function oynatPodcast(link, baslik) {
+function oynatPodcast(link, baslik) {
         if(link === "#") { alert("Öğretmeniniz bu podcast içeriğini henüz yüklemedi."); return; }
         
         const playerContainer = document.getElementById('audioPlayerContainer');
         const playerAudio = document.getElementById('mainAudio');
         const playerTitle = document.getElementById('playerTitle');
-        const floatingBtn = document.getElementById('iletisimBtnFloating');
         const playBtn = document.getElementById('playPauseBtn');
         const iconBox = document.getElementById('podcastIconBox');
         
         playerTitle.innerText = baslik;
         playerAudio.src = link;
+        
+        // Yeni podcast açıldığında göstergeleri sıfırla
+        if(document.getElementById('durationDisplay')) document.getElementById('durationDisplay').innerText = "00:00";
+        if(document.getElementById('currentTimeDisplay')) document.getElementById('currentTimeDisplay').innerText = "00:00";
+        if(document.getElementById('progressBarFill')) document.getElementById('progressBarFill').style.width = "0%";
+        
         playerContainer.classList.add('active');
         
         playerAudio.play().then(() => {
-            playBtn.innerHTML = '<i class="fa-solid fa-pause"></i>';
-            iconBox.classList.add('playing');
+            if(playBtn) playBtn.innerHTML = '<i class="fa-solid fa-pause"></i>';
+            if(iconBox) iconBox.classList.add('playing');
         }).catch(e => {
-            playBtn.innerHTML = '<i class="fa-solid fa-play" style="margin-left: 3px;"></i>';
-            iconBox.classList.remove('playing');
+            if(playBtn) playBtn.innerHTML = '<i class="fa-solid fa-play" style="margin-left: 3px;"></i>';
+            if(iconBox) iconBox.classList.remove('playing');
         });
-        
-        if (floatingBtn) floatingBtn.style.bottom = window.innerWidth <= 768 ? '155px' : '135px';
     }
 
     function kapatPlayer() {
         const playerContainer = document.getElementById('audioPlayerContainer');
         const playerAudio = document.getElementById('mainAudio');
-        const floatingBtn = document.getElementById('iletisimBtnFloating');
         const iconBox = document.getElementById('podcastIconBox');
         const playBtn = document.getElementById('playPauseBtn');
         
-        playerAudio.pause();
-        playerAudio.src = "";
-        playerContainer.classList.remove('active');
-        iconBox.classList.remove('playing');
-        playBtn.innerHTML = '<i class="fa-solid fa-play" style="margin-left: 3px;"></i>';
-        
-        if (floatingBtn) floatingBtn.style.bottom = '25px';
+        if(playerAudio) { playerAudio.pause(); playerAudio.src = ""; }
+        if(playerContainer) playerContainer.classList.remove('active');
+        if(iconBox) iconBox.classList.remove('playing');
+        if(playBtn) playBtn.innerHTML = '<i class="fa-solid fa-play" style="margin-left: 3px;"></i>';
     }
 
     function togglePlay() {
@@ -571,20 +570,24 @@ function materyalleriYukle(uniteId) {
         const btn = document.getElementById('playPauseBtn');
         const iconBox = document.getElementById('podcastIconBox');
         
+        if (!audio || !audio.src) return;
+
         if (audio.paused) {
             audio.play();
-            btn.innerHTML = '<i class="fa-solid fa-pause"></i>';
-            iconBox.classList.add('playing');
+            if(btn) btn.innerHTML = '<i class="fa-solid fa-pause"></i>';
+            if(iconBox) iconBox.classList.add('playing');
         } else {
             audio.pause();
-            btn.innerHTML = '<i class="fa-solid fa-play" style="margin-left: 3px;"></i>';
-            iconBox.classList.remove('playing');
+            if(btn) btn.innerHTML = '<i class="fa-solid fa-play" style="margin-left: 3px;"></i>';
+            if(iconBox) iconBox.classList.remove('playing');
         }
     }
 
     function skipAudio(seconds) {
         const audio = document.getElementById('mainAudio');
-        audio.currentTime += seconds;
+        if(audio && audio.src && !isNaN(audio.currentTime)) {
+            audio.currentTime += seconds;
+        }
     }
 
     function updateProgress() {
@@ -592,36 +595,54 @@ function materyalleriYukle(uniteId) {
         const fill = document.getElementById('progressBarFill');
         const currentDisplay = document.getElementById('currentTimeDisplay');
         
-        if (audio.duration) {
+        if (!audio || isNaN(audio.currentTime)) return;
+
+        // Süre hesaplanamasa bile saniye ekranda her zaman akacak
+        if(currentDisplay) currentDisplay.innerText = formatTime(audio.currentTime);
+        
+        // Süre verisi varsa ilerleme çubuğunu doldur
+        if (audio.duration && !isNaN(audio.duration) && audio.duration !== Infinity && audio.duration > 0) {
             const percent = (audio.currentTime / audio.duration) * 100;
-            fill.style.width = percent + '%';
-            currentDisplay.innerText = formatTime(audio.currentTime);
+            if(fill) fill.style.width = percent + '%';
         }
     }
 
     function setDuration() {
         const audio = document.getElementById('mainAudio');
         const durationDisplay = document.getElementById('durationDisplay');
-        if(audio.duration) durationDisplay.innerText = formatTime(audio.duration);
+        
+        if(audio && audio.duration && !isNaN(audio.duration) && audio.duration !== Infinity) {
+            if(durationDisplay) durationDisplay.innerText = formatTime(audio.duration);
+        } else {
+            // Sunucu toplam süreyi vermiyorsa
+            if(durationDisplay) durationDisplay.innerText = "Yükleniyor...";
+        }
     }
 
     function seekAudio(event) {
         const audio = document.getElementById('mainAudio');
         const bar = document.getElementById('progressBarBg');
-        const clickX = event.clientX - bar.getBoundingClientRect().left;
-        if(audio.duration) audio.currentTime = (clickX / bar.getBoundingClientRect().width) * audio.duration;
+        
+        if(audio && audio.duration && !isNaN(audio.duration) && audio.duration !== Infinity) {
+            const clickX = event.clientX - bar.getBoundingClientRect().left;
+            audio.currentTime = (clickX / bar.getBoundingClientRect().width) * audio.duration;
+        }
     }
 
     function formatTime(seconds) {
-        const min = Math.floor(seconds / 60); const sec = Math.floor(seconds % 60);
+        if (isNaN(seconds) || seconds < 0) return "00:00";
+        const min = Math.floor(seconds / 60); 
+        const sec = Math.floor(seconds % 60);
         return (min < 10 ? '0' : '') + min + ':' + (sec < 10 ? '0' : '') + sec;
     }
 
     function audioEnded() {
-        document.getElementById('playPauseBtn').innerHTML = '<i class="fa-solid fa-play" style="margin-left: 3px;"></i>';
-        document.getElementById('podcastIconBox').classList.remove('playing');
-        document.getElementById('progressBarFill').style.width = '0%';
-        document.getElementById('currentTimeDisplay').innerText = '00:00';
+        const btn = document.getElementById('playPauseBtn');
+        const iconBox = document.getElementById('podcastIconBox');
+        if(btn) btn.innerHTML = '<i class="fa-solid fa-play" style="margin-left: 3px;"></i>';
+        if(iconBox) iconBox.classList.remove('playing');
+        if(document.getElementById('progressBarFill')) document.getElementById('progressBarFill').style.width = '0%';
+        if(document.getElementById('currentTimeDisplay')) document.getElementById('currentTimeDisplay').innerText = '00:00';
     }
 
     function kategorilereDon() {
