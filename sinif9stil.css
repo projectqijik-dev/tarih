@@ -757,3 +757,72 @@ audio { width: 100%; height: 40px; outline: none; }
     color: var(--accent-color) !important;
     font-weight: bold !important;
 }
+/* --- YENİ ŞERİT PODCAST OYNATICI STİLLERİ --- */
+.bottom-audio-bar {
+    position: fixed;
+    bottom: -100px; /* Kapalıyken ekranın altında gizlenir */
+    left: 0;
+    width: 100%;
+    background: rgba(13, 17, 23, 0.95);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border-top: 1px solid rgba(201, 168, 76, 0.3);
+    z-index: 10000;
+    transition: bottom 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 -5px 25px rgba(0,0,0,0.5);
+}
+
+.bottom-audio-bar.active {
+    bottom: 0; /* Oynatıldığında yukarı kayar */
+}
+
+/* İlerleme çubuğu şeridin tam üst çizgisi oldu */
+.bottom-audio-bar .progress-bar-custom {
+    width: 100%; height: 4px; background: rgba(255, 255, 255, 0.1);
+    cursor: pointer; position: absolute; top: 0; left: 0;
+}
+.bottom-audio-bar .progress-fill {
+    height: 100%; background: var(--accent-color); width: 0%; transition: width 0.1s linear;
+}
+
+.bottom-bar-content {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 10px 20px; gap: 15px;
+}
+
+.bottom-audio-bar .player-info-custom {
+    display: flex; align-items: center; gap: 12px; flex: 1; overflow: hidden;
+}
+.bottom-audio-bar .player-icon-custom { color: var(--accent-color); font-size: 24px; flex-shrink: 0; }
+.bottom-audio-bar .player-text-custom { display: flex; flex-direction: column; overflow: hidden; white-space: nowrap; }
+.bottom-audio-bar .player-title-custom { font-weight: 700; color: var(--text-color); font-size: 14px; text-overflow: ellipsis; overflow: hidden; }
+.bottom-audio-bar .player-subtitle-custom { font-size: 11px; opacity: 0.7; color: var(--text-color); }
+
+.bottom-audio-bar .player-controls {
+    display: flex; align-items: center; gap: 20px; flex: 1; justify-content: center;
+}
+.bottom-audio-bar .ctrl-btn { background: none; border: none; color: var(--text-color); font-size: 18px; cursor: pointer; transition: 0.2s; }
+.bottom-audio-bar .ctrl-btn:hover { color: var(--accent-color); transform: scale(1.1); }
+.bottom-audio-bar .play-btn {
+    background: var(--accent-color); color: #0D1117; width: 45px; height: 45px;
+    border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 18px;
+}
+.bottom-audio-bar .play-btn:hover { background: #F4E4B0; }
+
+.bottom-audio-bar .player-right-actions {
+    display: flex; align-items: center; gap: 15px; flex: 1; justify-content: flex-end;
+}
+.bottom-audio-bar .time-display { font-size: 12px; color: var(--text-color); font-family: 'Inter', sans-serif; font-weight: 500; }
+.bottom-audio-bar .close-btn { color: var(--accent-color); font-size: 24px; }
+
+/* MOBİL UYUM (ÖNEMLİ) */
+@media (max-width: 768px) {
+    .bottom-bar-content { padding: 8px 15px; gap: 10px; }
+    .bottom-audio-bar .player-controls { gap: 12px; }
+    .bottom-audio-bar .play-btn { width: 38px; height: 38px; font-size: 16px; }
+    .bottom-audio-bar .player-right-actions { flex: 0; }
+    .bottom-audio-bar .time-display { display: none; /* Mobilde yerden tasarruf için zaman gizlenir */ }
+    .bottom-audio-bar .player-title-custom { font-size: 13px; }
+}
