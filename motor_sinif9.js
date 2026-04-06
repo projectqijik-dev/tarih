@@ -404,7 +404,8 @@ function materyalleriYukle(uniteId) {
 				{ baslik: "Eskiçağ Uygarlıkları Genel Özet", tur: "Sunu", icon: "fa-chalkboard-user", renk: "#e84393", link: "https://depo.kirkyama.uk/PDF/9.SinifSunular/2.Unite/8-Eski%C3%A7a%C4%9F%20Uygarl%C4%B1klar%C4%B1%20Genel%20%C3%96zet.pdf" },
 				{ baslik: "Mezopotamya Uygarlıkları Haritası (İnteraktif)", tur: "İnteraktif Harita", icon: "fa-map-location-dot", renk: "#2ecc71", link: "mezopotamya_uygarliklari" },
                 { baslik: "İlk Çağ Haritası", tur: "İnteraktif Harita", icon: "fa-map-location-dot", renk: "#2ecc71", link: "ilk_cag" },
-                { baslik: "Göç Yolları Haritası", tur: "İnteraktif Harita", icon: "fa-map-location-dot", renk: "#2ecc71", link: "goc_yollari" }
+                { baslik: "Göç Yolları Haritası", tur: "İnteraktif Harita", icon: "fa-map-location-dot", renk: "#2ecc71", link: "goc_yollari" },
+				{ baslik: "Anadolu Uygarlıkları", tur: "İnteraktif Harita", icon: "fa-map-location-dot", renk: "#2ecc71", link: "anadolu_uygarliklari" },
             ];
         } else if (uniteId === 'u3') {
             aktifMateryaller = [
@@ -440,9 +441,16 @@ function materyalleriYukle(uniteId) {
 				{ baslik: "Bilim Medeniyeti", tur: "PDF Not", icon: "fa-file-pdf", renk: "#e67e22", link: "https://depo.kirkyama.uk/PDF/9.%20S%C4%B1n%C4%B1f%20OGM/26-%20Bilim%20Medeniyeti.pdf" },
 				{ baslik: "Türklerin İslamiyeti Kabulü", tur: "PDF Not", icon: "fa-file-pdf", renk: "#e67e22", link: "https://depo.kirkyama.uk/PDF/9.%20S%C4%B1n%C4%B1f%20OGM/27-%20T%C3%BCrklerin%20%C4%B0slamiyeti%20Kabul%C3%BC.pdf" },
 				{ baslik: " İslamiyet'in Türk Devlet ve Toplum Yapısına Etkisi", tur: "PDF Not", icon: "fa-file-pdf", renk: "#e67e22", link: "https://depo.kirkyama.uk/PDF/9.%20S%C4%B1n%C4%B1f%20OGM/28-%20%C4%B0slamiyet'in%20T%C3%BCrk%20Devlet%20ve%20Toplum%20Yap%C4%B1s%C4%B1na%20Etkisi.pdf" },
-				{ baslik: "Uygarlıkları", tur: "Sunu", icon: "fa-chalkboard-user", renk: "#e84393", link: "link" },
+                { baslik: "Uygarlıkları", tur: "Sunu", icon: "fa-chalkboard-user", renk: "#e84393", link: "link" },
                 { baslik: "Kavimler Göçü Haritası", tur: "İnteraktif Harita", icon: "fa-map-location-dot", renk: "#2ecc71", link: "kavimler_gocu" },
-                { baslik: "Ticaret Yolları Haritası (İpek, Baharat, Kral, Kürk)", tur: "İnteraktif Harita", icon: "fa-map-location-dot", renk: "#2ecc71", link: "ticaret_yollari" }
+                { baslik: "Ticaret Yolları Haritası (İpek, Baharat, Kral, Kürk)", tur: "İnteraktif Harita", icon: "fa-map-location-dot", renk: "#2ecc71", link: "ticaret_yollari" },
+                { baslik: "Bizans'ın Değişimi (395-1453)", tur: "İnteraktif Harita", icon: "fa-map-location-dot", renk: "#2ecc71", link: "bizans_degisim" },
+				{ baslik: "Sasani İmparatorluğu (224-651)", tur: "İnteraktif Harita", icon: "fa-map-location-dot", renk: "#2ecc71", link: "sasani_degisim" },
+				{ baslik: "1. ve 2. Göktürk Devletleri", tur: "İnteraktif Harita", icon: "fa-map-location-dot", renk: "#2ecc71", link: "gokturk_degisim" },
+				{ baslik: "Uygur Kağanlığı'nın Değişimi (744-840)", tur: "İnteraktif Harita", icon: "fa-map-location-dot", renk: "#2ecc71", link: "uygur_degisim" },
+				{ baslik: "İslam Devleti'nin Genişlemesi", tur: "İnteraktif Harita", icon: "fa-map-location-dot", renk: "#2ecc71", link: "islam_genisleme" },
+				{ baslik: "Emeviler ve Abbasiler", tur: "İnteraktif Harita", icon: "fa-map-location-dot", renk: "#2ecc71", link: "emevi_abbasi_degisim" },
+				{ baslik: "Orta Çağ'ın Büyük Devletleri", tur: "İnteraktif Harita", icon: "fa-map-location-dot", renk: "#2ecc71", link: "ortacag_devletleri" },
             ];
         }
     }
