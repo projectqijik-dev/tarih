@@ -361,7 +361,18 @@ function materyalleriYukle(uniteId) {
 				{ baslik: "Tarih Araştırma ve Yazımında Dijital Dönüşüm", tur: "Sunu", icon: "fa-chalkboard-user", renk: "#e84393", link: "https://depo.kirkyama.uk/PDF/9.SinifSunular/1.%20%C3%9Cnite/2-Dijitalle%C5%9Fme.pdf" },
                 { baslik: "Kavram Haritası", tur: "PDF Not", icon: "fa-file-pdf", renk: "#e67e22", link: "#" },
                 { baslik: "Tarih Çalışma Kağıdı", tur: "PDF Not", icon: "fa-file-pdf", renk: "#e67e22", link: "#" },
-                { baslik: "Zaman Çizelgesi", tur: "İnteraktif Harita", icon: "fa-map-location-dot", renk: "#2ecc71", link: "#" }
+                { baslik: "Tarihsel Empati Simülatörü", tur: "İnteraktif Harita", icon: "fa-chess-knight", renk: "#8e44ad", link: "tarihi_empati" },
+				{ baslik: "Tarih Dedektifi: Kaynak Eleştirisi", tur: "İnteraktif Harita", icon: "fa-user-secret", renk: "#e74c3c", link: "tarih_dedektifi" },
+				{ baslik: "Kronoloji Bulmacası: Çaylak'tan Üstat'a", tur: "İnteraktif Harita", icon: "fa-sort-numeric-down", renk: "#f1c40f", link: "kronoloji_bulmacasi" },
+				{ baslik: "Yüzyıl Hesaplama Simülatörü", tur: "İnteraktif Harita", icon: "fa-calculator", renk: "#9b59b6", link: "yuzyil_hesaplama" },
+				{ baslik: "Tarihin Domino Taşları (Neden-Sonuç Simülatörü)", tur: "İnteraktif Harita", icon: "fa-cubes-stacked", renk: "#e67e22", link: "domino_etkisi" },
+				{ baslik: "Kültürel Etkileşim Çarkı", tur: "İnteraktif Harita", icon: "fa-earth-europe", renk: "#16a085", link: "kulturel_etkilesim" },
+				{ baslik: "Takvimlerin Coğrafyası ve Serüveni", tur: "İnteraktif Harita", icon: "fa-map-location-dot", renk: "#2ecc71", link: "takvimlerin_seruveni" },
+				{ baslik: "Büyük Keşifler ve Yardımcı Bilimler", tur: "İnteraktif Harita", icon: "fa-map-location-dot", renk: "#2ecc71", link: "kesifler_haritasi" },
+				{ baslik: "Tarih Yazıcılığının Gelişim Rotaları", tur: "İnteraktif Harita", icon: "fa-clock-rotate-left", renk: "#e67e22", link: "tarih_yaziciligi" },
+				{ baslik: "Suya Düşen Taş: Olay ve Olgu Kavramları", tur: "İnteraktif Harita", icon: "fa-water", renk: "#3498db", link: "olay_olgu" },
+				{ baslik: "Sinema Radarı: Kurgu mu, Gerçek mi?", tur: "İnteraktif Harita", icon: "fa-film", renk: "#f39c12", link: "sinema_radari" },
+			
             ];
         } else if (uniteId === 'u2') {
             aktifMateryaller = [
