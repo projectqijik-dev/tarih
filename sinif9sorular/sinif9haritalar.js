@@ -1241,3 +1241,1837 @@ window.HARITA_MOTORU["anadolu_uygarliklari"] = function() {
     // Harita ilk açıldığında tüm devletleri göster
     haritayiGuncelle(0);
 };
+// 7. HARİTA: TAKVİMLERİN COĞRAFYASI VE SERÜVENİ
+window.HARITA_MOTORU["takvimlerin_seruveni"] = function() {
+    const controlsContainer = document.getElementById('mapControlsContainer');
+    controlsContainer.innerHTML = `
+        <div style="text-align: center; padding: 10px;">
+            <p style="font-size: 0.9em; opacity: 0.8; margin: 0; color: var(--text-color);">Zamanın taksimi: Takvimlerin hangi coğrafi ve kültürel ihtiyaçlarla doğduğunu görmek için taralı alanları tıklayın.</p>
+        </div>
+    `;
+    controlsContainer.style.display = 'block';
+
+    // Haritayı Avrasya ve Kuzey Afrika'yı görecek şekilde ayarla
+    window.currentMapInstance = L.map('mapCanvas').setView([35.0, 65.0], 3);
+
+    L.tileLayer('http://mt0.google.com/vt/lyrs=p&hl=tr&x={x}&y={y}&z={z}', {
+        maxZoom: 10,
+        attribution: '© Google Haritalar (Fiziki)'
+    }).addTo(window.currentMapInstance);
+
+    const takvimler = [
+        {
+            isim: "12 Hayvanlı Türk Takvimi",
+            renk: "#16a085",
+            koordinatlar: [[45.0, 75.0], [53.0, 85.0], [53.0, 115.0], [45.0, 120.0], [38.0, 100.0]],
+            bilgi: "<b>12 Hayvanlı Türk Takvimi (Orta Asya)</b><br>Güneş yılına dayalıdır. Bozkır kültüründe hayvancılıkla uğraşan Türklerin doğa gözlemleriyle şekillenmiştir. Her yıla bir hayvan ismi verilmesi, göçebe yaşamın doğayla bütünleşmiş halini yansıtır."
+        },
+        {
+            isim: "Mısır Güneş Takvimi",
+            renk: "#e67e22",
+            koordinatlar: [[31.0, 28.0], [31.0, 34.0], [22.0, 34.0], [22.0, 28.0]],
+            bilgi: "<b>Güneş Takvimi (Mısır)</b><br>Nil Nehri'nin taşma zamanlarını hesaplama ihtiyacı (tarım) sonucu doğmuştur. Bir yılı 365 gün olarak hesaplayarak Miladi takvimin temelini atmışlardır. Astronominin tarım için ne kadar hayati olduğunu gösterir."
+        },
+        {
+            isim: "Sümer Ay Takvimi",
+            renk: "#2980b9",
+            koordinatlar: [[33.0, 43.0], [30.0, 47.0], [32.0, 48.0], [37.0, 45.0], [37.0, 42.0]],
+            bilgi: "<b>Ay Takvimi (Sümerler/Mezopotamya)</b><br>Zigguratlarda yapılan astronomik gözlemlerle şekillenmiştir. Ay'ın evrelerini esas alan bu sistem, Mezopotamya'nın şehir devletleri yapısında dini ve idari işlerin düzenlenmesinde kullanılmıştır."
+        },
+        {
+            isim: "Hicri Takvim",
+            renk: "#27ae60",
+            koordinatlar: [[25.0, 37.0], [25.0, 41.0], [20.0, 42.0], [18.0, 40.0], [20.0, 38.0]],
+            bilgi: "<b>Hicri Takvim (Hicaz)</b><br>Ay yılı esaslıdır. Başlangıç olarak İslam tarihinin dönüm noktası olan Hicret'i (622) alır. Müslümanların dini günlerini ve ibadet vakitlerini belirleme ihtiyacıyla yaygınlaşmıştır."
+        },
+        {
+            isim: "Celali Takvimi",
+            renk: "#8e44ad",
+            koordinatlar: [[38.0, 45.0], [40.0, 55.0], [35.0, 65.0], [28.0, 55.0], [30.0, 45.0]],
+            bilgi: "<b>Celali Takvimi (Büyük Selçuklu)</b><br>Melikşah döneminde Ömer Hayyam başkanlığındaki bir heyetçe hazırlanmıştır. Tarım ve vergi toplama zamanlarını (ekonomik ihtiyaçlar) hatasız düzenlemek için Güneş yılı esasına göre kurgulanmış çok hassas bir takvimdir."
+        }
+    ];
+
+    takvimler.forEach(t => {
+        L.polygon(t.koordinatlar, { color: t.renk, fillColor: t.renk, fillOpacity: 0.5, weight: 2 })
+        .addTo(window.currentMapInstance)
+        .bindPopup(t.bilgi);
+    });
+
+    const legend = L.control({position: 'bottomright'});
+    legend.onAdd = function () {
+        const div = L.DomUtil.create('div', 'info legend');
+        div.style.backgroundColor = "rgba(255, 255, 255, 0.9)";
+        div.style.padding = "10px";
+        div.style.borderRadius = "5px";
+        div.innerHTML = '<h4 style="margin: 0 0 5px 0; font-size:14px;">Zamanın Coğrafyası</h4>';
+        takvimler.forEach(t => {
+            div.innerHTML += `<div style="display:flex; align-items:center; margin-bottom:3px; font-size:12px;"><i style="background: ${t.renk}; width: 15px; height: 10px; display: inline-block; margin-right: 5px; opacity: 0.7;"></i> ${t.isim}</div>`;
+        });
+        return div;
+    };
+    legend.addTo(window.currentMapInstance);
+};
+// 8. HARİTA: TARİHE YARDIMCI BİLİMLER VE BÜYÜK KEŞİFLER
+window.HARITA_MOTORU["kesifler_haritasi"] = function() {
+    const controlsContainer = document.getElementById('mapControlsContainer');
+    controlsContainer.innerHTML = `
+        <div style="text-align: center; padding: 10px;">
+            <p style="font-size: 0.9em; opacity: 0.8; margin: 0; color: var(--text-color);">Büyük keşiflerin üzerindeki renkli noktalara tıklayarak, bu keşiflerin hangi yardımcı bilim dallarıyla incelendiğini öğrenin.</p>
+        </div>
+    `;
+    controlsContainer.style.display = 'block';
+
+    // Haritayı dünyayı kapsayacak şekilde başlat
+    window.currentMapInstance = L.map('mapCanvas').setView([35.0, 55.0], 3);
+
+    // Fiziki Harita Altlığı
+    L.tileLayer('http://mt0.google.com/vt/lyrs=p&hl=tr&x={x}&y={y}&z={z}', {
+        maxZoom: 10,
+        attribution: '© Google Haritalar (Fiziki)'
+    }).addTo(window.currentMapInstance);
+
+    // ZENGİNLEŞTİRİLMİŞ KEŞİFLER LİSTESİ (10 ADET)
+    const kesifler = [
+        {
+            isim: "Rosetta Taşı (Mısır)",
+            renk: "#e74c3c", // Kırmızı
+            koordinatlar: [31.4, 30.4],
+            bilgi: "<b>Rosetta Taşı</b><br>Mısır hiyerogliflerinin çözülmesini sağlayan anahtardır.<br><br><b>İlgili Bilimler:</b><br>• <b>Epigrafi:</b> Kitabeleri inceler.<br>• <b>Filoloji:</b> Dilleri ve metinleri inceler."
+        },
+        {
+            isim: "Orhun Abideleri (Moğolistan)",
+            renk: "#3498db", // Mavi
+            koordinatlar: [47.5, 102.8],
+            bilgi: "<b>Orhun Abideleri</b><br>Türk adının geçtiği ilk yazılı metinlerdir.<br><br><b>İlgili Bilimler:</b><br>• <b>Epigrafi:</b> Anıtların üzerindeki yazıları inceler.<br>• <b>Filoloji:</b> Eski Türkçeyi analiz eder.<br>• <b>Karbon-14:</b> Taşın yaşını belirler."
+        },
+        {
+            isim: "Terracotta Ordusu (Çin)",
+            renk: "#e67e22", // Turuncu
+            koordinatlar: [34.4, 109.3],
+            bilgi: "<b>Terracotta Ordusu</b><br>Çin'in ilk imparatoru Qin Shi Huang'ın mezarındaki toprak askerler.<br><br><b>İlgili Bilimler:</b><br>• <b>Arkeoloji:</b> Kazı yoluyla bu yeraltı ordusunu gün ışığına çıkarmıştır.<br>• <b>Sanat Tarihi:</b> Dönemin heykeltıraşlık tekniklerini inceler."
+        },
+        {
+            isim: "Lidya Sikkeleri (Manisa)",
+            renk: "#f1c40f", // Sarı
+            koordinatlar: [38.5, 28.0],
+            bilgi: "<b>Lidya Sikkeleri</b><br>Tarihteki ilk madeni paralar Sardes'te basılmıştır.<br><br><b>İlgili Bilimler:</b><br>• <b>Nümismatik (Meskukat):</b> Eski paraları inceler.<br>• <b>Metalurji:</b> Paraların yapıldığı madenleri analiz eder."
+        },
+        {
+            isim: "Göbeklitepe (Şanlıurfa)",
+            renk: "#9b59b6", // Mor
+            koordinatlar: [37.2, 38.9],
+            bilgi: "<b>Göbeklitepe</b><br>Dünyanın bilinen en eski tapınak kompleksidir.<br><br><b>İlgili Bilimler:</b><br>• <b>Arkeoloji:</b> Kazılarla yerleşimi ortaya çıkarır.<br>• <b>Karbon-14:</b> MÖ 10.000'li yıllara dayanan tarihini kanıtlar.<br>• <b>Antropoloji:</b> İnsanların inanç ve sosyal yapısını inceler."
+        },
+        {
+            isim: "Kadeş Antlaşması (Çorum)",
+            renk: "#1abc9c", // Turkuaz
+            koordinatlar: [40.0, 34.6], // Hattuşaş
+            bilgi: "<b>Kadeş Antlaşması Kil Tableti</b><br>Tarihte bilinen ilk yazılı barış antlaşmasıdır. Hititler ve Mısırlılar arasında imzalanmıştır.<br><br><b>İlgili Bilimler:</b><br>• <b>Diplomatik:</b> Devletler arası resmi belgeleri ve antlaşmaları inceler.<br>• <b>Paleografi:</b> Çivi yazısının alfabesini çözer."
+        },
+        {
+            isim: "Hammurabi Kanunları (Irak/İran)",
+            renk: "#d35400", // Koyu Turuncu
+            koordinatlar: [32.1, 48.2], // Susa (Bulunduğu yer)
+            bilgi: "<b>Hammurabi Dikilitaşı</b><br>Babil Kralı Hammurabi'nin hazırlattığı, tarihin ilk kapsamlı anayasa metnidir.<br><br><b>İlgili Bilimler:</b><br>• <b>Hukuk Tarihi:</b> Eski kanunları ve ceza sistemini inceler.<br>• <b>Epigrafi:</b> Taş üzerindeki çivi yazılarını okur."
+        },
+        {
+            isim: "Çatalhöyük (Konya)",
+            renk: "#c0392b", // Bordo
+            koordinatlar: [37.6, 32.8],
+            bilgi: "<b>Çatalhöyük Neolitik Kenti</b><br>İnsanlığın ilk tarım ve şehir yerleşimlerinden biridir. Evlere çatılardan girilirdi.<br><br><b>İlgili Bilimler:</b><br>• <b>Arkeoloji:</b> Şehir kalıntılarını kazar.<br>• <b>Etnografya:</b> O dönemki insanların kültürlerini inceler."
+        },
+        {
+            isim: "Ölü Deniz Yazmaları (Kudüs)",
+            renk: "#2c3e50", // Koyu Lacivert
+            koordinatlar: [31.7, 35.4], // Kumran Mağaraları
+            bilgi: "<b>Ölü Deniz (Kumran) Yazmaları</b><br>Tarihteki en eski İncil ve Tevrat metinlerini içeren deri ve papirüs tomarlarıdır.<br><br><b>İlgili Bilimler:</b><br>• <b>Paleografi:</b> Çok eski alfabeleri (Aramice, İbranice) okur.<br>• <b>Filoloji:</b> Eski dillerin gramer yapısını inceler."
+        },
+        {
+            isim: "Piri Reis Haritası (İstanbul)",
+            renk: "#16a085", // Koyu Su Yeşili
+            koordinatlar: [41.0, 28.9], // Topkapı Sarayı
+            bilgi: "<b>Piri Reis'in Dünya Haritası (1513)</b><br>Ceylan derisi üzerine çizilmiş, Amerika kıtasını gösteren en eski ve gizemli haritalardan biridir.<br><br><b>İlgili Bilimler:</b><br>• <b>Coğrafya:</b> Yer şekillerini ve kıtaları inceler.<br>• <b>Karbon-14:</b> Derinin 16. yüzyıla ait olduğunu kanıtlar."
+        }
+    ];
+
+    kesifler.forEach(k => {
+        L.circleMarker(k.koordinatlar, { 
+            color: k.renk, 
+            fillColor: k.renk, 
+            fillOpacity: 0.8, 
+            radius: 8, 
+            weight: 2 
+        })
+        .addTo(window.currentMapInstance)
+        .bindPopup(k.bilgi);
+    });
+
+    const legend = L.control({position: 'bottomright'});
+    legend.onAdd = function () {
+        const div = L.DomUtil.create('div', 'info legend');
+        div.style.backgroundColor = "rgba(255, 255, 255, 0.9)";
+        div.style.padding = "10px";
+        div.style.borderRadius = "5px";
+        
+        // Lejantın çok uzamaması için iki sütunlu grid yapısı kullanıyoruz
+        div.style.display = "grid";
+        div.style.gridTemplateColumns = "1fr 1fr";
+        div.style.gap = "0 15px";
+        
+        // Başlığı üstte tüm sütunları kapsayacak şekilde ayarlıyoruz
+        const title = L.DomUtil.create('div');
+        title.style.gridColumn = "1 / -1";
+        title.innerHTML = '<h4 style="margin: 0 0 8px 0; font-size:14px; text-align:center;">Büyük Keşifler</h4>';
+        div.appendChild(title);
+
+        kesifler.forEach(k => {
+            const item = L.DomUtil.create('div');
+            item.style.display = "flex";
+            item.style.alignItems = "center";
+            item.style.marginBottom = "5px";
+            item.style.fontSize = "12px";
+            item.innerHTML = `<i style="background: ${k.renk}; width: 12px; height: 12px; border-radius: 50%; display: inline-block; margin-right: 6px; flex-shrink:0;"></i> <span style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 120px;" title="${k.isim}">${k.isim.split(" ")[0]} ${k.isim.split(" ")[1] || ""}</span>`;
+            div.appendChild(item);
+        });
+        return div;
+    };
+    legend.addTo(window.currentMapInstance);
+};
+// 9. HARİTA: TARİH YAZICILIĞININ GELİŞİM ROTALARI
+window.HARITA_MOTORU["tarih_yaziciligi"] = function() {
+    const controlsContainer = document.getElementById('mapControlsContainer');
+    controlsContainer.innerHTML = `
+        <div style="text-align: center; padding: 10px;">
+            <h4 id="yazicilikYilBaslik" style="margin: 0 0 5px 0; color: #e67e22; font-size: 18px; font-weight: 800;">MÖ 1300 - Hitit Analları</h4>
+            <p id="yazicilikBilgi" style="font-size: 0.9em; opacity: 0.9; margin-bottom: 15px; color: var(--text-color); min-height: 45px;">Hitit kralları, Tanrıya hesap vermek için zaferleri kadar yenilgilerini de yazdılar. Bu, objektif tarih yazıcılığının ilk adımıdır.</p>
+            
+            <div style="display: flex; align-items: center; justify-content: center; gap: 15px; background: rgba(0,0,0,0.3); padding: 10px 15px; border-radius: 8px; border: 1px solid rgba(230,126,34,0.2);">
+                <span style="font-weight: 700; color: var(--text-color);">Kadim</span>
+                <input type="range" id="yazicilikSlider" min="0" max="4" value="0" step="1" 
+                       style="flex: 1; max-width: 300px; cursor: pointer; accent-color: #e67e22; height: 6px; border-radius: 5px;">
+                <span style="font-weight: 700; color: var(--text-color);">Modern</span>
+            </div>
+            <div style="font-size: 11px; opacity: 0.6; margin-top: 8px; color: var(--text-color);">Yazım türlerini ve rotaları keşfetmek için çubuğu sağa kaydırın</div>
+        </div>
+    `;
+    controlsContainer.style.display = 'block';
+
+    window.currentMapInstance = L.map('mapCanvas').setView([35.0, 35.0], 4);
+
+    L.tileLayer('http://mt0.google.com/vt/lyrs=p&hl=tr&x={x}&y={y}&z={z}', {
+        maxZoom: 10,
+        attribution: '© Google Haritalar (Fiziki)'
+    }).addTo(window.currentMapInstance);
+
+    const rotalar = [
+        {
+            isim: "Hitit Analları (Objektif Yazıcılık)",
+            renk: "#e67e22",
+            coords: [40.0, 34.6], // Hattuşaş
+            bilgi: "<b>Hitit Analları (MÖ 1300)</b><br>Tarih yazıcılığının ilk tarafsız örnekleridir. Krallar, tanrılara hesap vereceklerine inandıkları için yenilgilerini de dürüstçe kaydetmişlerdir.",
+            tur: "Objektif Tarih Yazıcılığı"
+        },
+        {
+            isim: "Herodot (Hikayeci Yazıcılık)",
+            renk: "#3498db",
+            coords: [37.0, 27.4], // Bodrum/Halikarnas
+            bilgi: "<b>Herodot (MÖ 5. YY)</b><br>Tarihin babası olarak kabul edilir. 'Historia' adlı eserinde efsanelerle gerçekleri harmanlamış, hikayeci bir dil kullanmıştır.",
+            tur: "Hikayeci Tarih Yazıcılığı"
+        },
+        {
+            isim: "Thukydides (Öğretici Yazıcılık)",
+            renk: "#2ecc71",
+            coords: [37.9, 23.7], // Atina
+            bilgi: "<b>Thukydides (MÖ 5. YY)</b><br>Peloponnes Savaşlarını neden-sonuç ilişkisi içinde anlatmıştır. Amacı okuyucuya siyasi dersler vermektir.",
+            tur: "Öğretici (Pragmatik) Yazıcılık"
+        },
+        {
+            isim: "Taberî (İslam Dünyasında Rivayetçilik)",
+            renk: "#f1c40f",
+            coords: [33.3, 44.4], // Bağdat
+            bilgi: "<b>Taberî (9. YY)</b><br>İslam tarih yazıcılığının en büyük isimlerindendir. Olayları habercilere (rivayet) dayandırarak geniş kapsamlı eserler bırakmıştır.",
+            tur: "Rivayetçi Tarih Yazıcılığı"
+        },
+        {
+            isim: "İbn Haldun (Bilimsel/Sosyolojik)",
+            renk: "#9b59b6",
+            coords: [30.0, 31.2], // Kahire/Tunus
+            bilgi: "<b>İbn Haldun (14. YY)</b><br>'Mukaddime' eseriyle tarih felsefesinin kurucusu sayılır. Tarihi sadece olaylar yığını değil, toplumların yapısını inceleyen bir bilim olarak görmüştür.",
+            tur: "Bilimsel/Felsefi Tarih Yazıcılığı"
+        }
+    ];
+
+    let currentMarker = null;
+
+    function rotayiGuncelle(index) {
+        const rota = rotalar[index];
+
+        if (currentMarker) window.currentMapInstance.removeLayer(currentMarker);
+
+        currentMarker = L.circleMarker(rota.coords, {
+            color: rota.renk,
+            fillColor: rota.renk,
+            fillOpacity: 0.8,
+            radius: 12,
+            weight: 3
+        }).addTo(window.currentMapInstance)
+          .bindPopup(`<b>${rota.isim}</b><br>${rota.bilgi}`)
+          .openPopup();
+
+        window.currentMapInstance.flyTo(rota.coords, 6);
+
+        document.getElementById('yazicilikYilBaslik').innerText = rota.isim;
+        document.getElementById('yazicilikYilBaslik').style.color = rota.renk;
+        document.getElementById('yazicilikBilgi').innerText = rota.tur + ": " + rota.bilgi.split("<br>")[1].substring(0, 100) + "...";
+        document.getElementById('yazicilikSlider').style.accentColor = rota.renk;
+    }
+
+    document.getElementById('yazicilikSlider').addEventListener('input', function(e) {
+        rotayiGuncelle(parseInt(e.target.value));
+    });
+
+    rotayiGuncelle(0);
+};
+// 10. HARİTA: "SUYA DÜŞEN TAŞ" (OLAY VE OLGU)
+window.HARITA_MOTORU["olay_olgu"] = function() {
+    const controlsContainer = document.getElementById('mapControlsContainer');
+    controlsContainer.innerHTML = `
+        <div style="text-align: center; padding: 10px;">
+            <h4 id="ooBaslik" style="margin: 0 0 5px 0; color: #3498db; font-size: 18px; font-weight: 800;">Olay (Vaka) ve Olgu (Vakıa)</h4>
+            
+            <div style="background: rgba(255,255,255,0.8); border: 1px solid #ddd; border-radius: 8px; padding: 10px; margin-bottom: 10px;">
+                <p id="olayMetni" style="font-size: 0.95em; margin: 0 0 8px 0; color: #d35400; font-weight: bold;">
+                    <i class="fa-solid fa-location-dot"></i> Olay: [Yükleniyor...]
+                </p>
+                <p id="olguMetni" style="font-size: 0.95em; margin: 0; color: #27ae60; font-weight: bold; opacity: 0; transition: opacity 0.8s ease;">
+                    <i class="fa-solid fa-water"></i> Olgu: [Yükleniyor...]
+                </p>
+            </div>
+
+            <button id="btnDalga" style="background: #3498db; color: white; border: none; padding: 8px 20px; border-radius: 20px; font-weight: bold; cursor: pointer; margin-bottom: 15px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); transition: 0.3s;">
+                <i class="fa-solid fa-gem"></i> Taşı Suya At (Olgu Dalgalarını Başlat)
+            </button>
+            
+            <div style="display: flex; align-items: center; justify-content: center; gap: 15px; background: rgba(0,0,0,0.05); padding: 10px 15px; border-radius: 8px;">
+                <i class="fa-solid fa-arrow-left" style="opacity: 0.5;"></i>
+                <input type="range" id="ooSlider" min="0" max="3" value="0" step="1" 
+                       style="flex: 1; max-width: 300px; cursor: pointer; accent-color: #3498db; height: 6px; border-radius: 5px;">
+                <i class="fa-solid fa-arrow-right" style="opacity: 0.5;"></i>
+            </div>
+            <div style="font-size: 11px; opacity: 0.6; margin-top: 8px; color: var(--text-color);">Farklı örnekleri görmek için çubuğu kaydırın</div>
+        </div>
+    `;
+    controlsContainer.style.display = 'block';
+
+    window.currentMapInstance = L.map('mapCanvas').setView([39.0, 35.0], 5);
+
+    L.tileLayer('http://mt0.google.com/vt/lyrs=p&hl=tr&x={x}&y={y}&z={z}', {
+        maxZoom: 10,
+        attribution: '© Google Haritalar (Fiziki)'
+    }).addTo(window.currentMapInstance);
+
+    // 4 FARKLI OLAY-OLGU ÖRNEĞİ
+    const ornekler = [
+        {
+            olayAd: "Malazgirt Meydan Muharebesi (1071)",
+            olguAd: "Anadolu'nun Türkleşmesi ve İslamlaşması Süreci",
+            coords: [39.14, 42.54], // Muş/Malazgirt
+            renk: "#2ecc71", // Yeşil
+            maxRadius: 800000 // Dalganın ulaşacağı metre cinsinden çap (Anadolu'yu kaplar)
+        },
+        {
+            olayAd: "Fransız İhtilali (1789)",
+            olguAd: "Milliyetçilik Akımının Yayılması ve Ulus Devletlerin Doğuşu",
+            coords: [48.85, 2.35], // Paris
+            renk: "#e74c3c", // Kırmızı
+            maxRadius: 2500000 // Tüm Avrupa'yı kaplar
+        },
+        {
+            olayAd: "Talas Savaşı (751)",
+            olguAd: "Türklerin Kitleler Halinde İslamiyet'i Kabul Etmesi",
+            coords: [42.52, 72.23], // Talas/Kırgızistan
+            renk: "#1abc9c", // Turkuaz
+            maxRadius: 1800000 // Orta Asya'ya yayılır
+        },
+        {
+            olayAd: "İlk Buhar Makinesinin İcadı (1765)",
+            olguAd: "Küresel Sanayileşme, İşçi Sınıfı ve Sömürgeciliğin Yayılması",
+            coords: [53.48, -2.24], // Manchester/İngiltere
+            renk: "#34495e", // Endüstriyel Koyu Gri
+            maxRadius: 3500000 // Kıtalararası yayılır
+        }
+    ];
+
+    let currentMarker = null;
+    let currentWave = null;
+    let waveInterval = null;
+
+    function ornegiGuncelle(index) {
+        const ornek = ornekler[index];
+
+        // Haritayı temizle
+        if (currentMarker) window.currentMapInstance.removeLayer(currentMarker);
+        if (currentWave) window.currentMapInstance.removeLayer(currentWave);
+        if (waveInterval) clearInterval(waveInterval);
+
+        // Olay (Taş) noktasını koy
+        currentMarker = L.marker(ornek.coords).addTo(window.currentMapInstance)
+            .bindPopup(`<b>Olay:</b> ${ornek.olayAd}`);
+        
+        // Harita kamerası Olayın olduğu yere uçar
+        window.currentMapInstance.flyTo(ornek.coords, 4, { duration: 1.5 });
+
+        // Arayüz metinlerini güncelle
+        document.getElementById('olayMetni').innerHTML = `<i class="fa-solid fa-location-dot"></i> <b>Kısa Süreli Olay (Vaka):</b> ${ornek.olayAd}`;
+        document.getElementById('olguMetni').innerHTML = `<i class="fa-solid fa-water"></i> <b>Uzun Süreli Olgu (Vakıa):</b> ${ornek.olguAd}`;
+        
+        // Olgu metnini gizle ve butonu aktif et
+        document.getElementById('olguMetni').style.opacity = "0";
+        const btn = document.getElementById('btnDalga');
+        btn.disabled = false;
+        btn.style.opacity = "1";
+        btn.style.background = ornek.renk;
+        document.getElementById('ooSlider').style.accentColor = ornek.renk;
+        
+        // Butonun tıklama işlevi (Dalga Animasyonu)
+        btn.onclick = function() {
+            btn.disabled = true;
+            btn.style.opacity = "0.5";
+            document.getElementById('olguMetni').style.opacity = "1"; // Olgu yazısı yavaşça belirir
+
+            // "Suya Düşen Taş" Animasyon Döngüsü
+            let currentRadius = 10000; // 10km ile başla
+            currentWave = L.circle(ornek.coords, {
+                color: ornek.renk,
+                fillColor: ornek.renk,
+                fillOpacity: 0.3,
+                weight: 2,
+                radius: currentRadius
+            }).addTo(window.currentMapInstance);
+
+            waveInterval = setInterval(() => {
+                currentRadius += ornek.maxRadius / 40; // Dalga 40 adımda büyür
+                currentWave.setRadius(currentRadius);
+                
+                if (currentRadius >= ornek.maxRadius) {
+                    clearInterval(waveInterval);
+                    currentWave.bindPopup(`<b>Olgu:</b> ${ornek.olguAd}`).openPopup();
+                }
+            }, 30); // Saniyede 30 kare akıcılığında büyüme
+        };
+    }
+
+    document.getElementById('ooSlider').addEventListener('input', function(e) {
+        ornegiGuncelle(parseInt(e.target.value));
+    });
+
+    // İlk örneği yükle
+    ornegiGuncelle(0);
+};
+// 11. ARAÇ: İNTERAKTİF YÜZYIL VE ÇEYREK HESAPLAMA SİMÜLATÖRÜ (KOMPAKT VERSİYON)
+window.HARITA_MOTORU["yuzyil_hesaplama"] = function() {
+    const controlsContainer = document.getElementById('mapControlsContainer');
+    const mapCanvas = document.getElementById('mapCanvas');
+
+    controlsContainer.style.display = 'block';
+    controlsContainer.style.padding = '5px 10px'; // Dikey boşluğu azalttık
+    
+    // Giriş alanını tek satıra indirdik ve açıklamayı küçülttük
+    controlsContainer.innerHTML = `
+        <div style="display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 8px;">
+            <select id="zamanYonu" style="padding: 6px; border-radius: 6px; font-weight: bold; border: 2px solid #9b59b6; background: var(--container-bg); color: var(--text-color); font-size: 14px;">
+                <option value="MO">MÖ</option>
+                <option value="MS" selected>MS</option>
+            </select>
+            <input type="number" id="yilInput" placeholder="Yıl giriniz..." style="padding: 6px; border-radius: 6px; border: 2px solid #9b59b6; width: 100px; font-weight:bold; background: var(--container-bg); color: var(--text-color); font-size: 14px;">
+            <button id="hesaplaBtn" style="background: #9b59b6; color: white; border: none; padding: 7px 15px; border-radius: 6px; font-weight: bold; cursor: pointer; font-size: 14px;">
+                Hesapla
+            </button>
+            <div style="font-size: 11px; opacity: 0.7; color: var(--text-color); width: 100%; text-align: center; margin-top: 2px;">Yılı girip 'Hesapla' butonuna dokunun.</div>
+        </div>
+    `;
+
+    window.currentMapInstance = { remove: function() { mapCanvas.innerHTML = ''; mapCanvas.style.display = 'block'; } };
+
+    mapCanvas.innerHTML = `
+        <div id="zamanCetveliAlani" style="width: 100%; height: 100%; display: flex; flex-direction: column; align-items: center; padding: 15px; background: var(--container-bg); box-sizing: border-box;">
+            
+            <div id="cetvelSonuc" style="font-size: 20px; font-weight: 800; color: var(--text-color); margin-bottom: 20px; text-align: center; width: 100%; min-height: 50px;">
+                <span style="opacity: 0.5; font-size: 16px; font-weight: 400;">Sonuç burada belirecek</span>
+            </div>
+            
+            <div id="grafikKutusu" style="width: 100%; max-width: 600px; opacity: 0; transition: opacity 0.5s ease;">
+                <div style="display: flex; justify-content: space-between; margin-bottom: 5px; font-weight: 900; font-size: 14px; color: var(--text-color); opacity: 0.8;">
+                    <span id="yuzyilBas">0</span>
+                    <span id="yuzyilOrta">50</span>
+                    <span id="yuzyilSon">99</span>
+                </div>
+
+                <div style="position: relative; width: 100%; height: 50px; background: var(--card-border); border-radius: 8px; overflow: hidden; display: flex;">
+                    <div id="ceyrek1" style="flex: 1; border-right: 1px dashed rgba(127,140,141,0.3); display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: bold; color: var(--text-color);">Ç1</div>
+                    <div id="ceyrek2" style="flex: 1; border-right: 2px solid rgba(127,140,141,0.5); display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: bold; color: var(--text-color);">Ç2</div>
+                    <div id="ceyrek3" style="flex: 1; border-right: 1px dashed rgba(127,140,141,0.3); display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: bold; color: var(--text-color);">Ç3</div>
+                    <div id="ceyrek4" style="flex: 1; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: bold; color: var(--text-color);">Ç4</div>
+                    <div id="zamanOku" style="position: absolute; top: 0; left: 0%; height: 100%; width: 4px; background: #e74c3c; box-shadow: 0 0 10px #e74c3c; transition: left 0.8s ease; z-index: 10;"></div>
+                </div>
+                
+                <div style="display: flex; justify-content: space-between; width: 100%; margin-top: 10px;">
+                    <div id="yari1" style="width: 49%; text-align: center; padding: 6px; background: var(--option-bg); border-radius: 6px; font-size: 13px; font-weight: bold; color: var(--text-color); border: 1px solid var(--card-border);">1. Yarı</div>
+                    <div id="yari2" style="width: 49%; text-align: center; padding: 6px; background: var(--option-bg); border-radius: 6px; font-size: 13px; font-weight: bold; color: var(--text-color); border: 1px solid var(--card-border);">2. Yarı</div>
+                </div>
+            </div>
+        </div>
+    `;
+
+    document.getElementById('hesaplaBtn').addEventListener('click', function() {
+        const yil = parseInt(document.getElementById('yilInput').value);
+        const yon = document.getElementById('zamanYonu').value;
+        if (!yil || yil < 1) return;
+
+        const yuzyil = Math.ceil(yil / 100);
+        let yilinIkiHanesi = yil % 100 === 0 ? 100 : yil % 100;
+        let yari = "", ceyrek = "", leftPercent = 0;
+
+        if (yon === "MS") {
+            yari = (yilinIkiHanesi <= 49) ? "1. Yarı" : "2. Yarı";
+            if (yilinIkiHanesi <= 24) ceyrek = "1. Çeyrek";
+            else if (yilinIkiHanesi <= 49) ceyrek = "2. Çeyrek";
+            else if (yilinIkiHanesi <= 74) ceyrek = "3. Çeyrek";
+            else ceyrek = "4. Çeyrek";
+            leftPercent = (yilinIkiHanesi === 100 ? 99 : yilinIkiHanesi);
+            document.getElementById('yuzyilBas').innerText = (yuzyil - 1) * 100;
+            document.getElementById('yuzyilSon').innerText = (yuzyil * 100) - 1;
+        } else { 
+            yari = (yilinIkiHanesi >= 50) ? "1. Yarı" : "2. Yarı";
+            if (yilinIkiHanesi >= 75) ceyrek = "1. Çeyrek";
+            else if (yilinIkiHanesi >= 50) ceyrek = "2. Çeyrek";
+            else if (yilinIkiHanesi >= 25) ceyrek = "3. Çeyrek";
+            else ceyrek = "4. Çeyrek";
+            leftPercent = 100 - (yilinIkiHanesi === 100 ? 100 : yilinIkiHanesi);
+            document.getElementById('yuzyilBas').innerText = yuzyil * 100;
+            document.getElementById('yuzyilSon').innerText = (yuzyil - 1) * 100;
+        }
+
+        document.getElementById('cetvelSonuc').innerHTML = `<span style="color:#9b59b6">${yon} ${yil}</span><br><span style="font-size:16px">${yuzyil}. Yüzyıl - ${yari} - ${ceyrek}</span>`;
+        document.getElementById('grafikKutusu').style.opacity = "1";
+        document.getElementById('zamanOku').style.left = leftPercent + "%";
+
+        // Renklendirme
+        for(let i=1; i<=4; i++) document.getElementById('ceyrek'+i).style.background = "transparent";
+        document.getElementById('yari1').style.background = document.getElementById('yari2').style.background = "var(--option-bg)";
+        
+        setTimeout(() => {
+            const cMap = {"1. Çeyrek": 1, "2. Çeyrek": 2, "3. Çeyrek": 3, "4. Çeyrek": 4};
+            document.getElementById('ceyrek'+cMap[ceyrek]).style.background = "rgba(155, 89, 182, 0.2)";
+            if(yari === "1. Yarı") document.getElementById('yari1').style.background = "rgba(46, 204, 113, 0.2)";
+            else document.getElementById('yari2').style.background = "rgba(46, 204, 113, 0.2)";
+        }, 500);
+    });
+};
+// 12. ARAÇ: TARİH DEDEKTİFİ (SAHTE BELGE AVCISI) - 5 VAKALI SÜRÜM
+window.HARITA_MOTORU["tarih_dedektifi"] = function() {
+    const controlsContainer = document.getElementById('mapControlsContainer');
+    const mapCanvas = document.getElementById('mapCanvas');
+
+    controlsContainer.style.display = 'block';
+    controlsContainer.style.padding = '10px';
+    controlsContainer.innerHTML = `
+        <div style="text-align: center;">
+            <h4 style="margin: 0 0 5px 0; color: #e74c3c; font-size: 18px; font-weight: 800;"><i class="fa-solid fa-user-secret"></i> Tarih Dedektifi: Kaynak Eleştirisi</h4>
+            <p style="font-size: 0.9em; opacity: 0.9; margin-bottom: 5px; color: var(--text-color);">Aşağıdaki tarihi iddiaları ve belgeleri inceleyin. Doğrulama araçlarını kullanarak belgenin orijinal (Gerçek) mi yoksa uydurma (Sahte) mi olduğunu kanıtlayın.</p>
+        </div>
+    `;
+
+    window.currentMapInstance = { remove: function() { mapCanvas.innerHTML = ''; mapCanvas.style.display = 'block'; } };
+
+    // ZENGİNLEŞTİRİLMİŞ VAKA DOSYALARI (5 ADET)
+    const vakalar = [
+        {
+            baslik: "VAKA DOSYASI #1: Eski Bir Antlaşma",
+            iddia: "Kazılarda MÖ 1280 yılına ait, Hititler ve Mısırlılar arasında imzalanan Kadeş Antlaşması'nın çok iyi korunmuş, kağıt üzerine yazılmış bir kopyası bulundu!",
+            ipucuZaman: "Kağıt, MÖ 2. yüzyılda Çin'de icat edilmiştir. MÖ 1280'de Anadolu veya Mısır'da kağıt bilinmiyordu.",
+            ipucuFiziksel: "O dönemde antlaşmalar kil tabletlere veya papirüslere yazılırdı.",
+            ipucuMantik: "Antlaşmanın metni tarihi gerçeklere uysa da, kullanıldığı materyal dönemin teknolojisiyle uyuşmuyor.",
+            gercekMi: false,
+            sonucMetni: "SAHTE! Bu bir Anakronizm (Zaman Yanılgısı) örneğidir. Belge içeriği doğru olsa bile, dış tenkit (materyal analizi) belgenin sahte olduğunu kanıtlar."
+        },
+        {
+            baslik: "VAKA DOSYASI #2: Gizemli Hiyeroglifler",
+            iddia: "Sosyal medyada yayılan bir fotoğrafta, Mısır Piramitlerinin içindeki bir duvarda uzay gemisi ve helikopter figürlerine benzeyen hiyeroglifler olduğu iddia ediliyor.",
+            ipucuZaman: "Mısır uygarlığı döneminde motorlu taşıtlar veya uçan araçlar icat edilmemiştir.",
+            ipucuFiziksel: "Epigrafi uzmanları (Yazıt bilimciler), bu şekillerin aslında iki farklı firavunun isimlerinin üst üste yazılmasıyla oluşan tesadüfi bir silinme olduğunu kanıtlamıştır.",
+            ipucuMantik: "Tarih bilimi somut belgelere dayanır. Eski çağlarda devasa yapıların uzaylıların yardımıyla yapıldığı iddiası 'sözdebilim'dir.",
+            gercekMi: false,
+            sonucMetni: "SAHTE! Sosyal medyada sıkça dolaşan bu iddia, metinlerin üst üste binmesi (palimpsest) sonucu oluşan bir optik illüzyondur. Paleografi bilimi bu sahtekarlığı çürütmüştür."
+        },
+        {
+            baslik: "VAKA DOSYASI #3: Sümerlerin Yakınması",
+            iddia: "MÖ 2000'lere ait bir Sümer kil tabletinin çevirisinde şu cümle geçiyor: 'Günümüz gençliği çok bozuldu, büyüklere saygıları kalmadı. Dünyanın sonu yaklaşıyor olmalı.'",
+            ipucuZaman: "Tablet gerçekten de Sümer dönemine aittir. O dönemde de nesiller arası çatışmalar yaşanıyordu.",
+            ipucuFiziksel: "Filoloji uzmanları çivi yazısı metnini çevirmiş ve bu sitemkar edebi ifadenin tablette gerçekten yer aldığını doğrulamıştır.",
+            ipucuMantik: "İnsan psikolojisi ve kuşak çatışmaları binlerce yıldır benzerdir. Bu metin, dönemin sosyal yapısını yansıtan birinci elden bir kaynaktır.",
+            gercekMi: true,
+            sonucMetni: "GERÇEK! Ne kadar modern görünse de, bu iddia doğrudur. İstanbul Arkeoloji Müzesi'nde de benzer edebi metinler barındıran orijinal Sümer tabletleri bulunmaktadır."
+        },
+        {
+            baslik: "VAKA DOSYASI #4: İmparatorun Bağışı",
+            iddia: "Avrupa'da yüzyıllarca kabul gören Latince bir belgede, 4. yüzyılda Roma İmparatoru Konstantin'in tüm Batı Roma'nın yönetimini Papa'ya bıraktığı yazıyor.",
+            ipucuZaman: "Belgedeki bazı kelimeler ve hukuki terimler 4. yüzyılda değil, 8. yüzyılda kullanılmaya başlanmıştır.",
+            ipucuFiziksel: "Rönesans bilginleri, metindeki Latince gramer yapısının (Filoloji) Klasik Roma dönemine değil, Orta Çağ'a ait olduğunu tespit etti.",
+            ipucuMantik: "Güçlü bir imparatorun tüm siyasi gücünü sebepsiz yere devretmesi dönemin devlet mantığına aykırıdır.",
+            gercekMi: false,
+            sonucMetni: "SAHTE! 'Konstantin'in Bağışı' olarak bilinen bu belge tarihin en ünlü sahtekarlıklarından biridir. Lorenzo Valla, filoloji (dilbilim) kullanarak belgenin yüzyıllar sonra uydurulduğunu kanıtlamıştır."
+        },
+        {
+            baslik: "VAKA DOSYASI #5: Diktatörün Günlükleri",
+            iddia: "1983 yılında Almanya'da, Adolf Hitler'e ait olduğu iddia edilen ve onun gizli planlarını anlatan 60 ciltlik el yazması günlükler bulundu.",
+            ipucuZaman: "Günlüklerin yazıldığı iddia edilen dönem ile kağıdın üretim tarihi uyuşmuyor.",
+            ipucuFiziksel: "Kimyasal analizler, kağıdın içindeki beyazlatıcı maddenin ve mürekkebin 1950'lerden sonra (Hitler'in ölümünden sonra) icat edildiğini kanıtladı.",
+            ipucuMantik: "Hitler'in hayatının son yıllarında ağır el titremesi (Parkinson) yaşadığı ve bu kadar uzun metinleri kendi eliyle yazamayacağı biliniyor.",
+            gercekMi: false,
+            sonucMetni: "SAHTE! 'Hitler Günlükleri' skandalı, dış tenkitin (kimya ve materyal analizi) ne kadar hayati olduğunu gösterir. Sahtekarlar kağıt ve mürekkep analizini hesaba katmamıştı."
+        }
+    ];
+
+    let aktifVaka = 0;
+
+    mapCanvas.innerHTML = `
+        <div style="width: 100%; height: 100%; padding: 20px; background: var(--container-bg); box-sizing: border-box; overflow-y: auto;">
+            
+            <div style="max-width: 700px; margin: 0 auto; background: var(--option-bg); border: 2px solid #34495e; border-radius: 10px; padding: 20px; box-shadow: 0 10px 20px rgba(0,0,0,0.1);">
+                <div style="display: flex; justify-content: space-between; border-bottom: 2px dashed #7f8c8d; padding-bottom: 10px; margin-bottom: 15px;">
+                    <h3 id="vakaBaslik" style="margin: 0; color: #e74c3c; font-family: monospace; font-size: 20px;"></h3>
+                    <span style="background: #e74c3c; color: white; padding: 3px 10px; border-radius: 5px; font-weight: bold; font-size: 12px; letter-spacing: 1px;">GİZLİ DOSYA ${aktifVaka + 1}/5</span>
+                </div>
+                
+                <p id="vakaIddia" style="font-size: 16px; font-weight: 600; color: var(--text-color); margin-bottom: 25px; line-height: 1.5; padding: 15px; background: rgba(236, 240, 241, 0.1); border-left: 4px solid #3498db;"></p>
+
+                <h4 style="margin: 0 0 10px 0; color: var(--text-color);"><i class="fa-solid fa-toolbox"></i> Doğrulama Araçları (İpuçları):</h4>
+                <div style="display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap;">
+                    <button class="aracBtn" data-tip="zaman" style="flex:1; background: #34495e; color: white; border: none; padding: 10px; border-radius: 5px; cursor: pointer; transition: 0.3s; font-weight: bold;"><i class="fa-solid fa-clock"></i> Zaman Süzgeci</button>
+                    <button class="aracBtn" data-tip="fiziksel" style="flex:1; background: #34495e; color: white; border: none; padding: 10px; border-radius: 5px; cursor: pointer; transition: 0.3s; font-weight: bold;"><i class="fa-solid fa-microscope"></i> Dış Tenkit</button>
+                    <button class="aracBtn" data-tip="mantik" style="flex:1; background: #34495e; color: white; border: none; padding: 10px; border-radius: 5px; cursor: pointer; transition: 0.3s; font-weight: bold;"><i class="fa-solid fa-brain"></i> İç Tenkit</button>
+                </div>
+
+                <div id="ipucuAlani" style="display: none; background: rgba(241, 196, 15, 0.2); border-left: 4px solid #f1c40f; padding: 15px; margin-bottom: 20px; font-size: 14px; font-weight: bold; color: var(--text-color); min-height: 50px;"></div>
+
+                <div id="kararAlani" style="text-align: center; border-top: 2px dashed #7f8c8d; padding-top: 20px;">
+                    <h4 style="margin: 0 0 15px 0; color: var(--text-color);">KARARIN NEDİR DEDEKTİF?</h4>
+                    <button id="btnGercek" style="background: #27ae60; color: white; border: none; padding: 12px 30px; border-radius: 25px; font-size: 16px; font-weight: bold; cursor: pointer; margin-right: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.2);"><i class="fa-solid fa-check"></i> GERÇEK</button>
+                    <button id="btnSahte" style="background: #c0392b; color: white; border: none; padding: 12px 30px; border-radius: 25px; font-size: 16px; font-weight: bold; cursor: pointer; box-shadow: 0 4px 6px rgba(0,0,0,0.2);"><i class="fa-solid fa-xmark"></i> SAHTE</button>
+                </div>
+
+                <div id="sonucAlani" style="display: none; margin-top: 20px; text-align: center; padding: 20px; border-radius: 10px; font-size: 16px; font-weight: bold;">
+                    <p id="sonucMetni" style="margin: 0 0 15px 0; color: #fff;"></p>
+                    <button id="btnSonraki" style="background: rgba(255,255,255,0.3); color: white; border: 2px solid white; padding: 8px 20px; border-radius: 5px; font-weight: bold; cursor: pointer;">Sonraki Dosya <i class="fa-solid fa-arrow-right"></i></button>
+                </div>
+
+            </div>
+        </div>
+    `;
+
+    function vakayiYukle() {
+        const v = vakalar[aktifVaka];
+        document.getElementById('vakaBaslik').innerText = v.baslik;
+        document.querySelector('span[style*="letter-spacing"]').innerText = `İncelenen Vaka ${aktifVaka + 1}/5`;
+        document.getElementById('vakaIddia').innerHTML = `"${v.iddia}"`;
+        document.getElementById('ipucuAlani').style.display = 'none';
+        document.getElementById('sonucAlani').style.display = 'none';
+        document.getElementById('kararAlani').style.display = 'block';
+
+        document.querySelectorAll('.aracBtn').forEach(btn => {
+            btn.style.opacity = '1';
+            btn.onclick = function() {
+                const tip = this.getAttribute('data-tip');
+                const ipucuKutusu = document.getElementById('ipucuAlani');
+                ipucuKutusu.style.display = 'block';
+                if(tip === 'zaman') ipucuKutusu.innerHTML = `<i class="fa-solid fa-clock"></i> <b>Zaman Raporu:</b> ${v.ipucuZaman}`;
+                if(tip === 'fiziksel') ipucuKutusu.innerHTML = `<i class="fa-solid fa-microscope"></i> <b>Materyal Raporu:</b> ${v.ipucuFiziksel}`;
+                if(tip === 'mantik') ipucuKutusu.innerHTML = `<i class="fa-solid fa-brain"></i> <b>Mantık Raporu:</b> ${v.ipucuMantik}`;
+                this.style.opacity = '0.5';
+            };
+        });
+    }
+
+    function karariKontrolEt(secimGercekMi) {
+        const v = vakalar[aktifVaka];
+        const sonucAlani = document.getElementById('sonucAlani');
+        const sonucMetni = document.getElementById('sonucMetni');
+        
+        document.getElementById('kararAlani').style.display = 'none';
+        sonucAlani.style.display = 'block';
+
+        if(secimGercekMi === v.gercekMi) {
+            sonucAlani.style.background = '#27ae60';
+            sonucMetni.innerHTML = `<i class="fa-solid fa-star"></i> TEBRİKLER DEDEKTİF! Doğru bildin.<br><br>${v.sonucMetni}`;
+        } else {
+            sonucAlani.style.background = '#c0392b';
+            sonucMetni.innerHTML = `<i class="fa-solid fa-triangle-exclamation"></i> YANLIŞ KARAR! Dezenformasyon tuzağına düştün.<br><br>${v.sonucMetni}`;
+        }
+
+        if(aktifVaka === vakalar.length - 1) {
+            document.getElementById('btnSonraki').innerText = "Vakaları Başa Sar";
+        } else {
+            document.getElementById('btnSonraki').innerHTML = "Sonraki Dosya <i class='fa-solid fa-arrow-right'></i>";
+        }
+    }
+
+    document.getElementById('btnGercek').onclick = () => karariKontrolEt(true);
+    document.getElementById('btnSahte').onclick = () => karariKontrolEt(false);
+    
+    document.getElementById('btnSonraki').onclick = () => {
+        aktifVaka++;
+        if(aktifVaka >= vakalar.length) aktifVaka = 0;
+        vakayiYukle();
+    };
+
+    vakayiYukle();
+};
+// 13. ARAÇ: TARİHİ SİNEMA RADARI (BOĞAZİÇİ SİNEMA PLATFORMU ÖZEL SÜRÜMÜ)
+window.HARITA_MOTORU["sinema_radari"] = function() {
+    const controlsContainer = document.getElementById('mapControlsContainer');
+    const mapCanvas = document.getElementById('mapCanvas');
+
+    controlsContainer.style.display = 'block';
+    controlsContainer.style.padding = '10px';
+controlsContainer.innerHTML = `
+        <div style="text-align: center;">
+            <h4 style="margin: 0 0 5px 0; color: #f39c12; font-size: 18px; font-weight: 800; display: flex; align-items: center; justify-content: center; gap: 10px; flex-wrap: wrap;">
+                <span><i class="fa-solid fa-film"></i> Tarihi Sinema Radarı</span>
+                <a href="https://sinema.kirkyama.uk" target="_blank" title="Filmleri İzlemek İçin Sinema Platformuna Git" style="font-size: 12px; color: #fff; background: #f39c12; text-decoration: none; padding: 3px 10px; border-radius: 15px; font-weight: bold; transition: 0.3s; box-shadow: 0 2px 5px rgba(0,0,0,0.2);">
+                    <i class="fa-solid fa-arrow-up-right-from-square"></i> sinema.kirkyama.uk
+                </a>
+            </h4>
+            <div style="display: flex; justify-content: center; gap: 10px; align-items: center; flex-wrap: wrap; margin-top: 8px;">
+                <select id="filmSecici" style="padding: 6px; border-radius: 5px; border: 2px solid #f39c12; background: var(--container-bg); color: var(--text-color); font-weight: bold; font-size: 14px; max-width: 100%;">
+                    <option value="gladiator">Gladiator (Gladyatör)</option>
+                    <option value="braveheart">Braveheart (Cesur Yürek)</option>
+                    <option value="troy">Troy (Truva)</option>
+                    <option value="warhorse">War Horse (Savaş Atı)</option>
+                    <option value="bati_cephesi">Batı Cephesinde Yeni Bir Şey Yok</option>
+                    <option value="1917">1917</option>
+                    <option value="nisan1915">Bir İnce Sızı Nisan 1915 (Tiyatro)</option>
+                    <option value="hidden_figures">Hidden Figures (Gizli Sayılar)</option>
+                    <option value="turtles">Kaplumbağalar da Uçar (Turtles Can Fly)</option>
+                    <option value="sherlock">Sherlock Holmes: Gölge Oyunları</option>
+                    <option value="kinglear">King Lear (Kral Lear)</option>
+                </select>
+            </div>
+            <div style="font-size: 11px; opacity: 0.6; margin-top: 5px; color: var(--text-color);">Bir film seçin ve sahnelerin gerçek mi kurgu mu olduğunu analiz edin.</div>
+        </div>
+    `;
+
+    window.currentMapInstance = { remove: function() { mapCanvas.innerHTML = ''; mapCanvas.style.display = 'block'; } };
+
+    // BOĞAZİÇİ SİNEMA PLATFORMUNDAKİ TÜM FİLMLERİN VERİTABANI
+    const filmVerileri = {
+        "gladiator": {
+            aciklama: "Roma İmparatorluğu'nun altın çağının sonlarında, ihanete uğrayan bir generalin arenadaki mücadelesi.",
+            sahneler: [
+                { baslik: "İmparator Commodus'un Arenada Ölümü", iddia: "İmparator Commodus, gladyatör Maximus ile arenada halkın gözü önünde dövüşürken öldürülmüştür.", cevap: "kurgu", gercek: "<b>SİNEMATOGRAFİK KURGU:</b> Commodus arenada dövüşmeyi çok severdi ancak arenada ölmedi. MS 192'de hamamda güreş hocası Narcissus tarafından boğularak suikasta uğradı." },
+                { baslik: "Germen Savaşları ve Roma Ordusu", iddia: "Filmin başındaki devasa orman savaşı ve Roma ordusunun savaş düzeni (Testudo/Kaplumbağa vb.) o döneme aittir.", cevap: "gercek", gercek: "<b>TARİHİ GERÇEKLİK:</b> İmparator Marcus Aurelius dönemi gerçekten de kuzeydeki Germen kabileleriyle (Marcomanni) yapılan zorlu ve kanlı orman savaşlarıyla geçmiştir." }
+            ]
+        },
+        "braveheart": {
+            aciklama: "13. Yüzyılda İskoçya'nın İngiltere'ye karşı verdiği bağımsızlık savaşını ve William Wallace'ı anlatır.",
+            sahneler: [
+                { baslik: "Stirling Köprüsü Savaşı", iddia: "William Wallace'ın İngiliz ağır süvarilerini yendiği devasa savaş geniş bir ovada gerçekleşmiştir.", cevap: "kurgu", gercek: "<b>SİNEMATOGRAFİK KURGU:</b> Savaşın gerçek adı 'Stirling KÖPRÜSÜ Savaşı'dır. Wallace, dar bir köprüden geçen İngilizleri tuzağa düşürerek yenmiştir. Filmde bütçe/çekim zorluğu nedeniyle köprü hiç gösterilmemiştir!" },
+                { baslik: "İskoçların Bağımsızlık İsyanı", iddia: "William Wallace, İngiliz zulmüne (ve eşinin öldürülmesine) karşı halkı örgütleyen gerçek bir tarihi figürdür.", cevap: "gercek", gercek: "<b>TARİHİ GERÇEKLİK:</b> William Wallace, İskoçya'nın en büyük milli kahramanlarından biridir ve I. Edward'ın ordularına karşı gerçekten de gerilla taktikleriyle büyük bir isyan başlatmıştır." }
+            ]
+        },
+        "troy": {
+            aciklama: "Homeros'un İlyada destanına dayanan, Akalar (Yunanlılar) ile Truvalılar arasındaki efsanevi savaşı konu alır.",
+            sahneler: [
+                { baslik: "Truva Şehri ve Zenginliği", iddia: "Truva adında devasa surlara sahip, Asya ile Avrupa arasında kilit bir ticaret şehri gerçekten vardı.", cevap: "gercek", gercek: "<b>TARİHİ GERÇEKLİK:</b> Alman arkeolog Heinrich Schliemann'ın Çanakkale Hisarlık tepesinde yaptığı kazılar, Truva'nın var olduğunu ve defalarca yıkılıp yeniden yapıldığını kanıtlamıştır." },
+                { baslik: "Aşil'in (Achilles) Truva Atına Binişi", iddia: "Savaş, içine Aşil'in de saklandığı devasa bir tahta at hilesiyle kazanılmıştır.", cevap: "kurgu", gercek: "<b>SİNEMATOGRAFİK KURGU (MİTOLOJİ):</b> Truva savaşı gerçektir ancak 'Tahta At' muhtemelen bir metafordur (Depremi simgeleyen Poseidon'un atı veya bir kuşatma koçbaşı). Filmin aksine Homeros'un İlyada destanında Truva Atı geçmez bile!" }
+            ]
+        },
+        "warhorse": {
+            aciklama: "I. Dünya Savaşı'nın acımasız siperlerine satılan Joey adlı bir atın ve sahibinin hikayesi.",
+            sahneler: [
+                { baslik: "Milyonlarca Atın Kullanımı", iddia: "I. Dünya Savaşı'nda makineli tüfeklere ve tanklara rağmen milyonlarca at cepheye sürülmüş ve telef olmuştur.", cevap: "gercek", gercek: "<b>TARİHİ GERÇEKLİK:</b> I. Dünya Savaşı'nda lojistik, top çekimi ve süvari hücumları için yaklaşık 8 milyon at kullanılmış ve büyük bir kısmı ölmüştür. Film bu acı trajediyi çok doğru yansıtır." },
+                { baslik: "Siperler Arası Mucizevi Buluşma", iddia: "Joey'in tarafsız bölgedeki (No Man's Land) tellere takılması ve sahibinin onu gaz saldırısı sonrası bulması olayların standart akışıdır.", cevap: "kurgu", gercek: "<b>SİNEMATOGRAFİK KURGU:</b> Atların tellere takıldığı doğrudur ancak filmin sonundaki bu inanılmaz tesadüfler zinciri, savaşın acımasızlığını yumuşatmak için yazılmış melodramatik bir kurgudur." }
+            ]
+        },
+        "bati_cephesi": {
+            aciklama: "I. Dünya Savaşı'nda Alman ordusuna gönüllü katılan genç lise öğrencilerinin siperlerdeki psikolojik çöküşü.",
+            sahneler: [
+                { baslik: "Ateşkese Saniyeler Kala Taarruz", iddia: "11 Kasım 1918 sabahı, ateşkesin yürürlüğe girmesine 15 dakika kala Alman komutanlar askerleri tekrar ölüme göndermiştir.", cevap: "kurgu", gercek: "<b>SİNEMATOGRAFİK KURGU:</b> Bu sahne 2022 yapımı filme özel bir dramatizasyondur. Kitapta veya 1930 filminde böyle bir sahne yoktur. Paul, ateşkesten aylar önce sıradan, sakin bir günde vurulur." },
+                { baslik: "Askerlerin Psikolojik Yıkımı", iddia: "Savaşın başındaki milliyetçi heyecanın, çamurlu siperlerde ve tanklar karşısında büyük bir travmaya (Shell Shock) dönüşmesi.", cevap: "gercek", gercek: "<b>TARİHİ GERÇEKLİK:</b> Yazar Erich Maria Remarque'ın bizzat yaşadıklarına dayanan bu eser, 'Kayıp Kuşak' denilen I. Dünya Savaşı gençliğinin gerçek travmasını yansıtır." }
+            ]
+        },
+        "1917": {
+            aciklama: "I. Dünya Savaşı'nda iki İngiliz askerinin, iletişim hatları kesik olan bir tabura çekilme emrini iletme çabası.",
+            sahneler: [
+                { baslik: "Kesintisiz Tek Plan Çekim", iddia: "Film, baştan sona hiç ara verilmeden tek bir kamera çekimiyle (One-shot) kaydedilmiştir.", cevap: "kurgu", gercek: "<b>SİNEMATOGRAFİK KURGU:</b> Film tek bir çekim gibi görünse de aslında birçok gizli kurgu noktası içerir. Yönetmen Sam Mendes, seyirciyi karakterin yanından hiç ayırmamak için bu harika teknik illüzyonu kullanmıştır." },
+                { baslik: "Tarafsız Bölge ve Alman Siperleri", iddia: "İngiliz askerlerinin geçtiği insansız bölge (No Man's Land), devasa kraterler ve terk edilmiş beton Alman siperleri gerçektir.", cevap: "gercek", gercek: "<b>TARİHİ GERÇEKLİK:</b> Filmin görsel tasarımı ve 'Almanların taktiksel olarak Hindenburg Hattı'na çekilmesi' olayı tamamen tarihi kayıtlara ve 1917 stratejilerine dayanır." }
+            ]
+        },
+        "hidden_figures": {
+            aciklama: "1960'larda ABD Uzay Yarışında (NASA), matematiksel dehalarıyla tarih yazan siyahi kadınların hikayesi.",
+            sahneler: [
+                { baslik: "Orbit (Yörünge) Hesaplamaları", iddia: "Astronot John Glenn, uzaya çıkmadan önce IBM bilgisayarlarına güvenmeyip hesaplamaları bizzat Katherine Johnson'ın yapmasını istemiştir.", cevap: "gercek", gercek: "<b>TARİHİ GERÇEKLİK:</b> Bu efsanevi olay kesinlikle doğrudur. Glenn, 'O kız (Katherine) rakamları kontrol etsin, o tamamsa ben uçmaya hazırım' demiştir." },
+                { baslik: "Tuvalet Tabelasının Kırılması", iddia: "NASA müdürü Al Harrison (Kevin Costner), eline bir levye alıp 'NASA'da herkesin çişi aynı renktir' diyerek ayrımcı tuvalet tabelasını kırmıştır.", cevap: "kurgu", gercek: "<b>SİNEMATOGRAFİK KURGU:</b> Bu sahne Hollywood'un duygusal etki yaratmak için uydurduğu (White Savior tropeu) kurgusal bir andır. Gerçek hayatta Katherine Johnson ayrımcı tabelaları zaten gizlice görmezden geliyordu." }
+            ]
+        },
+        "turtles": {
+            aciklama: "ABD'nin Irak'ı işgali arifesinde, Türkiye-Irak sınırındaki mülteci kampında mayın toplayarak hayatta kalan yetim çocukların öyküsü.",
+            sahneler: [
+                { baslik: "Mayın Toplayan Çocuklar", iddia: "Bölgedeki çocuklar, Amerikan silah tüccarlarına satmak için elleriyle patlamamış kara mayınlarını sökmektedir.", cevap: "gercek", gercek: "<b>TARİHİ GERÇEKLİK:</b> Yönetmen Bahman Ghobadi, filmdeki çocukların çoğunu bölgeden seçmiştir ve maalesef savaş sonrası Irak-Türkiye-Suriye sınırlarında bu trajediler aynen yaşanmıştır." },
+                { baslik: "Agrin'in Trajedisi", iddia: "Filmdeki ana karakterlerin yaşadığı sarsıcı son, belgesel niteliğinde birebir yaşanmış tek bir olayın kaydıdır.", cevap: "kurgu", gercek: "<b>SİNEMATOGRAFİK KURGU:</b> Filmin arka planı (Halepçe katliamı etkileri, mayınlar, Saddam'ın düşüşü) tamamen gerçek olsa da, Agrin ve Soran karakterlerinin dramatik hikayesi yönetmenin yazdığı edebi bir kurgudur." }
+            ]
+        },
+        "sherlock": {
+            aciklama: "Sanayi Devrimi sonrası Londra'da, Avrupa'yı I. Dünya Savaşına sürüklemeye çalışan Profesör Moriarty ile Sherlock'un zeka savaşı.",
+            sahneler: [
+                { baslik: "Sherlock Holmes'un Yaşamı", iddia: "Dünyanın en büyük dedektifi olan Sherlock Holmes, 19. yüzyıl sonlarında Londra'da gerçekten yaşamış bir şahıstır.", cevap: "kurgu", gercek: "<b>SİNEMATOGRAFİK KURGU:</b> Sherlock Holmes, yazar Sir Arthur Conan Doyle tarafından yaratılmış kurgusal bir romandır. O kadar inandırıcıdır ki hala 221B Baker Street'e mektuplar gelir." },
+                { baslik: "Silahlanma Yarışı ve Silah Fabrikaları", iddia: "Filmde gösterilen devasa mühimmat fabrikaları, yeni toplar ve Avrupa devletleri arasındaki gergin silahlanma yarışı dönemin gerçeğidir.", cevap: "gercek", gercek: "<b>TARİHİ GERÇEKLİK:</b> 19. Yüzyılın sonu, Sanayi İnkılabının ölümcül silahlar ürettiği ve büyük devletlerin sömürgeler için I. Dünya Savaşı'na hazırlandığı gerçek bir 'Silahlı Barış' (Armed Peace) dönemidir." }
+            ]
+        },
+        "kinglear": {
+            aciklama: "Yaşlanan bir kralın, krallığını üç kızı arasında bölüştürme kararı almasıyla başlayan ihanet ve delilik trajedisi.",
+            sahneler: [
+                { baslik: "Antik Britanya Krallığı", iddia: "Kral Lear (Leir), Britanya'nın antik çağlarında yaşamış, ülkesini kızları arasında paylaştırmış gerçek bir tarihi figürdür.", cevap: "kurgu", gercek: "<b>SİNEMATOGRAFİK KURGU:</b> Lear, mitolojik/efsanevi bir figürdür (Leir of Britain). Shakespeare, bu eski efsaneyi alıp kendi edebi dehasıyla kurgulayarak tarihin en büyük tiyatro metinlerinden birini yaratmıştır." },
+                { baslik: "Mutlak Monarşinin Çöküşü", iddia: "Kralın gücünü (topraklarını) devrettikten sonra otoritesini ve itibarını anında kaybetmesi, Orta Çağ feodal düzeninin temel bir gerçeğidir.", cevap: "gercek", gercek: "<b>TARİHİ/SOSYOLOJİK GERÇEKLİK:</b> Eser kurgu olsa da, feodal sistemde 'Toprak = Güç' denklemi kesin bir gerçektir. Toprağını ve ordusunu kaybeden bir kral, sadece unvanla ayakta kalamaz." }
+            ]
+        },
+        "nisan1915": {
+            aciklama: "Osmanlı'nın son döneminde yaşanan Tehcir (Zorunlu Göç) olaylarını ve iki toplum arasındaki acı kırılmaları anlatan bir tiyatro eseri.",
+            sahneler: [
+                { baslik: "1915 Tehcir Kanunu (Sevk ve İskân)", iddia: "I. Dünya Savaşı sırasında Kafkas Cephesindeki güvenlik nedeniyle Osmanlı Devleti Ermeni vatandaşlarını Suriye bölgesine göç ettirmiştir.", cevap: "gercek", gercek: "<b>TARİHİ GERÇEKLİK:</b> 1915 Sevk ve İskân Kanunu tarihi bir gerçektir. Savaşın getirdiği lojistik yetersizlikler, çetecilik faaliyetleri ve salgın hastalıklar nedeniyle yollarda büyük trajediler yaşanmıştır." },
+                { baslik: "Karakterlerin Birebir Yaşamı", iddia: "Tiyatro sahnesinde izlenen belirli ailelerin ve karakterlerin diyalogları tarihi arşivlerden birebir alınmıştır.", cevap: "kurgu", gercek: "<b>SİNEMATOGRAFİK/TEATRAL KURGU:</b> Olayların tarihi arka planı gerçek olsa da, sahnede izlenen karakterler, o dönemin sosyolojik yapısını ve acılarını yansıtmak için yazar tarafından yaratılmış dramatik arketiplerdir." }
+            ]
+        }
+    };
+
+    let aktifFilm = "gladiator";
+    let aktifSahneIdx = 0;
+
+    function arayuzCiz() {
+        const film = filmVerileri[aktifFilm];
+        const sahne = film.sahneler[aktifSahneIdx];
+        const comboSelect = document.getElementById('filmSecici').outerHTML; // Seçiciyi hafızada tut
+
+        mapCanvas.innerHTML = `
+            <div style="width: 100%; height: 100%; padding: 15px; background: var(--container-bg); display: flex; flex-direction: column; align-items: center; box-sizing: border-box; overflow-y:auto;">
+                <div style="max-width: 650px; width: 100%; background: var(--option-bg); border-radius: 12px; border: 3px solid #f39c12; padding: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.2);">
+                    <div style="text-align: center; margin-bottom: 15px;">
+                        <span style="background: #f39c12; color: white; padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: bold;">ANALİZ MODÜLÜ</span>
+                        <h2 style="margin: 10px 0; color: var(--text-color); font-size: 20px;">${document.getElementById('filmSecici').options[document.getElementById('filmSecici').selectedIndex].text}</h2>
+                        <p style="font-size: 13px; opacity: 0.8; font-style: italic; color: var(--text-color);">${film.aciklama}</p>
+                    </div>
+
+                    <div id="sahneKarti" style="background: rgba(0,0,0,0.05); padding: 15px; border-radius: 8px; border-left: 5px solid #f39c12; margin-bottom: 20px;">
+                        <h4 style="margin: 0 0 8px 0; color: #f39c12;">Sahne ${aktifSahneIdx + 1}/2: ${sahne.baslik}</h4>
+                        <p style="margin: 0; font-size: 15px; color: var(--text-color); line-height: 1.5;">${sahne.iddia}</p>
+                    </div>
+
+                    <div id="kararButonlari" style="display: flex; gap: 10px; flex-wrap: wrap;">
+                        <button onclick="window.RADAR_KONTROL('gercek')" style="flex: 1; min-width:150px; background: #27ae60; color: white; border: none; padding: 12px; border-radius: 8px; font-weight: bold; cursor: pointer; transition: 0.3s; font-size: 14px;"><i class="fa-solid fa-landmark"></i> TARİHİ GERÇEKLİK</button>
+                        <button onclick="window.RADAR_KONTROL('kurgu')" style="flex: 1; min-width:150px; background: #2980b9; color: white; border: none; padding: 12px; border-radius: 8px; font-weight: bold; cursor: pointer; transition: 0.3s; font-size: 14px;"><i class="fa-solid fa-clapperboard"></i> SİNEMATOGRAFİK KURGU</button>
+                    </div>
+
+                    <div id="sonucAlani" style="display: none; margin-top: 20px; padding: 15px; border-radius: 8px; animation: fadeIn 0.5s;">
+                        <p id="sonucMetni" style="margin: 0 0 15px 0; font-size: 14px; line-height: 1.6; color: white;"></p>
+                        <button id="btnSonraki" style="background: rgba(255,255,255,0.3); color: white; border: 1px solid white; padding: 8px 15px; border-radius: 5px; cursor: pointer; font-weight: bold;">Sonraki Sahne <i class="fa-solid fa-chevron-right"></i></button>
+                    </div>
+                </div>
+            </div>
+        `;
+    }
+
+    window.RADAR_KONTROL = function(secim) {
+        const sahne = filmVerileri[aktifFilm].sahneler[aktifSahneIdx];
+        const sonucAlani = document.getElementById('sonucAlani');
+        const sonucMetni = document.getElementById('sonucMetni');
+        const btnSonraki = document.getElementById('btnSonraki');
+
+        sonucAlani.style.display = "block";
+        document.getElementById('kararButonlari').style.display = "none";
+
+        if (secim === sahne.cevap) {
+            sonucAlani.style.background = "#27ae60";
+            sonucMetni.innerHTML = `<i class="fa-solid fa-circle-check"></i> <b>DOĞRU ANALİZ!</b><br><br>${sahne.gercek}`;
+        } else {
+            sonucAlani.style.background = "#c0392b";
+            sonucMetni.innerHTML = `<i class="fa-solid fa-circle-xmark"></i> <b>YANLIŞ ANALİZ!</b> Yönetmenin tuzağına düştünüz.<br><br>${sahne.gercek}`;
+        }
+
+        btnSonraki.onclick = function() {
+            aktifSahneIdx++;
+            if (aktifSahneIdx >= filmVerileri[aktifFilm].sahneler.length) {
+                aktifSahneIdx = 0;
+                alert("Bu film için analizi tamamladınız! Modülü kapatabilir veya menüden başka bir film seçebilirsiniz.");
+            }
+            arayuzCiz();
+        };
+    };
+
+    // Dinamik dropdown değişikliğini yakala
+    document.getElementById('mapControlsContainer').addEventListener('change', function(e) {
+        if(e.target.id === 'filmSecici') {
+            aktifFilm = e.target.value;
+            aktifSahneIdx = 0;
+            arayuzCiz();
+        }
+    });
+
+    arayuzCiz();
+};
+// 14. ARAÇ: TARİHİ EMPATİ SİMÜLATÖRÜ (KARAR AĞACI / 6 SENARYOLU SÜRÜM)
+window.HARITA_MOTORU["tarihi_empati"] = function() {
+    const controlsContainer = document.getElementById('mapControlsContainer');
+    const mapCanvas = document.getElementById('mapCanvas');
+
+    controlsContainer.style.display = 'block';
+    controlsContainer.style.padding = '10px';
+    controlsContainer.innerHTML = `
+        <div style="text-align: center;">
+            <h4 style="margin: 0 0 5px 0; color: #8e44ad; font-size: 18px; font-weight: 800;"><i class="fa-solid fa-chess-knight"></i> Tarihsel Empati Simülatörü</h4>
+            <div style="display: flex; justify-content: center; gap: 10px; align-items: center; flex-wrap: wrap; margin-top: 8px;">
+                <select id="senaryoSecici" style="padding: 6px; border-radius: 5px; border: 2px solid #8e44ad; background: var(--container-bg); color: var(--text-color); font-weight: bold; font-size: 14px; max-width: 100%;">
+                    <option value="kades">MÖ 1274 - Hitit Kralı Muvatalli (Kadeş Savaşı)</option>
+                    <option value="metehan">MÖ 209 - Mete Han (Vatan Toprağı)</option>
+                    <option value="iskender">MÖ 333 - Büyük İskender (Kör Düğüm)</option>
+                    <option value="attila">MS 452 - Attila (Tanrının Kırbacı)</option>
+                    <option value="bumin">MS 552 - Bumin Kağan (Bağımsızlık Ateşi)</option>
+                    <option value="tarik">MS 711 - Tarık Bin Ziyad (Geri Dönüş Yok)</option>
+                </select>
+            </div>
+            <div style="font-size: 11px; opacity: 0.8; margin-top: 8px; color: var(--text-color);">Geçmişi bugünün aklıyla değil, o dönemin şartlarıyla değerlendirin. Karar sizin!</div>
+        </div>
+    `;
+
+    window.currentMapInstance = { remove: function() { mapCanvas.innerHTML = ''; mapCanvas.style.display = 'block'; } };
+
+    const senaryolar = {
+        // 1. KADEŞ SAVAŞI
+        "kades": {
+            baslik: "Kadeş'in Kaderi", karakter: "Hitit Kralı Muvatalli", kimlik: "Anadolu'nun en büyük askeri gücünün başındasın.", baslangic: "dugum1",
+            dugumler: {
+                "dugum1": {
+                    metin: "Mısır Firavunu II. Ramses büyük bir orduyla Kadeş şehrine doğru ilerliyor. Casusların yakaladığı iki Bedevi, Ramses'in ordusunun hala çok uzakta, Halep'te olduğunu söylüyor. Ordun savaşa hazır ancak yorgun. Ne emredersin?",
+                    ikon: "fa-campground",
+                    secenekler: [
+                        { metin: "Bedevilere inan ve hemen zayıf görünen öncü Mısır birliklerine saldır.", hedef: "dugum2_yanlis" },
+                        { metin: "Bedevilerin Ramses'in casusu olabileceğinden şüphelen. Ordunu Kadeş kalesinin arkasına gizle.", hedef: "dugum2_dogru" }
+                    ]
+                },
+                "dugum2_yanlis": {
+                    metin: "Tarihi Hata! Bedeviler aslında Ramses'in casuslarıydı. Aceleyle saldırdığın için Ramses'in asıl ordusu seni pusuya düşürdü ve Hitit ordusu ağır kayıplar verdi.", sonuc: "basarisiz",
+                    geriBildirim: "Anakronizm ve Strateji: Antik çağlarda uydu görüntüleri yoktu, istihbarat yanıltıcı olabilirdi. Gerçekte Muvatalli bu tuzağa düşmemiş ve Mısır ordusunu pusuya düşürmüştür."
+                },
+                "dugum2_dogru": {
+                    metin: "Doğru Karar! Bedevilerin yalan söylediğini anladın ve ordunu Kadeş kalesinin arkasına başarıyla gizledin. Ramses, ordusunun büyük kısmından koparak senin pusuna düştü. Savaş arabalarınla Mısır ordusuna ağır bir darbe vurdun. Ancak savaş kilitlendi. Ne yapacaksın?",
+                    ikon: "fa-shield-halved",
+                    secenekler: [
+                        { metin: "Ramses ölene kadar saldırıya devam et. Geri çekilmek yok!", hedef: "dugum3_yanlis" },
+                        { metin: "Savaşın uzaması iki tarafı da tüketecek. Ateşkes teklif et.", hedef: "dugum3_dogru" }
+                    ]
+                },
+                "dugum3_yanlis": {
+                    metin: "Tarihi Hata! Savaş uzadıkça Mısır'ın yedek birlikleri yetişti. Hitit ordusu yıprandı ve kesin bir zafer kazanamadın. İki devlet de ağır yıkım yaşadı.", sonuc: "basarisiz",
+                    geriBildirim: "Tarihi Empati: O dönemin şartlarında uzun süren meydan savaşları devletlerin ekonomisini tamamen çökertirdi. Mutlak yok etme stratejisi yerine diplomatik kazanç elde etmek daha akılcıydı."
+                },
+                "dugum3_dogru": {
+                    metin: "Muhteşem Tarihi Empati! Her iki ordunun da yenişemeyeceğini ve bölgede yükselen Asur tehlikesini öngördün. Ramses ile savaşı durdurdun.", sonuc: "basarili",
+                    geriBildirim: "Gerçek Tarih: Muvatalli barış yolunu seçti. Tarihin bilinen ilk yazılı antlaşması olan 'Kadeş Barış Antlaşması' imzalandı. Bu diplomatik zeka Anadolu'ya uzun bir barış getirdi."
+                }
+            }
+        },
+        // 2. METE HAN
+        "metehan": {
+            baslik: "Vatan Toprağı", karakter: "Asya Hun Hükümdarı Mete Han", kimlik: "Bozkırın yeni ve genç liderisin. Devletin sınırları tehdit altında.", baslangic: "dugum1",
+            dugumler: {
+                "dugum1": {
+                    metin: "Tahta yeni geçtin. Doğudaki güçlü komşun Tunguzlar (Donghular) güçlenmeni istemiyor. Senden en sevdiğin atını istediler. Kurultay (Meclis) 'Bu bir hakarettir, savaşalım!' diyor. Ne karar vereceksin?",
+                    ikon: "fa-horse-head",
+                    secenekler: [
+                        { metin: "Kurultayı dinle ve onurunu korumak için hemen savaş ilan et.", hedef: "dugum2_yanlis" },
+                        { metin: "Ordun henüz tam hazır değil. Zaman kazanmak için atı ver.", hedef: "dugum2_dogru" }
+                    ]
+                },
+                "dugum2_yanlis": {
+                    metin: "Tarihi Hata! Ordun tam olarak teşkilatlanmamıştı (Onlu Sistem henüz oturmamıştı). Güçlü Tunguz ordusu karşısında yenilgiye uğradın ve devletin dağıldı.", sonuc: "basarisiz",
+                    geriBildirim: "Tarihi Empati: Devlet adamlığı, kişisel duygularla değil, devletin bekası için rasyonel düşünmeyi gerektirir. Mete Han ordusunu hazırlamak için zaman kazanmayı seçmişti."
+                },
+                "dugum2_dogru": {
+                    metin: "Doğru Karar! Zaman kazandın ve ordunu 'Onlu Sistem' ile eğitmeye devam ettin. Ancak Tunguzlar küstahlaştı. Şimdi de sınırda, tarıma elverişsiz çorak bir toprak parçasını istiyorlar. Kurultay 'Çorak toprak için savaşmaya değmez, verelim gitsin' diyor. Ne yapacaksın?",
+                    ikon: "fa-mountain-sun",
+                    secenekler: [
+                        { metin: "Kurultayı dinle ve gereksiz bir toprak için savaşma, toprağı ver.", hedef: "dugum3_yanlis" },
+                        { metin: "Toprak devletindir, verilmez! Savaş ilan et.", hedef: "dugum3_dogru" }
+                    ]
+                },
+                "dugum3_yanlis": {
+                    metin: "Tarihi Hata! Toprak tavizi verdiğin için boyların sana olan güveni sarsıldı. Bağımsızlık sembolünü kaybettin ve devlet zayıfladı.", sonuc: "basarisiz",
+                    geriBildirim: "Vatan Bilinci: Tarihte toprak sadece ekonomik bir kaynak değil, egemenliğin ve bağımsızlığın sembolüdür. Toprak tavizi, devletin otoritesini yıkar."
+                },
+                "dugum3_dogru": {
+                    metin: "Muhteşem Tarihi Empati! 'Toprak devletin temelidir, hiç kimseye verilmez!' diyerek ordunla ani bir baskın yaptın ve Tunguzları ağır bir yenilgiye uğrattın.", sonuc: "basarili",
+                    geriBildirim: "Gerçek Tarih: Mete Han'ın bu tutumu, Türk tarihinde 'Vatan Sevgisi' ve 'Toprak Bütünlüğü' kavramlarının bilinen ilk ve en net örneğidir."
+                }
+            }
+        },
+        // 3. BÜYÜK İSKENDER
+        "iskender": {
+            baslik: "Kör Düğüm", karakter: "Makedon Kralı Büyük İskender", kimlik: "Gözünü tüm Asya'yı fethetmeye dikmiş genç, zeki ve hırslı bir komutansın.", baslangic: "dugum1",
+            dugumler: {
+                "dugum1": {
+                    metin: "Pers İmparatorluğu'na karşı sefere çıktın. Frigya'nın başkenti Gordion'dasın. Tapınakta çözülemeyen antik bir düğüm var. Kehanete göre bu düğümü çözen kişi Asya'nın hakimi olacak. Tüm askerlerin ve komutanların seni izliyor. Düğümün uçları bile görünmüyor. Ne yapacaksın?",
+                    ikon: "fa-ring",
+                    secenekler: [
+                        { metin: "Günlerce uğraşarak düğümü çözmenin mantıklı ve sabırlı yolunu ara.", hedef: "dugum2_yanlis" },
+                        { metin: "Kılıcını çek ve düğümü tek hamlede ortadan ikiye kes!", hedef: "dugum2_dogru" }
+                    ]
+                },
+                "dugum2_yanlis": {
+                    metin: "Tarihi Hata! Düğümü çözmeyi başaramadın. Günlerce uğraşman ordunun sana olan ilahi inancını sarstı ve kehaneti gerçekleştiremediğin için prestij kaybettin.", sonuc: "basarisiz",
+                    geriBildirim: "Liderlik Psikolojisi: Büyük askeri dehalar, kuralların dışına çıkabilen insanlardır. Takılıp kalmak bir imparator için zayıflık belirtisiydi."
+                },
+                "dugum2_dogru": {
+                    metin: "Muhteşem Tarihi Empati! Kılıcını çekip düğümü kestin! 'Nasıl çözüldüğünün bir önemi yok!' diyerek orduna yenilmez olduğunu kanıtladın.", sonuc: "basarili",
+                    geriBildirim: "Gerçek Tarih: İskender, Gordion düğümünü kılıcıyla keserek kuralları kendi yazan bir lider olduğunu göstermiş, askerlerinin maneviyatını zirveye taşıyarak Asya'nın derinliklerine (Hindistan'a kadar) ilerlemiştir."
+                }
+            }
+        },
+        // 4. ATTİLA
+        "attila": {
+            baslik: "Tanrının Kırbacı", karakter: "Avrupa Hun Hükümdarı Attila", kimlik: "Avrupa'yı titreten, en güçlü askeri dehanın sahibisin.", baslangic: "dugum1",
+            dugumler: {
+                "dugum1": {
+                    metin: "Batı Roma İmparatorluğu'nu dize getirdin, ordunla İtalya'ya girdin ve Roma'nın kapılarına dayandın. Roma halkı dehşet içinde. Papa I. Leo büyük bir heyetle ve ganimetle huzuruna gelerek Roma'yı bağışlaman için yalvarıyor. Kurultaydaki bazı komutanların 'Roma'yı yakıp yıkalım' diyor. Ne yapacaksın?",
+                    ikon: "fa-gavel",
+                    secenekler: [
+                        { metin: "Orduma kimse dur diyemez! Papa'yı reddet ve Roma'yı yağmala.", hedef: "dugum2_yanlis" },
+                        { metin: "Papa'nın yüklü haraç teklifini kabul et, Roma'yı bağışla ve geri dön.", hedef: "dugum2_dogru" }
+                    ]
+                },
+                "dugum2_yanlis": {
+                    metin: "Tarihi Hata! Roma'yı yağmaladın ancak ordun İtalya'da baş gösteren veba salgınına yakalandı. Üstelik sen İtalya'dayken Doğu Roma (Bizans) arkadan başkentine saldırdı.", sonuc: "basarisiz",
+                    geriBildirim: "Çok Cepheli Savaş: Bir lider ordu lojistiğini ve hastalıkları hesaba katmalıdır. Attila o dönem ordusundaki yorgunluğu ve doğudan gelen tehlikeyi biliyordu."
+                },
+                "dugum2_dogru": {
+                    metin: "Muhteşem Tarihi Empati! Papa'nın ricasını (ve ağır vergiyi) kabul ettin. Roma'yı yağmalamadın ancak psikolojik olarak tüm Avrupa'nın senin önünde diz çökmesini sağladın.", sonuc: "basarili",
+                    geriBildirim: "Gerçek Tarih: Attila ordusundaki salgın hastalıkları, yorgunluğu ve arkadan gelebilecek Marcianus (Bizans) saldırısını öngördü. Roma'yı haraca bağlayarak savaşmadan en büyük zaferi kazandı."
+                }
+            }
+        },
+        // 5. BUMİN KAĞAN
+        "bumin": {
+            baslik: "Bağımsızlık Ateşi", karakter: "Bumin Kağan", kimlik: "Avar Hakanlığı'na bağlı, demircilikle uğraşan Türk boylarının liderisin.", baslangic: "dugum1",
+            dugumler: {
+                "dugum1": {
+                    metin: "Avar Hakanı, kendisine karşı isyan eden Tölesleri bastırmanı istedi. Başarıyla bastırdın. Ödül olarak Hakan'ın kızıyla evlenmek istedin. Ancak Hakan sana 'Sen benim sıradan bir demirci kölemsin, buna nasıl cüret edersin!' diyerek hakaret etti. Ne yapacaksın?",
+                    ikon: "fa-hammer",
+                    secenekler: [
+                        { metin: "Avarlara karşı tek başına isyan etmek intihardır. Sessiz kal ve güçlenmeyi bekle.", hedef: "dugum2_yanlis" },
+                        { metin: "Bu hakaret kabul edilemez. Çin'deki Batı Wei devletiyle ittifak kur ve isyan bayrağını çek.", hedef: "dugum2_dogru" }
+                    ]
+                },
+                "dugum2_yanlis": {
+                    metin: "Tarihi Hata! Sessiz kalarak boyların gözündeki itibarını kaybettin. Avarlar senin fazla güçlendiğini fark edip Türk boylarını dağıttı.", sonuc: "basarisiz",
+                    geriBildirim: "Tarihi Empati: Bozkır kültüründe 'Kut' (yönetme yetkisi) cesaret ve başarıyla kanıtlanır. Liderlik fırsatını ve onurunu koruyamayanlar silinir."
+                },
+                "dugum2_dogru": {
+                    metin: "Doğru Karar! Diplomatik zekanı kullanıp Batı Wei prensesiyle evlendin. Çin'in desteğini arkana alarak Avarlara saldırdın ve onları Orta Asya'dan sürdün. Yeni kurduğun bu devlete ne ad vereceksin?",
+                    ikon: "fa-flag",
+                    secenekler: [
+                        { metin: "Bumin Kağanlığı", hedef: "dugum3_yanlis" },
+                        { metin: "Göktürk Devleti", hedef: "dugum3_dogru" }
+                    ]
+                },
+                "dugum3_yanlis": {
+                    metin: "Tarihi Hata! Sadece kendi adınla anılan bir devlet kurmak, Türk boylarının aidiyetini tam olarak sağlayamazdı.", sonuc: "basarisiz",
+                    geriBildirim: "Milli Kimlik: Bumin Kağan, tarihte ilk defa 'Türk' adını siyasi bir devlet adı olarak kullanarak tüm boyları tek bir milli kimlik altında toplamıştır."
+                },
+                "dugum3_dogru": {
+                    metin: "Muhteşem Tarihi Empati! Tarihte ilk kez 'Türk' adını devlet adı olarak kullandın ve 'İl Kağan' unvanını aldın.", sonuc: "basarili",
+                    geriBildirim: "Gerçek Tarih: 552'de kurulan Göktürk Devleti, Orta Asya'daki dağınık Türk boylarını birleştirmiş ve İpek Yolu'na hükmeden devasa bir imparatorluğa dönüşmüştür."
+                }
+            }
+        },
+        // 6. TARIK BİN ZİYAD
+        "tarik": {
+            baslik: "Geri Dönüş Yok", karakter: "İslam Komutanı Tarık Bin Ziyad", kimlik: "Kuzey Afrika'dan İspanya'yı fethe giden Emevi komutanısın.", baslangic: "dugum1",
+            dugumler: {
+                "dugum1": {
+                    metin: "7000 kişilik ordunla Cebelitarık Boğazı'nı geçip İspanya'ya (Endülüs) ayak bastın. Karşıda Vizigot Kralı Rodrigo'nun yaklaşık 100.000 kişilik devasa ordusu var. Askerlerin sayıca az oldukları için korku içinde, gemilere binip geri dönmek istiyorlar. Ne emredeceksin?",
+                    ikon: "fa-ship",
+                    secenekler: [
+                        { metin: "Askerler haklı, bu bir intihar. Disiplinli bir şekilde gemilere binip Kuzey Afrika'ya geri dönelim.", hedef: "dugum2_yanlis" },
+                        { metin: "Bütün gemileri yakın! Arkamız deniz, önümüz düşman. Ya zafer ya şehadet!", hedef: "dugum2_dogru" }
+                    ]
+                },
+                "dugum2_yanlis": {
+                    metin: "Tarihi Hata! Geri çekilme sırasında ordu paniğe kapıldı, Vizigot süvarileri sahil şeridinde ordunu yok etti. İspanya'nın fethi yüzlerce yıl gecikti.", sonuc: "basarisiz",
+                    geriBildirim: "Askeri Psikoloji: Sayıca az bir orduda 'kaçış' fikri bir kez kök salarsa disiplin biter. Komutan, askerlerine kazanmaktan başka bir çare bırakmamalıdır."
+                },
+                "dugum2_dogru": {
+                    metin: "Muhteşem Tarihi Empati! Gemileri ateşe verdin. Askerlerine dönerek: 'Arkanızda düşman gibi deniz, önünüzde deniz gibi düşman var!' diyerek onları savaşa motive ettin.", sonuc: "basarili",
+                    geriBildirim: "Gerçek Tarih: Tarık bin Ziyad'ın bu tarihi hamlesi askerlerdeki tüm korkuyu sildi. 711 yılındaki Kadiks (Guadalete) Savaşı'nda devasa Vizigot ordusunu yok ederek, 800 yıl sürecek Endülüs İslam medeniyetinin temellerini attı. Türkçedeki 'Gemileri yakmak' deyimi buradan gelir."
+                }
+            }
+        }
+    };
+
+    let aktifSenaryoId = "kades";
+    let aktifDugumId = "dugum1";
+
+    function arayuzCiz() {
+        const senaryo = senaryolar[aktifSenaryoId];
+        const dugum = senaryo.dugumler[aktifDugumId];
+        
+        let icerikHTML = "";
+
+        if (dugum.sonuc) {
+            const sonucRengi = dugum.sonuc === "basarili" ? "#27ae60" : "#c0392b";
+            const sonucIkonu = dugum.sonuc === "basarili" ? "fa-crown" : "fa-skull-crossbones";
+            
+            icerikHTML = `
+                <div style="background: ${sonucRengi}; color: white; padding: 25px; border-radius: 12px; margin-bottom: 20px; box-shadow: 0 10px 20px rgba(0,0,0,0.2);">
+                    <i class="fa-solid ${sonucIkonu}" style="font-size: 40px; margin-bottom: 15px;"></i>
+                    <h3 style="margin: 0 0 15px 0; font-size: 20px;">${dugum.metin}</h3>
+                    <div style="background: rgba(0,0,0,0.2); padding: 15px; border-radius: 8px; font-size: 15px; line-height: 1.5; text-align: left;">
+                        ${dugum.geriBildirim}
+                    </div>
+                </div>
+                <button onclick="window.EMPATI_BASA_SAR()" style="background: var(--option-bg); color: var(--text-color); border: 2px solid ${sonucRengi}; padding: 12px 25px; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 15px; transition: 0.3s;">
+                    <i class="fa-solid fa-rotate-left"></i> Senaryoyu Başa Sar
+                </button>
+            `;
+        } else {
+            icerikHTML = `
+                <div style="background: rgba(0,0,0,0.05); border-left: 5px solid #8e44ad; padding: 20px; border-radius: 8px; margin-bottom: 25px; text-align: left;">
+                    <div style="text-align: center; margin-bottom: 15px; color: #8e44ad; font-size: 30px;">
+                        <i class="fa-solid ${dugum.ikon}"></i>
+                    </div>
+                    <p style="margin: 0; font-size: 16px; color: var(--text-color); line-height: 1.6;">${dugum.metin}</p>
+                </div>
+                <div style="display: flex; flex-direction: column; gap: 12px;">
+                    ${dugum.secenekler.map((secenek) => `
+                        <button onclick="window.EMPATI_KARAR('${secenek.hedef}')" style="background: var(--option-bg); color: var(--text-color); border: 2px solid #8e44ad; padding: 15px; border-radius: 8px; font-weight: 600; cursor: pointer; font-size: 15px; transition: 0.3s; text-align: left;">
+                            <i class="fa-solid fa-arrow-right-long" style="color: #8e44ad; margin-right: 10px;"></i> ${secenek.metin}
+                        </button>
+                    `).join('')}
+                </div>
+            `;
+        }
+
+        mapCanvas.innerHTML = `
+            <div style="width: 100%; height: 100%; padding: 15px; background: var(--container-bg); display: flex; flex-direction: column; align-items: center; box-sizing: border-box; overflow-y:auto;">
+                <div style="max-width: 650px; width: 100%; background: var(--option-bg); border-radius: 12px; border: 3px solid #8e44ad; padding: 25px; box-shadow: 0 10px 25px rgba(0,0,0,0.2);">
+                    
+                    <div style="text-align: center; margin-bottom: 20px; border-bottom: 2px dashed rgba(142, 68, 173, 0.3); padding-bottom: 15px;">
+                        <h2 style="margin: 0 0 5px 0; color: #8e44ad; font-size: 22px;">${senaryo.baslik}</h2>
+                        <div style="font-weight: bold; color: var(--text-color); font-size: 15px; margin-bottom: 5px;">
+                            <i class="fa-solid fa-user-tie"></i> Rolün: <span style="color: #e67e22;">${senaryo.karakter}</span>
+                        </div>
+                        <div style="font-size: 13px; opacity: 0.7; color: var(--text-color);">${senaryo.kimlik}</div>
+                    </div>
+
+                    ${icerikHTML}
+                    
+                    <div style="font-size: 10px; color: var(--text-color); opacity: 0.5; margin-top: 25px; text-align: center;">
+                        Simülasyon: Murat Mutlu
+                    </div>
+                </div>
+            </div>
+        `;
+    }
+
+    window.EMPATI_KARAR = function(hedefDugumId) {
+        aktifDugumId = hedefDugumId;
+        arayuzCiz();
+    };
+
+    window.EMPATI_BASA_SAR = function() {
+        aktifDugumId = senaryolar[aktifSenaryoId].baslangic;
+        arayuzCiz();
+    };
+
+    document.getElementById('mapControlsContainer').addEventListener('change', function(e) {
+        if(e.target.id === 'senaryoSecici') {
+            aktifSenaryoId = e.target.value;
+            aktifDugumId = senaryolar[aktifSenaryoId].baslangic;
+            arayuzCiz();
+        }
+    });
+
+    arayuzCiz();
+};
+// 15. ARAÇ: KRONOLOJİ BULMACASI (ÇAYLAK'TAN ÜSTAT'A)
+window.HARITA_MOTORU["kronoloji_bulmacasi"] = function() {
+    const controlsContainer = document.getElementById('mapControlsContainer');
+    const mapCanvas = document.getElementById('mapCanvas');
+
+    // Üst Kontrol Paneli (Gizliyoruz çünkü oyun tam ekran olacak)
+    controlsContainer.style.display = 'none';
+    window.currentMapInstance = { remove: function() { mapCanvas.innerHTML = ''; mapCanvas.style.display = 'block'; } };
+
+    const seviyeler = [
+        {
+            baslik: "1. Seviye: İlk Çağ'ın Dönüm Noktaları",
+            olaylar: [
+                { id: "yazi", metin: "Sümerlerin Yazıyı İcat Etmesi", yil: -3200, yilMetni: "MÖ 3200" },
+                { id: "kades", metin: "Kadeş Antlaşması", yil: -1280, yilMetni: "MÖ 1280" },
+                { id: "para", metin: "Lidyalıların Parayı İcat Etmesi", yil: -700, yilMetni: "MÖ 7. Yüzyıl" },
+                { id: "roma", metin: "Roma'nın İkiye Ayrılması", yil: 395, yilMetni: "MS 395" }
+            ]
+        },
+        {
+            baslik: "2. Seviye: Türk Tarihinin Kırılmaları",
+            olaylar: [
+                { id: "mete", metin: "Mete Han'ın Tahta Çıkışı", yil: -209, yilMetni: "MÖ 209" },
+                { id: "kavimler", metin: "Kavimler Göçü", yil: 375, yilMetni: "MS 375" },
+                { id: "gokturk", metin: "I. Göktürk Devleti'nin Kuruluşu", yil: 552, yilMetni: "MS 552" },
+                { id: "uygur", metin: "Uygurların Yerleşik Hayata Geçişi", yil: 762, yilMetni: "MS 762" }
+            ]
+        },
+        {
+            baslik: "3. Seviye: İslam ve Orta Çağ",
+            olaylar: [
+                { id: "hicret", metin: "Hicret Olayı", yil: 622, yilMetni: "MS 622" },
+                { id: "talas", metin: "Talas Savaşı", yil: 751, yilMetni: "MS 751" },
+                { id: "malazgirt", metin: "Malazgirt Savaşı", yil: 1071, yilMetni: "MS 1071" },
+                { id: "istanbul", metin: "İstanbul'un Fethi", yil: 1453, yilMetni: "MS 1453" }
+            ]
+        }
+    ];
+
+    let aktifSeviye = 0;
+    let puan = 0;
+    let seciliKart = null;
+    let dogruSayisi = 0;
+
+    function rutbeHesapla() {
+        if (puan < 30) return { ad: "ÇAYLAK", renk: "#95a5a6", ikon: "fa-seedling" };
+        if (puan < 70) return { ad: "KALFA", renk: "#3498db", ikon: "fa-hammer" };
+        if (puan < 110) return { ad: "USTA", renk: "#e67e22", ikon: "fa-fire" };
+        return { ad: "ÜSTAT", renk: "#f1c40f", ikon: "fa-crown" };
+    }
+
+    function diziyiKaristir(array) {
+        let currentIndex = array.length, randomIndex;
+        while (currentIndex !== 0) {
+            randomIndex = Math.floor(Math.random() * currentIndex);
+            currentIndex--;
+            [array[currentIndex], array[randomIndex]] = [array[randomIndex], array[currentIndex]];
+        }
+        return array;
+    }
+
+    window.KART_SEC = function(id) {
+        document.querySelectorAll('.krono-kart').forEach(k => k.style.border = "2px solid #ccc");
+        const kart = document.getElementById("kart_" + id);
+        if(kart) kart.style.border = "3px solid #f1c40f";
+        seciliKart = id;
+    };
+
+    window.SLOT_TIKLA = function(hedefId) {
+        if (!seciliKart) {
+            alert("Önce yukarıdan bir olay kartı seçmelisin!");
+            return;
+        }
+
+        const slot = document.getElementById("slot_" + hedefId);
+        const kart = document.getElementById("kart_" + seciliKart);
+
+        if (seciliKart === hedefId) {
+            // DOĞRU EŞLEŞTİRME
+            puan += 10;
+            dogruSayisi++;
+            
+            // Kartı slota taşı ve kilitle
+            slot.innerHTML = `<div style="background:#27ae60; color:white; padding:10px; border-radius:5px; font-weight:bold; height:100%; display:flex; align-items:center; justify-content:center; font-size:13px; text-align:center;"><i class="fa-solid fa-check" style="margin-right:5px;"></i> ${kart.innerText}</div>`;
+            slot.style.border = "none";
+            kart.style.display = "none";
+            seciliKart = null;
+
+            // Rütbeyi ve puanı güncelle
+            arayuzGuncelle();
+
+            // Seviye bitti mi kontrolü
+            if (dogruSayisi === 4) {
+                setTimeout(() => {
+                    aktifSeviye++;
+                    if (aktifSeviye < seviyeler.length) {
+                        alert("Tebrikler! Seviye atladın. Puanın: " + puan);
+                        seviyeYukle();
+                    } else {
+                        const sonRutbe = rutbeHesapla();
+                        mapCanvas.innerHTML = `
+                            <div style="display:flex; flex-direction:column; align-items:center; justify-content:center; height:100%; background:var(--container-bg); color:var(--text-color); text-align:center; padding:20px;">
+                                <i class="fa-solid ${sonRutbe.ikon}" style="font-size:80px; color:${sonRutbe.renk}; margin-bottom:20px;"></i>
+                                <h1 style="margin:0 0 10px 0;">OYUN BİTTİ!</h1>
+                                <h2 style="margin:0; color:${sonRutbe.renk};">Nihai Rütben: ${sonRutbe.ad}</h2>
+                                <h3 style="margin:10px 0;">Toplam Puan: ${puan}</h3>
+                                <p style="opacity:0.8; margin-top:20px;">Tarihin akışına başarıyla yön verdin.</p>
+                                <button onclick="window.HARITA_MOTORU['kronoloji_bulmacasi']()" style="margin-top:20px; padding:10px 20px; background:#3498db; color:white; border:none; border-radius:8px; font-weight:bold; cursor:pointer;">Tekrar Oyna</button>
+                                
+                                <div style="font-size: 12px; font-weight: bold; opacity: 0.6; margin-top: 35px;">
+                                    <i class="fa-solid fa-gamepad"></i> Oyun: Murat Mutlu
+                                </div>
+                            </div>
+                        `;
+                    }
+                }, 500);
+            }
+        } else {
+            // YANLIŞ EŞLEŞTİRME
+            puan = Math.max(0, puan - 5);
+            slot.style.border = "3px solid #e74c3c";
+            setTimeout(() => { slot.style.border = "3px dashed #7f8c8d"; }, 500);
+            arayuzGuncelle();
+        }
+    };
+
+    function arayuzGuncelle() {
+        const rutbe = rutbeHesapla();
+        document.getElementById('kronoPuan').innerText = puan;
+        document.getElementById('kronoRutbe').innerHTML = `<i class="fa-solid ${rutbe.ikon}"></i> ${rutbe.ad}`;
+        document.getElementById('kronoRutbe').style.color = rutbe.renk;
+    }
+
+    function seviyeYukle() {
+        dogruSayisi = 0;
+        seciliKart = null;
+        const seviye = seviyeler[aktifSeviye];
+        
+        // Kartları karıştır
+        const karisikOlaylar = diziyiKaristir([...seviye.olaylar]);
+
+        // HTML İskeleti
+        mapCanvas.innerHTML = `
+            <div style="width: 100%; height: 100%; display: flex; flex-direction: column; background: var(--container-bg); box-sizing: border-box; overflow-y:auto; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">
+                
+                <div style="display:flex; justify-content:space-between; align-items:center; background: #2c3e50; color: white; padding: 15px 20px; flex-shrink: 0;">
+                    <div>
+                        <div style="font-size:12px; opacity:0.7;">Puan</div>
+                        <div style="font-size:24px; font-weight:bold; color:#f1c40f;" id="kronoPuan">${puan}</div>
+                    </div>
+                    <div style="text-align:center;">
+                        <h3 style="margin:0; font-size:16px;">KRONOLOJİ BULMACASI</h3>
+                        <div style="font-size:12px; color:#bdc3c7;">${seviye.baslik}</div>
+                    </div>
+                    <div style="text-align:right;">
+                        <div style="font-size:12px; opacity:0.7;">Rütbe</div>
+                        <div style="font-size:18px; font-weight:bold;" id="kronoRutbe">Yükleniyor...</div>
+                    </div>
+                </div>
+
+                <div style="flex: 1; padding: 15px; display: flex; flex-direction: column; max-width: 800px; margin: 0 auto; width: 100%;">
+                    
+                    <div style="margin-bottom: 20px;">
+                        <div style="font-weight:bold; color:var(--text-color); margin-bottom:10px;"><i class="fa-solid fa-hand-pointer"></i> 1. Yerleştirmek İstediğin Olayı Seç:</div>
+                        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
+                            ${karisikOlaylar.map(o => `
+                                <div id="kart_${o.id}" class="krono-kart" onclick="window.KART_SEC('${o.id}')" style="background:var(--option-bg); border:2px solid var(--card-border); padding:10px; border-radius:8px; font-size:13px; font-weight:bold; color:var(--text-color); cursor:pointer; transition:0.2s; text-align:center; box-shadow:0 4px 6px rgba(0,0,0,0.1);">
+                                    ${o.metin}
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+
+                    <div style="flex:1; background: rgba(0,0,0,0.03); border-radius: 12px; padding: 15px; border: 1px solid var(--card-border);">
+                        <div style="font-weight:bold; color:var(--text-color); margin-bottom:15px;"><i class="fa-solid fa-bullseye"></i> 2. Boş Tarih Kutusuna Tıkla:</div>
+                        
+                        <div style="position:relative; padding-left:30px;">
+                            <div style="position:absolute; left:15px; top:10px; bottom:10px; width:4px; background:#34495e; border-radius:2px;"></div>
+                            
+                            ${seviye.olaylar.map(o => `
+                                <div style="position:relative; margin-bottom:20px; display:flex; align-items:center;">
+                                    <div style="position:absolute; left:-24px; width:16px; height:16px; background:#f1c40f; border:3px solid #34495e; border-radius:50%; z-index:2;"></div>
+                                    
+                                    <div style="width: 90px; font-weight:900; color:#e74c3c; font-size:15px; text-shadow: 1px 1px 0px rgba(255,255,255,0.5);">
+                                        ${o.yilMetni}
+                                    </div>
+                                    
+                                    <div id="slot_${o.id}" onclick="window.SLOT_TIKLA('${o.id}')" style="flex:1; height:45px; background:rgba(255,255,255,0.5); border:3px dashed #7f8c8d; border-radius:8px; cursor:pointer; transition:0.3s;"></div>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                    
+                    <div style="font-size: 11px; font-weight: bold; color: var(--text-color); opacity: 0.5; margin-top: 25px; text-align: center; padding-bottom: 10px;">
+                        <i class="fa-solid fa-gamepad"></i> Oyun: Murat Mutlu
+                    </div>
+
+                </div>
+            </div>
+        `;
+        arayuzGuncelle();
+    }
+
+    seviyeYukle();
+};
+// 16. ARAÇ: TARİHİN DOMİNO TAŞLARI (NEDEN-SONUÇ SİMÜLATÖRÜ) - 6 SENARYO & DETAY PENCERELİ
+window.HARITA_MOTORU["domino_etkisi"] = function() {
+    const controlsContainer = document.getElementById('mapControlsContainer');
+    const mapCanvas = document.getElementById('mapCanvas');
+
+    controlsContainer.style.display = 'block';
+    controlsContainer.style.padding = '10px';
+    controlsContainer.innerHTML = `
+        <div style="text-align: center;">
+            <h4 style="margin: 0 0 5px 0; color: #e67e22; font-size: 18px; font-weight: 800;"><i class="fa-solid fa-cubes-stacked"></i> Tarihin Domino Taşları</h4>
+            <div style="display: flex; justify-content: center; gap: 10px; align-items: center; flex-wrap: wrap; margin-top: 8px;">
+                <select id="zincirSecici" style="padding: 6px; border-radius: 5px; border: 2px solid #e67e22; background: var(--container-bg); color: var(--text-color); font-weight: bold; font-size: 14px; max-width: 100%;">
+                    <option value="kavimler">1. Kavimler Göçü'nün Kelebek Etkisi</option>
+                    <option value="hacli">2. Haçlı Seferleri ve Feodalitenin Çöküşü</option>
+                    <option value="kesifler">3. Coğrafi Keşiflerden Sanayi İnkılabına</option>
+                    <option value="fransiz">4. Fransız İhtilali ve Milliyetçilik</option>
+                    <option value="sanayi">5. Sanayi İnkılabı ve Sömürgecilik</option>
+                    <option value="savas">6. I. Dünya Savaşı'nın Patlak Vermesi</option>
+                </select>
+                <button id="btnDevir" style="background: #e67e22; color: white; border: none; padding: 7px 15px; border-radius: 5px; font-weight: bold; cursor: pointer; transition: 0.3s;">
+                    <i class="fa-solid fa-hand-point-right"></i> İlk Taşı Devir
+                </button>
+            </div>
+            <div style="font-size: 11px; opacity: 0.8; margin-top: 8px; color: var(--text-color);">Tarihi olaylar birbirini tetikler. Olayın detayını okumak için taşlara tıklayın!</div>
+        </div>
+    `;
+
+    window.currentMapInstance = { remove: function() { mapCanvas.innerHTML = ''; mapCanvas.style.display = 'block'; } };
+
+    // 6 ZENGİNLEŞTİRİLMİŞ SENARYO
+    const zincirler = {
+        "kavimler": {
+            baslik: "Kavimler Göçü'nün Kelebek Etkisi", temaRengi: "#3498db",
+            taslar: [
+                { baslik: "Orta Asya'da Kuraklık", detay: "İklim değişiklikleri ve şiddetli kuraklık nedeniyle otlaklar azaldı, boylar arası mücadeleler arttı ve kıtlık baş gösterdi." },
+                { baslik: "Türk Boylarının Göçü", detay: "Hayatta kalmak ve Çin baskısından kurtulmak isteyen Hunlar (Balamir önderliğinde) batıya, Karadeniz'in kuzeyine doğru büyük bir göç başlattı." },
+                { baslik: "Barbar Kavimlerin İtilmesi", detay: "Hunların önünden kaçan Ostrogot, Vizigot ve Vandal gibi devasa kavimler domino etkisiyle Avrupa'ya, Roma sınırlarına yığıldı." },
+                { baslik: "Roma'nın İkiye Ayrılması", detay: "Bu devasa göç dalgasına ve yağmalara dayanamayan Roma İmparatorluğu sarsıldı ve 395 yılında Doğu ve Batı olarak kesin bir şekilde ikiye bölündü." },
+                { baslik: "Feodalitenin Doğuşu", detay: "Kralların halkı koruyamaması üzerine halk, can güvenliği için güçlü senyörlerin şatolarına sığındı. Avrupa'da Derebeylik (Feodalite) rejimi doğdu." }
+            ]
+        },
+        "hacli": {
+            baslik: "Haçlı Seferleri ve Feodalitenin Çöküşü", temaRengi: "#e74c3c",
+            taslar: [
+                { baslik: "Malazgirt Zaferi (1071)", detay: "Büyük Selçuklu Devleti, Bizans'ı yenerek Anadolu'nun kapılarını Türklere açtı. Türkler hızla Marmara kıyılarına kadar ulaştı." },
+                { baslik: "Bizans'ın Yardım Çağrısı", detay: "Anadolu'yu kaybeden ve başkenti tehlikeye giren Bizans İmparatoru, gururunu hiçe sayarak Papa'dan acil askeri yardım istedi." },
+                { baslik: "Haçlı Seferleri Başladı", detay: "Papa'nın dini kışkırtması ve Doğu'nun efsanevi zenginliklerine ulaşma hayaliyle yüz binlerce Avrupalı, Kudüs'ü alma bahanesiyle yola çıktı." },
+                { baslik: "Derebeylerin Kayıpları", detay: "Sefere katılan şövalyelerin ve feodal senyörlerin büyük bir kısmı Doğu'daki savaşlarda öldü veya tüm ordularını kaybederek iflas etti." },
+                { baslik: "Merkezi Krallıkların Güçlenmesi", detay: "Derebeylerin gücünü yitirmesiyle oluşan otorite boşluğunu Krallar doldurdu. Avrupa'da Feodalite zayıfladı, merkezi krallıklar güçlendi." }
+            ]
+        },
+        "kesifler": {
+            baslik: "Coğrafi Keşiflerden Sanayi İnkılabına", temaRengi: "#27ae60",
+            taslar: [
+                { baslik: "Ticaret Yollarının Fethi", detay: "İpek ve Baharat yollarının kontrolü (İstanbul'un ve Mısır'ın fethiyle) tamamen Osmanlı ve İslam devletlerinin eline geçti." },
+                { baslik: "Yeni Yol Arayışları", detay: "Müslüman tüccarlara vergi ödemek istemeyen ve Doğu'ya ucuz yoldan ulaşmak isteyen Avrupalılar, pusulanın gelişimiyle okyanuslara açıldı." },
+                { baslik: "Yeni Kıtaların Keşfi", detay: "Amerika kıtası ve Ümit Burnu keşfedildi. Akdeniz limanları (Venedik, Ceneviz) eski önemini yitirirken, Atlas Okyanusu limanları zenginleşti." },
+                { baslik: "Sermaye Birikimi (Merkantilizm)", detay: "Yeni kıtalardaki tonlarca altın, gümüş ve hammadde Avrupa'ya taşındı. Avrupa olağanüstü bir zenginliğe ulaştı." },
+                { baslik: "Sanayi İnkılabı", detay: "Keşiflerden elde edilen bu devasa sermaye birikimi ve bilimsel düşünce, devasa fabrikaların kurulmasını (Sanayi İnkılabı) tetikledi." }
+            ]
+        },
+        "fransiz": {
+            baslik: "Fransız İhtilali ve Milliyetçilik", temaRengi: "#9b59b6",
+            taslar: [
+                { baslik: "Aydınlanma Çağı Düşünürleri", detay: "Rousseau, Voltaire gibi düşünürler halka 'Eşitlik, Özgürlük ve Adalet' fikirlerini aşıladı. Kralların tanrısal gücü sorgulanmaya başlandı." },
+                { baslik: "Ağır Vergiler ve Ekonomik Kriz", detay: "Fransız sarayının lüks harcamaları ve savaş masrafları nedeniyle halka ağır vergiler yüklendi, ekmek bile bulunamaz hale geldi." },
+                { baslik: "Bastille Hapishanesi Baskını", detay: "Öfkelenen Paris halkı isyan etti ve 1789'da kraliyetin baskı sembolü olan Bastille hapishanesini basarak siyasi mahkumları serbest bıraktı." },
+                { baslik: "Milliyetçilik Akımının Yayılması", detay: "İhtilal ile birlikte 'Her millete kendi bağımsız devleti' (Milliyetçilik) fikri, Napolyon savaşlarıyla tüm Avrupa'ya hızla yayıldı." },
+                { baslik: "İmparatorlukların Parçalanması", detay: "Bu akım; Osmanlı, Avusturya-Macaristan ve Rusya gibi çok uluslu imparatorluklarda azınlık isyanlarını başlatarak bu devletleri parçaladı." }
+            ]
+        },
+        "sanayi": {
+            baslik: "Sanayi İnkılabı ve Sömürgecilik", temaRengi: "#f39c12",
+            taslar: [
+                { baslik: "Buhar Makinesinin İcadı", detay: "Kömürle ısıtılan suyun buhar gücüne dönüşmesi, insan ve hayvan gücünün yerini alarak dev bir teknolojik sıçrama yarattı." },
+                { baslik: "Seri Üretime Geçiş", detay: "Küçük atölyelerin yerini binlerce işçinin çalıştığı dev fabrikalar aldı. Üretim hızlandı ve mallar ucuzladı." },
+                { baslik: "Hammadde ve Pazar İhtiyacı", detay: "Fabrikaların durmaması için çok daha fazla pamuğa, demire ve kömüre; ayrıca üretilen fazla malları satacak yeni 'müşterilere' (pazarlara) ihtiyaç duyuldu." },
+                { baslik: "Küresel Sömürgecilik (Emperyalizm)", detay: "Sanayileşen Avrupa devletleri, silah üstünlüklerini kullanarak Afrika ve Asya'yı işgal edip zenginliklerini sömürmeye başladılar." },
+                { baslik: "I. Dünya Savaşı", detay: "İngiltere ve Fransa'nın sömürgelerine göz diken ve sanayileşmede geç kalan Almanya'nın agresif politikaları, dünyayı küresel bir savaşa sürükledi." }
+            ]
+        },
+        "savas": {
+            baslik: "I. Dünya Savaşı'nın Patlak Vermesi", temaRengi: "#34495e",
+            taslar: [
+                { baslik: "Avrupa'da Silahlanma ve Bloklaşma", detay: "Sömürgecilik yarışı ve milliyetçilik akımı, Avrupa'yı barut fıçısına çevirdi. Devletler İtilaf ve İttifak olarak iki kampa bölündü." },
+                { baslik: "Saraybosna Suikasti", detay: "28 Haziran 1914'te Avusturya-Macaristan veliahdı Ferdinand, Saraybosna'yı ziyareti sırasında Sırp bir milliyetçi tarafından vurularak öldürüldü." },
+                { baslik: "Avusturya'nın Sırbistan'a Savaş İlanı", detay: "Suikastten Sırbistan'ı sorumlu tutan Avusturya-Macaristan, Sırbistan'a savaş ilan etti." },
+                { baslik: "Zincirleme İttifak Reaksiyonu", detay: "Sırbistan'ı korumak için Rusya; Rusya'ya karşı Almanya; Almanya'ya karşı ise Fransa ve İngiltere savaşa dahil oldu. Kıvılcım dünyayı sardı." },
+                { baslik: "İmparatorlukların Yıkılışı", detay: "Milyonlarca insanın öldüğü savaşın sonunda; Osmanlı, Rus, Alman ve Avusturya-Macaristan imparatorlukları tarihe karıştı, yeni ulus devletler kuruldu." }
+            ]
+        }
+    };
+
+    let aktifZincir = "kavimler";
+    let animasyonDevamEdiyor = false;
+    let timerYakalayici = [];
+
+    // Tıklanınca açılacak Modal (Detay Penceresi) Yapısı
+    function modalGoster(baslik, detay, renk) {
+        let modal = document.getElementById("dominoModal");
+        if (!modal) {
+            modal = document.createElement("div");
+            modal.id = "dominoModal";
+            modal.style.position = "absolute";
+            modal.style.top = "0"; modal.style.left = "0"; modal.style.width = "100%"; modal.style.height = "100%";
+            modal.style.backgroundColor = "rgba(0,0,0,0.7)";
+            modal.style.zIndex = "999";
+            modal.style.display = "flex"; modal.style.alignItems = "center"; modal.style.justifyContent = "center";
+            modal.style.opacity = "0"; modal.style.transition = "opacity 0.3s ease";
+            
+            modal.innerHTML = `
+                <div style="background: var(--option-bg); border-top: 6px solid #e74c3c; width: 85%; max-width: 450px; border-radius: 10px; padding: 25px; box-shadow: 0 15px 30px rgba(0,0,0,0.5); transform: scale(0.9); transition: transform 0.3s ease; position: relative;">
+                    <button onclick="document.getElementById('dominoModal').style.opacity='0'; setTimeout(()=>document.getElementById('dominoModal').style.display='none',300);" style="position: absolute; top: 10px; right: 15px; background: none; border: none; font-size: 20px; color: var(--text-color); cursor: pointer; opacity: 0.7;">&times;</button>
+                    <h3 id="modalBaslik" style="margin: 0 0 15px 0; color: #e74c3c; font-size: 18px; line-height: 1.3;"></h3>
+                    <p id="modalDetay" style="margin: 0; color: var(--text-color); font-size: 15px; line-height: 1.6; opacity: 0.9;"></p>
+                    <div style="margin-top: 20px; text-align: center;">
+                        <button onclick="document.getElementById('dominoModal').style.opacity='0'; setTimeout(()=>document.getElementById('dominoModal').style.display='none',300);" style="background: var(--card-border); color: var(--text-color); border: none; padding: 8px 20px; border-radius: 5px; cursor: pointer; font-weight: bold;">Anladım</button>
+                    </div>
+                </div>
+            `;
+            document.getElementById('mapCanvas').appendChild(modal);
+        }
+
+        document.getElementById("modalBaslik").innerText = baslik;
+        document.getElementById("modalBaslik").style.color = renk;
+        document.getElementById("modalDetay").innerHTML = detay;
+        modal.firstElementChild.style.borderTopColor = renk;
+        
+        modal.style.display = "flex";
+        setTimeout(() => {
+            modal.style.opacity = "1";
+            modal.firstElementChild.style.transform = "scale(1)";
+        }, 10);
+    }
+
+    // Modal açma fonksiyonunu globale (window) ekleyelim ki tıklamalar çalışsın
+    window.DOMINO_ACIKLAMA_GIZLI = function(baslik, detay, renk) {
+        modalGoster(baslik, detay, renk);
+    };
+
+    function arayuzCiz() {
+        const veri = zincirler[aktifZincir];
+        const renk = veri.temaRengi;
+        
+        timerYakalayici.forEach(t => clearTimeout(t));
+        timerYakalayici = [];
+        animasyonDevamEdiyor = false;
+        document.getElementById('btnDevir').disabled = false;
+        document.getElementById('btnDevir').style.opacity = "1";
+
+        let html = `
+            <div style="width: 100%; height: 100%; padding: 20px; background: var(--container-bg); display: flex; flex-direction: column; align-items: center; box-sizing: border-box; overflow-y:auto; font-family: 'Segoe UI', sans-serif; position: relative;">
+                <div style="max-width: 600px; width: 100%;">
+                    
+                    <h2 style="text-align:center; color:${renk}; margin-bottom: 25px; font-size: 20px;">${veri.baslik}</h2>
+                    <div style="text-align:center; margin-bottom: 25px; opacity:0.8; font-size: 13px; color:var(--text-color);"><i class="fa-solid fa-circle-info"></i> Taşlara tıklayarak tarihi detayları okuyabilirsiniz.</div>
+                    
+                    <div id="dominoKutusu" style="padding-left: 20px;">
+        `;
+
+        veri.taslar.forEach((tas, index) => {
+            // escape single quotes for onclick function
+            const escapedBaslik = tas.baslik.replace(/'/g, "\\'");
+            const escapedDetay = tas.detay.replace(/'/g, "\\'");
+
+            html += `
+                <div class="domino-sarmal" style="position: relative; margin-bottom: 25px;">
+                    <div id="tas_${index}" onclick="window.DOMINO_ACIKLAMA_GIZLI('${escapedBaslik}', '${escapedDetay}', '${renk}')" style="
+                        background: var(--option-bg); 
+                        border: 2px solid var(--card-border); 
+                        border-left: 6px solid #7f8c8d; 
+                        padding: 15px; 
+                        border-radius: 8px; 
+                        box-shadow: 0 4px 6px rgba(0,0,0,0.1); 
+                        opacity: 0.4; 
+                        transform: perspective(500px) rotateX(15deg); 
+                        transform-origin: top; 
+                        transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+                        position: relative;
+                        z-index: 2;
+                        cursor: pointer;
+                    " onmouseover="this.style.transform=this.style.transform.replace('scale(1.02)','') + ' scale(1.02)'; this.style.boxShadow='0 8px 15px rgba(0,0,0,0.2)';" onmouseout="this.style.transform=this.style.transform.replace(' scale(1.02)',''); this.style.boxShadow='';">
+                        <h3 style="margin: 0; color: var(--text-color); font-size: 16px; display: flex; align-items: center; justify-content: space-between;">
+                            <span>
+                                <span style="display:inline-block; background:${renk}; color:white; width:22px; height:22px; text-align:center; border-radius:50%; font-size:14px; line-height:22px; margin-right:8px;">${index + 1}</span> 
+                                ${tas.baslik}
+                            </span>
+                            <i class="fa-solid fa-magnifying-glass" style="opacity: 0.3; font-size: 14px;"></i>
+                        </h3>
+                    </div>
+                    
+                    ${index < veri.taslar.length - 1 ? `
+                        <div id="ok_${index}" style="
+                            position: absolute; 
+                            left: 30px; 
+                            top: 100%; 
+                            width: 4px; 
+                            height: 0px; 
+                            background: ${renk}; 
+                            transition: height 0.5s linear;
+                            z-index: 1;
+                        ">
+                            <div style="
+                                position: absolute; 
+                                bottom: -6px; 
+                                left: -4px; 
+                                width: 0; 
+                                height: 0; 
+                                border-left: 6px solid transparent; 
+                                border-right: 6px solid transparent; 
+                                border-top: 8px solid ${renk};
+                                opacity: 0;
+                                transition: opacity 0.2s;
+                            " id="okUcu_${index}"></div>
+                        </div>
+                    ` : ''}
+                </div>
+            `;
+        });
+
+        html += `
+                    </div>
+                    
+                    <div style="font-size: 12px; font-weight: bold; color: var(--text-color); opacity: 0.5; margin-top: 40px; text-align: center; border-top: 1px dashed var(--card-border); padding-top: 15px; padding-bottom: 20px;">
+                        <i class="fa-solid fa-graduation-cap"></i> Eğitim Modülü: Murat Mutlu
+                    </div>
+                </div>
+            </div>
+        `;
+
+        mapCanvas.innerHTML = html;
+    }
+
+    window.DOMINO_BASLAT = function() {
+        if (animasyonDevamEdiyor) return;
+        animasyonDevamEdiyor = true;
+        document.getElementById('btnDevir').disabled = true;
+        document.getElementById('btnDevir').style.opacity = "0.5";
+
+        const veri = zincirler[aktifZincir];
+        const renk = veri.temaRengi;
+        let sure = 0;
+
+        veri.taslar.forEach((tas, index) => {
+            timerYakalayici.push(setTimeout(() => {
+                const tasEl = document.getElementById(`tas_${index}`);
+                
+                tasEl.style.opacity = "1";
+                tasEl.style.transform = "perspective(500px) rotateX(0deg)";
+                tasEl.style.borderLeftColor = renk;
+                
+                if (index < veri.taslar.length - 1) {
+                    timerYakalayici.push(setTimeout(() => {
+                        const okEl = document.getElementById(`ok_${index}`);
+                        const okUcu = document.getElementById(`okUcu_${index}`);
+                        okEl.style.height = "25px";
+                        setTimeout(() => { okUcu.style.opacity = "1"; }, 400);
+                    }, 500));
+                }
+
+                tasEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+
+            }, sure));
+            
+            sure += 1200; // Akıcılığı artırmak için süreyi biraz kısalttık
+        });
+
+        timerYakalayici.push(setTimeout(() => {
+            document.getElementById('btnDevir').innerHTML = '<i class="fa-solid fa-rotate-left"></i> Yeniden Oynat';
+            document.getElementById('btnDevir').disabled = false;
+            document.getElementById('btnDevir').style.opacity = "1";
+            animasyonDevamEdiyor = false;
+        }, sure));
+    };
+
+    document.getElementById('btnDevir').addEventListener('click', function() {
+        if(this.innerText.includes("Yeniden Oynat")) {
+            this.innerHTML = '<i class="fa-solid fa-hand-point-right"></i> İlk Taşı Devir';
+            arayuzCiz();
+            setTimeout(window.DOMINO_BASLAT, 100);
+        } else {
+            window.DOMINO_BASLAT();
+        }
+    });
+
+    document.getElementById('zincirSecici').addEventListener('change', function(e) {
+        aktifZincir = e.target.value;
+        document.getElementById('btnDevir').innerHTML = '<i class="fa-solid fa-hand-point-right"></i> İlk Taşı Devir';
+        arayuzCiz();
+    });
+
+    arayuzCiz();
+};
+// 17. ARAÇ: KÜLTÜREL ETKİLEŞİM ÇARKI (MEDENİYETLERİN MİRASI)
+window.HARITA_MOTORU["kulturel_etkilesim"] = function() {
+    const controlsContainer = document.getElementById('mapControlsContainer');
+    const mapCanvas = document.getElementById('mapCanvas');
+
+    controlsContainer.style.display = 'block';
+    controlsContainer.style.padding = '10px';
+    controlsContainer.innerHTML = `
+        <div style="text-align: center;">
+            <h4 style="margin: 0 0 10px 0; color: #16a085; font-size: 18px; font-weight: 800;"><i class="fa-solid fa-earth-europe"></i> Kültürel Etkileşim: Medeniyetlerin Mirası</h4>
+            <div style="font-size: 12px; opacity: 0.8; margin-bottom: 12px; color: var(--text-color);">Aşağıdaki miras kartlarından birini seçerek haritadaki yayılış serüvenini izleyin.</div>
+            
+            <div id="mirasKartlari" style="display: flex; justify-content: center; gap: 8px; flex-wrap: wrap; margin-bottom: 10px;">
+                <button onclick="window.MIRAS_SEC('kagit')" class="miras-btn" style="background: #f1c40f; color: #2c3e50; border: none; padding: 8px 15px; border-radius: 20px; font-weight: bold; cursor: pointer; transition: 0.3s; box-shadow: 0 2px 5px rgba(0,0,0,0.2);"><i class="fa-solid fa-scroll"></i> Kağıt</button>
+                <button onclick="window.MIRAS_SEC('barut')" class="miras-btn" style="background: #e74c3c; color: white; border: none; padding: 8px 15px; border-radius: 20px; font-weight: bold; cursor: pointer; transition: 0.3s; box-shadow: 0 2px 5px rgba(0,0,0,0.2);"><i class="fa-solid fa-bomb"></i> Barut</button>
+                <button onclick="window.MIRAS_SEC('pusula')" class="miras-btn" style="background: #3498db; color: white; border: none; padding: 8px 15px; border-radius: 20px; font-weight: bold; cursor: pointer; transition: 0.3s; box-shadow: 0 2px 5px rgba(0,0,0,0.2);"><i class="fa-regular fa-compass"></i> Pusula</button>
+                <button onclick="window.MIRAS_SEC('matbaa')" class="miras-btn" style="background: #9b59b6; color: white; border: none; padding: 8px 15px; border-radius: 20px; font-weight: bold; cursor: pointer; transition: 0.3s; box-shadow: 0 2px 5px rgba(0,0,0,0.2);"><i class="fa-solid fa-print"></i> Matbaa</button>
+                <button onclick="window.MIRAS_SEC('yazi')" class="miras-btn" style="background: #34495e; color: white; border: none; padding: 8px 15px; border-radius: 20px; font-weight: bold; cursor: pointer; transition: 0.3s; box-shadow: 0 2px 5px rgba(0,0,0,0.2);"><i class="fa-solid fa-pen-nib"></i> Yazı / Alfabe</button>
+            </div>
+
+            <div style="font-size: 11px; font-weight: bold; color: var(--text-color); opacity: 0.5; margin-top: 10px; border-top: 1px dashed var(--card-border); padding-top: 8px;">
+                <i class="fa-solid fa-network-wired"></i> Konsept ve Tasarım: Murat Mutlu
+            </div>
+        </div>
+    `;
+
+    // Haritayı dünya genelini gösterecek şekilde başlat
+    window.currentMapInstance = L.map('mapCanvas', { zoomControl: false }).setView([35.0, 55.0], 3);
+    L.control.zoom({ position: 'bottomright' }).addTo(window.currentMapInstance);
+
+    // Koyu/Sade bir altlık harita daha iyi kontrast sağlar
+    L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
+        maxZoom: 10,
+        attribution: '© OpenStreetMap © CARTO'
+    }).addTo(window.currentMapInstance);
+
+    const mirasVerileri = {
+        kagit: {
+            renk: "#f39c12", // Koyu Sarı
+            duraklar: [
+                { koordinat: [34.3, 108.9], baslik: "1. Çin (MÖ 105)", detay: "Kağıt, ağaç kabukları ve paçavralar kullanılarak Çin'de icat edildi. Yüzyıllarca sır olarak saklandı.", ikon: "fa-leaf", tur: "İcat" },
+                { koordinat: [42.5, 72.2], baslik: "2. Talas Savaşı (MS 751)", detay: "Çinliler ve Müslüman Araplar/Türkler arasındaki savaşta esir düşen Çinli kağıt ustaları, bu sırrı İslam dünyasına öğretti.", ikon: "fa-khanda", tur: "Savaş" },
+                { koordinat: [33.3, 44.4], baslik: "3. Bağdat (MS 793)", detay: "İslam dünyasının ilk büyük kağıt fabrikaları Bağdat'ta kuruldu. Bilimsel eserler hızla çoğaltıldı.", ikon: "fa-book-quran", tur: "Ticaret/Üretim" },
+                { koordinat: [37.8, -4.7], baslik: "4. Endülüs (MS 1150)", detay: "Müslüman İspanya (Endülüs) üzerinden kağıt Avrupa'ya geçti. İlk Avrupa kağıt fabrikası İspanya'da kuruldu.", ikon: "fa-mosque", tur: "Etkileşim" },
+                { koordinat: [48.8, 2.3], baslik: "5. Avrupa & Rönesans", detay: "Kağıdın bollaşması ve ucuzlaması, daha sonra matbaayla birleşerek Rönesans ve Reform hareketlerini başlattı.", ikon: "fa-lightbulb", tur: "Sonuç" }
+            ]
+        },
+        barut: {
+            renk: "#e74c3c", // Kırmızı
+            duraklar: [
+                { koordinat: [34.3, 108.9], baslik: "1. Çin (MS 9. YY)", detay: "Çinli simyacılar ölümsüzlük iksirini ararken kazara barutu buldular. Başlangıçta havai fişek olarak kullanıldı.", ikon: "fa-fire-burst", tur: "İcat" },
+                { koordinat: [35.6, 51.3], baslik: "2. İslam Dünyası", detay: "İpek Yolu ticareti ve Moğol istilaları aracılığıyla barut Ortadoğu'ya ulaştı ve ateşli silahlarda kullanılmaya başlandı.", ikon: "fa-camel", tur: "Ticaret/Göç" },
+                { koordinat: [31.7, 35.2], baslik: "3. Haçlı Seferleri (11.-13. YY)", detay: "Avrupalılar, Haçlı Seferleri sırasında Müslümanlardan barutu ve ilk ilkel topları öğrendi.", ikon: "fa-cross", tur: "Savaş" },
+                { koordinat: [48.8, 2.3], baslik: "4. Avrupa (Feodalitenin Çöküşü)", detay: "Avrupalı krallar barutu devasa toplarda kullanarak, yıkılmaz sanılan derebeyi şatolarını yerle bir etti. Merkezi krallıklar güçlendi.", ikon: "fa-chess-rook", tur: "Sonuç" }
+            ]
+        },
+        pusula: {
+            renk: "#2980b9", // Mavi
+            duraklar: [
+                { koordinat: [34.3, 108.9], baslik: "1. Çin (Han Hanedanı)", detay: "Mıknatıs taşının kuzeyi gösterdiği Çin'de keşfedildi. İlk pusulalar suda yüzen iğneler şeklindeydi.", ikon: "fa-magnet", tur: "İcat" },
+                { koordinat: [25.2, 55.2], baslik: "2. Arap Denizciler", detay: "Hint Okyanusu'nda ticaret yapan Müslüman denizciler pusulayı Çinlilerden alarak geliştirdiler.", ikon: "fa-ship", tur: "Ticaret" },
+                { koordinat: [41.9, 12.4], baslik: "3. Akdeniz ve İtalya", detay: "Haçlı Seferleri ve Akdeniz ticareti sayesinde pusula Avrupalı denizcilerin eline geçti ve kutu içine alındı.", ikon: "fa-anchor", tur: "Etkileşim" },
+                { koordinat: [38.7, -9.1], baslik: "4. Coğrafi Keşifler", detay: "Pusulanın sapma açısının hesaplanmasıyla Avrupalılar açık denizlere korkusuzca açıldı ve yeni kıtalar keşfetti.", ikon: "fa-globe", tur: "Sonuç" }
+            ]
+        },
+        matbaa: {
+            renk: "#8e44ad", // Mor
+            duraklar: [
+                { koordinat: [34.3, 108.9], baslik: "1. Çin (Ahşap Baskı)", detay: "Metinler ahşap bloklara kazınarak mürekkeple kağıda basıldı.", ikon: "fa-tree", tur: "İcat" },
+                { koordinat: [42.9, 89.1], baslik: "2. Uygur Türkleri", detay: "Uygurlar, tahtadan ve kilden tek tek hareketli harfler (tipo) yaparak modern matbaanın temelini attılar.", ikon: "fa-font", tur: "Geliştirme" },
+                { koordinat: [46.8, 10.5], baslik: "3. Moğol İstilası & Ticaret", detay: "Moğolların batıya ilerleyişi ve İpek Yolu ticareti, bu baskı tekniğini Avrupa sınırlarına taşıdı.", ikon: "fa-horse", tur: "Göç/Savaş" },
+                { koordinat: [50.0, 8.2], baslik: "4. Almanya (Gutenberg - 1450)", detay: "Johannes Gutenberg hareketli metal harfleri ve modern baskı makinesini icat etti.", ikon: "fa-print", tur: "İnovasyon" },
+                { koordinat: [48.8, 2.3], baslik: "5. Rönesans ve Reform", detay: "Kitapların ucuzlamasıyla fikirler Avrupa'ya hızla yayıldı. Skolastik düşünce yıkıldı, aydınlanma başladı.", ikon: "fa-book-open", tur: "Sonuç" }
+            ]
+        },
+        yazi: {
+            renk: "#2c3e50", // Koyu Gri/Lacivert
+            duraklar: [
+                { koordinat: [31.3, 45.6], baslik: "1. Sümerler (MÖ 3200)", detay: "Tarihte ilk yazı (Çivi Yazısı) Mezopotamya'da Uruk şehrinde, tapınak kayıtlarını tutmak için icat edildi.", ikon: "fa-tablet", tur: "İcat" },
+                { koordinat: [39.9, 35.4], baslik: "2. Anadolu (Asur Ticaret Kolonileri)", detay: "Asurlu tüccarlar, ticaret yapmak için geldikleri Kayseri (Kültepe) üzerinden yazıyı Anadolu'ya taşıyıp tarihi devirleri başlattı.", ikon: "fa-coins", tur: "Ticaret" },
+                { koordinat: [33.8, 35.5], baslik: "3. Fenikeliler (MÖ 1000)", detay: "Doğu Akdeniz'deki denizci Fenikeliler, yüzlerce işaretten oluşan çivi yazısı yerine 22 harfli ilk modern Alfabeyi icat ettiler.", ikon: "fa-a", tur: "İnovasyon" },
+                { koordinat: [41.9, 12.4], baslik: "4. Yunan ve Roma", detay: "Fenike alfabesi Akdeniz ticaretiyle önce Yunanlılara, oradan da Romalılara geçti ve günümüz Latin Alfabesi oluştu.", ikon: "fa-language", tur: "Sonuç" }
+            ]
+        }
+    };
+
+    let aktifCizgiler = [];
+    let aktifMarkerlar = [];
+    let cizimZamanlayicilari = [];
+
+    // Haritayı Temizleme
+    function haritayiTemizle() {
+        aktifCizgiler.forEach(layer => window.currentMapInstance.removeLayer(layer));
+        aktifMarkerlar.forEach(layer => window.currentMapInstance.removeLayer(layer));
+        cizimZamanlayicilari.forEach(t => clearTimeout(t));
+        aktifCizgiler = [];
+        aktifMarkerlar = [];
+        cizimZamanlayicilari = [];
+    }
+
+    window.MIRAS_SEC = function(mirasId) {
+        // Buton efektleri
+        document.querySelectorAll('.miras-btn').forEach(b => b.style.opacity = "0.5");
+        event.currentTarget.style.opacity = "1";
+
+        haritayiTemizle();
+        const veri = mirasVerileri[mirasId];
+        const noktalar = veri.duraklar;
+        
+        // Haritayı ilk noktaya kaydır
+        window.currentMapInstance.flyTo(noktalar[0].koordinat, 4, { duration: 1 });
+
+        let gecikme = 1000; // İlk nokta için 1 saniye bekle
+
+        noktalar.forEach((nokta, index) => {
+            // Noktayı (Marker) ve Pop-up'ı ekle
+            cizimZamanlayicilari.push(setTimeout(() => {
+                
+                // Özel İkon Oluşturma
+                const customIcon = L.divIcon({
+                    className: 'custom-div-icon',
+                    html: `<div style="background-color:${veri.renk}; color:white; width:30px; height:30px; border-radius:50%; display:flex; align-items:center; justify-content:center; border:2px solid white; box-shadow:0 0 10px ${veri.renk}; font-size:14px;"><i class="fa-solid ${nokta.ikon}"></i></div>`,
+                    iconSize: [30, 30],
+                    iconAnchor: [15, 15]
+                });
+
+                const marker = L.marker(nokta.koordinat, { icon: customIcon }).addTo(window.currentMapInstance);
+                
+                const popupIcerik = `
+                    <div style="text-align:center; min-width:150px;">
+                        <span style="font-size:10px; font-weight:bold; color:white; background:${veri.renk}; padding:2px 8px; border-radius:10px; text-transform:uppercase;">${nokta.tur}</span>
+                        <h4 style="margin:8px 0 5px 0; color:${veri.renk}; border-bottom:1px solid #eee; padding-bottom:5px;">${nokta.baslik}</h4>
+                        <p style="margin:0; font-size:12px; color:#555; line-height:1.4;">${nokta.detay}</p>
+                    </div>
+                `;
+                marker.bindPopup(popupIcerik).openPopup();
+                aktifMarkerlar.push(marker);
+
+                // Kamerayı noktaya doğru hafifçe kaydır
+                window.currentMapInstance.panTo(nokta.koordinat);
+
+            }, gecikme));
+
+            // Sonraki noktaya giden oku (Çizgi) çiz
+            if (index < noktalar.length - 1) {
+                gecikme += 2500; // Çizgi çizimi ve okunması için bekleme süresi
+                
+                cizimZamanlayicilari.push(setTimeout(() => {
+                    const baslangic = nokta.koordinat;
+                    const bitis = noktalar[index + 1].koordinat;
+                    
+                    // Animasyonlu Çizgi (DashArray hilesi kullanıyoruz)
+                    const cizgi = L.polyline([baslangic, bitis], {
+                        color: veri.renk,
+                        weight: 4,
+                        opacity: 0.8,
+                        dashArray: '10, 15', // Kesik çizgi (yol hissi)
+                        lineJoin: 'round'
+                    }).addTo(window.currentMapInstance);
+                    
+                    // Basit bir uçak/ok animasyonu da eklenebilir ama okunaklılığı bozmamak için kesik çizgiyi tercih ettik
+                    aktifCizgiler.push(cizgi);
+                    
+                }, gecikme - 1000)); // Marker çıkmadan 1 saniye önce çizgiyi çizmeye başla
+            }
+        });
+        
+        // Animasyon bitince haritayı genelle
+        cizimZamanlayicilari.push(setTimeout(() => {
+            const grup = new L.featureGroup(aktifMarkerlar);
+            window.currentMapInstance.flyToBounds(grup.getBounds(), { padding: [50, 50], duration: 1.5 });
+        }, gecikme + 3000));
+    };
+
+    // İlk açılışta boş harita dursa da olur veya Kağıt otomatik seçilebilir
+};
