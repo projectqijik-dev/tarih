@@ -3075,3 +3075,1119 @@ window.HARITA_MOTORU["kulturel_etkilesim"] = function() {
 
     // İlk açılışta boş harita dursa da olur veya Kağıt otomatik seçilebilir
 };
+// 19. ARAÇ: COĞRAFYA KADERDİR (KATMANLI SU VE MEDENİYET HARİTASI)
+window.HARITA_MOTORU["cografya_kaderdir"] = function() {
+    const controlsContainer = document.getElementById('mapControlsContainer');
+    const mapCanvas = document.getElementById('mapCanvas');
+
+    controlsContainer.style.display = 'block';
+    controlsContainer.style.padding = '10px';
+    controlsContainer.innerHTML = `
+        <div style="text-align: center;">
+            <h4 style="margin: 0 0 5px 0; color: #3498db; font-size: 18px; font-weight: 800;"><i class="fa-solid fa-water"></i> Coğrafya Kaderdir</h4>
+            <div style="font-size: 12px; opacity: 0.9; margin-bottom: 10px; color: var(--text-color);">İlk Çağ medeniyetlerine can suyu vererek haritada nasıl yeşerdiklerini keşfedin.</div>
+            <div style="display: flex; justify-content: center; gap: 8px; flex-wrap: wrap; margin-bottom: 5px;" id="nehirButonlari">
+                <button onclick="window.MEDENIYET_CANLANDIR('mezopotamya')" class="btn-nehir" style="background: #2c3e50; color: white; border: 2px solid #3498db; padding: 6px 15px; border-radius: 20px; font-weight: bold; cursor: pointer; transition: 0.3s;"><i class="fa-solid fa-droplet"></i> Dicle & Fırat</button>
+                <button onclick="window.MEDENIYET_CANLANDIR('misir')" class="btn-nehir" style="background: #2c3e50; color: white; border: 2px solid #f1c40f; padding: 6px 15px; border-radius: 20px; font-weight: bold; cursor: pointer; transition: 0.3s;"><i class="fa-solid fa-droplet"></i> Nil Nehri</button>
+                <button onclick="window.MEDENIYET_CANLANDIR('hint')" class="btn-nehir" style="background: #2c3e50; color: white; border: 2px solid #9b59b6; padding: 6px 15px; border-radius: 20px; font-weight: bold; cursor: pointer; transition: 0.3s;"><i class="fa-solid fa-droplet"></i> İndus Nehri</button>
+                <button onclick="window.MEDENIYET_CANLANDIR('cin')" class="btn-nehir" style="background: #2c3e50; color: white; border: 2px solid #e74c3c; padding: 6px 15px; border-radius: 20px; font-weight: bold; cursor: pointer; transition: 0.3s;"><i class="fa-solid fa-droplet"></i> Sarı Irmak</button>
+            </div>
+            
+            <div style="font-size: 11px; font-weight: bold; color: #3498db; margin-top: 10px; border-top: 1px dashed rgba(52, 152, 219, 0.5); padding-top: 8px;">
+                <i class="fa-solid fa-graduation-cap"></i> Tasarım ve Kurgu: Murat Mutlu
+            </div>
+        </div>
+    `;
+
+    // Harita Başlangıcı (Fiziki Odaklı, Etiketsiz)
+    window.currentMapInstance = L.map('mapCanvas', { zoomControl: false }).setView([30.0, 60.0], 4);
+    L.control.zoom({ position: 'bottomleft' }).addTo(window.currentMapInstance);
+
+    // Etiketsiz Fiziki Harita (Sadece coğrafya görünsün, medeniyetler bizimle belirecek)
+    L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Physical_Map/MapServer/tile/{z}/{y}/{x}', {
+        maxZoom: 10,
+        attribution: 'Tiles &copy; Esri'
+    }).addTo(window.currentMapInstance);
+
+    // Koyu bir filtre uygulayalım ki yeşillikler ve nehirler parlasın
+    document.querySelector('.leaflet-tile-pane').style.filter = "brightness(0.8) contrast(1.2)";
+
+    // Medeniyet Veritabanı
+    const medeniyetler = {
+        mezopotamya: {
+            isim: "Mezopotamya Medeniyetleri",
+            renk: "#3498db",
+            odak: [33.0, 43.0], zoom: 6,
+            nehirler: [
+                [[38.5, 39.5], [36.0, 40.0], [34.0, 42.0], [31.0, 47.0]], // Fırat (Temsili)
+                [[38.0, 40.5], [36.5, 43.0], [34.0, 44.0], [31.0, 47.0]]  // Dicle (Temsili)
+            ],
+            yesilAlan: [[37.0, 39.0], [36.0, 43.0], [31.0, 48.0], [30.0, 46.0], [34.0, 40.0]],
+            sehirler: [
+                { isim: "Sümer (Uruk)", koor: [31.3, 45.6] },
+                { isim: "Babil", koor: [32.5, 44.4] },
+                { isim: "Asur (Ninova)", koor: [36.3, 43.1] }
+            ],
+            bilgi: "İki Nehir Arası anlamına gelen Mezopotamya, Dicle ve Fırat nehirlerinin taşıdığı alüvyonlarla Bereketli Hilal'in kalbidir. Yazı, tekerlek ve ilk yazılı kanunlar burada yeşermiştir."
+        },
+        misir: {
+            isim: "Mısır Medeniyeti",
+            renk: "#f1c40f",
+            odak: [26.0, 32.0], zoom: 6,
+            nehirler: [
+                [[22.0, 31.5], [26.0, 32.8], [30.0, 31.2], [31.5, 31.0]] // Nil (Temsili)
+            ],
+            yesilAlan: [[31.5, 30.0], [31.5, 32.0], [29.0, 31.5], [24.0, 33.0], [24.0, 32.0], [29.0, 30.5]],
+            sehirler: [
+                { isim: "Memfis (Aşağı Mısır)", koor: [29.8, 31.2] },
+                { isim: "Teb (Yukarı Mısır)", koor: [25.7, 32.6] }
+            ],
+            bilgi: "Herodot'un deyimiyle 'Mısır, Nil'in bir armağanıdır.' Etrafı çöllerle çevrili olduğu için istilalardan korunmuş ve kendine özgü (hiyeroglif, piramitler) kapalı bir medeniyet kurmuştur."
+        },
+        hint: {
+            isim: "Hint Medeniyeti",
+            renk: "#9b59b6",
+            odak: [28.0, 69.0], zoom: 5,
+            nehirler: [
+                [[33.0, 75.0], [30.0, 71.0], [26.0, 68.0], [24.0, 67.5]] // İndus (Temsili)
+            ],
+            yesilAlan: [[33.0, 76.0], [30.0, 73.0], [24.0, 69.0], [24.0, 66.0], [30.0, 69.0], [33.0, 74.0]],
+            sehirler: [
+                { isim: "Harappa", koor: [30.6, 72.8] },
+                { isim: "Mohenjo-Daro", koor: [27.3, 68.1] }
+            ],
+            bilgi: "Ganj ve İndus nehirlerinin can verdiği bu coğrafya, dünyanın en eski planlı şehirlerine (ızgara planı ve kanalizasyon sistemi) ev sahipliği yapmıştır."
+        },
+        cin: {
+            isim: "Çin Medeniyeti",
+            renk: "#e74c3c",
+            odak: [35.0, 110.0], zoom: 5,
+            nehirler: [
+                [[35.0, 95.0], [40.0, 110.0], [35.0, 115.0], [38.0, 118.0]] // Sarı Irmak / Huang He (Temsili)
+            ],
+            yesilAlan: [[34.0, 105.0], [41.0, 110.0], [38.0, 120.0], [34.0, 118.0], [33.0, 110.0]],
+            sehirler: [
+                { isim: "Anyang (Shang Hanedanı)", koor: [36.1, 114.3] }
+            ],
+            bilgi: "Sarı Irmak (Huang He) ve Gök Irmak (Yangtze) vadilerinde doğmuştur. İpekböcekçiliği, kağıt, pusula, matbaa ve barut gibi dünya tarihini değiştiren icatların vatanıdır."
+        }
+    };
+
+    let aktifKatmanlar = [];
+    let bilgiKutusu = null;
+
+    window.MEDENIYET_CANLANDIR = function(id) {
+        // Buton Efektleri
+        document.querySelectorAll('.btn-nehir').forEach(btn => btn.style.background = "#2c3e50");
+        event.currentTarget.style.background = medeniyetler[id].renk;
+
+        // Eski katmanları temizle
+        aktifKatmanlar.forEach(layer => window.currentMapInstance.removeLayer(layer));
+        aktifKatmanlar = [];
+        if(bilgiKutusu) bilgiKutusu.remove();
+
+        const med = medeniyetler[id];
+        
+        // 1. Kamera Hareketi
+        window.currentMapInstance.flyTo(med.odak, med.zoom, { duration: 1.5 });
+
+        setTimeout(() => {
+            // 2. Nehirleri Çiz (Mavi Su)
+            med.nehirler.forEach(koor => {
+                const nehir = L.polyline(koor, { color: '#3498db', weight: 6, opacity: 0.8 }).addTo(window.currentMapInstance);
+                aktifKatmanlar.push(nehir);
+            });
+
+            // 3. Tarım Havzası (Yeşerme Efekti)
+            setTimeout(() => {
+                const tarim = L.polygon(med.yesilAlan, {
+                    color: '#27ae60', fillColor: '#2ecc71', fillOpacity: 0.3, weight: 2
+                }).addTo(window.currentMapInstance);
+                aktifKatmanlar.push(tarim);
+
+                // 4. Şehirler Pop-up
+                setTimeout(() => {
+                    med.sehirler.forEach(sehir => {
+                        const icon = L.divIcon({
+                            className: 'medeniyet-ikon',
+                            html: `<div style="background:${med.renk}; color:white; padding:4px 8px; border-radius:10px; font-weight:bold; font-size:12px; border:2px solid white; white-space:nowrap; box-shadow:0 0 10px rgba(0,0,0,0.5);"><i class="fa-solid fa-building-columns"></i> ${sehir.isim}</div>`,
+                            iconSize: null
+                        });
+                        const marker = L.marker(sehir.koor, { icon: icon }).addTo(window.currentMapInstance);
+                        aktifKatmanlar.push(marker);
+                    });
+
+                    // 5. Bilgi Kutusu (Sağ Alt/Üst)
+                    bilgiKutusu = L.control({position: 'bottomright'});
+                    bilgiKutusu.onAdd = function () {
+                        const div = L.DomUtil.create('div', 'info');
+                        div.style.background = "var(--option-bg)";
+                        div.style.color = "var(--text-color)";
+                        div.style.padding = "15px";
+                        div.style.borderRadius = "8px";
+                        div.style.borderLeft = `5px solid ${med.renk}`;
+                        div.style.maxWidth = "280px";
+                        div.style.boxShadow = "0 5px 15px rgba(0,0,0,0.2)";
+                        div.innerHTML = `
+                            <h4 style="margin: 0 0 8px 0; color: ${med.renk};"><i class="fa-solid fa-book-journal-whills"></i> ${med.isim}</h4>
+                            <p style="margin: 0; font-size: 13px; line-height: 1.5;">${med.bilgi}</p>
+                            <div style="margin-top: 10px; font-size: 10px; opacity: 0.6; text-align: right; font-weight: bold;">
+                                Hazırlayan: Murat Mutlu
+                            </div>
+                        `;
+                        return div;
+                    };
+                    bilgiKutusu.addTo(window.currentMapInstance);
+
+                }, 800);
+            }, 600);
+        }, 1500); // FlyTo bitiş süresi
+    };
+};
+// 20. ARAÇ: BABİL YÜKSEK MAHKEMESİ (HAMMURABİ'NİN TOKMAĞI)
+window.HARITA_MOTORU["hammurabi_mahkemesi"] = function() {
+    const controlsContainer = document.getElementById('mapControlsContainer');
+    const mapCanvas = document.getElementById('mapCanvas');
+
+    controlsContainer.style.display = 'block';
+    controlsContainer.style.padding = '10px';
+    controlsContainer.innerHTML = `
+        <div style="text-align: center;">
+            <h4 style="margin: 0 0 5px 0; color: #8e44ad; font-size: 18px; font-weight: 800;"><i class="fa-solid fa-gavel"></i> Babil Yüksek Mahkemesi</h4>
+            <div style="font-size: 12px; opacity: 0.9; margin-bottom: 5px; color: var(--text-color);">Hammurabi Kanunlarına göre hüküm verin. Unutmayın, modern adalet burada geçmez!</div>
+        </div>
+    `;
+
+    window.currentMapInstance = { remove: function() { mapCanvas.innerHTML = ''; mapCanvas.style.display = 'block'; } };
+
+    const davalar = [
+        {
+            konu: "Çöken Ev Vakası",
+            olay: "Bir usta (mimar) soylu bir adam için ev yaptı. Ancak evi sağlam inşa etmediği için ev çöktü ve soylu adamın oğlu enkaz altında kalarak hayatını kaybetti. Babil Baş Yargıcı olarak hükmünüz nedir?",
+            secenekler: [
+                { metin: "Usta, ihmalkarlık suçundan 10 yıl zindana atılır.", dogruMu: false, mesaj: "Yanlış! Babil'de uzun süreli hapis cezası mantığı gelişmemiştir. Devlet mahkumu beslemek istemez." },
+                { metin: "Usta, soylu adama yüklü miktarda gümüş öder.", dogruMu: false, mesaj: "Yanlış! Kanla ödenmesi gereken bir can borcu parayla kapatılamaz." },
+                { metin: "Ustanın kendi oğlu idam edilir.", dogruMu: true, mesaj: "DOĞRU HÜKÜM! Kısasa Kısas (Lex Talionis). Ölen kişi ev sahibinin oğlu olduğu için, ustanın da oğlu öldürülür." }
+            ],
+            madde: "Madde 230: Eğer bir ustanın yaptığı ev çöküp ev sahibinin oğlunun ölümüne sebep olursa, o ustanın oğlu öldürülür."
+        },
+        {
+            konu: "Kırık Kemik Vakası",
+            olay: "Sokaktaki bir kavga sırasında, 'Soylu' (Hür) bir adam, 'Köle' (Avam) sınıfından bir adamın kemiğini kırdı. Hükmünüz nedir?",
+            secenekler: [
+                { metin: "Göze göz, dişe diş! Soylu adamın da kemiği kırılır.", dogruMu: false, mesaj: "Yanlış! Kısasa kısas kuralı sadece 'eşit sınıflar' arasında geçerlidir." },
+                { metin: "Soylu adam, kölenin sahibine belirli bir miktar gümüş öder.", dogruMu: true, mesaj: "DOĞRU HÜKÜM! Sınıf Ayrımı. Köleler eşya veya mal statüsünde olduğu için, soylu adam sadece mal kaybı tazminatı öder." },
+                { metin: "Soylu adam köle yapılarak o kölenin sahibine verilir.", dogruMu: false, mesaj: "Yanlış! Soylular kolay kolay köle sınıfına düşürülmezdi." }
+            ],
+            madde: "Madde 199: Eğer hür bir adam, bir kölenin gözünü çıkarır veya kemiğini kırarsa, kölenin değerinin yarısı kadar gümüş öder."
+        },
+        {
+            konu: "Cerrahın Hatası",
+            olay: "Bir cerrah (doktor), soylu bir adamı bronz bir bıçakla ameliyat etti ancak hasta ameliyat masasında hayatını kaybetti. Hükmünüz nedir?",
+            secenekler: [
+                { metin: "Cerrahın mesleğini yapması ömür boyu yasaklanır.", dogruMu: false, mesaj: "Yanlış! Modern bir tıbbi men cezası verdiniz. Babil hukuku çok daha acımasızdır." },
+                { metin: "Cerrahın ameliyat yaptığı elleri kesilir.", dogruMu: true, mesaj: "DOĞRU HÜKÜM! Hammurabi kanunları mesleki hataları affetmezdi." },
+                { metin: "Cerrah, ölen adamın ailesine tazminat öder.", dogruMu: false, mesaj: "Yanlış! Kısas kanunlarında para cezası sadece alt sınıflar için geçerliydi." }
+            ],
+            madde: "Madde 218: Eğer bir hekim, bir soyluyu ameliyat ederken onun ölümüne sebep olursa, o hekimin elleri kesilir."
+        },
+        {
+            konu: "Borç ve Kölelik",
+            olay: "Bir çiftçi, tüccardan aldığı borcu tarlasında çıkan kuraklık nedeniyle ödeyemedi. Borcuna karşılık tüccar ondan ne talep edebilir?",
+            secenekler: [
+                { metin: "Çiftçinin eşini ve çocuklarını 3 yıllığına köle olarak alır.", dogruMu: true, mesaj: "DOĞRU HÜKÜM! Babil'de borç köleliği çok yaygındı." },
+                { metin: "Devlet borcu siler ve çiftçiye yeni tohum verir.", dogruMu: false, mesaj: "Yanlış! Sosyal devlet anlayışı bu dönemde mevcut değildi." },
+                { metin: "Çiftçi borcunu ödeyene kadar zindana atılır.", dogruMu: false, mesaj: "Yanlış! Hapishanede yatan bir adam borcunu üreterek ödeyemez." }
+            ],
+            madde: "Madde 117: Eğer bir adam borcunu ödeyemezse eşini, oğlunu veya kızını borcuna karşılık verir; onlar üç yıl köle olarak çalışırlar, dördüncü yıl özgür kalırlar."
+        }
+    ];
+
+    let aktifDava = 0;
+    let puan = 0;
+
+    function davaCiz() {
+        if (aktifDava >= davalar.length) {
+            // Oyun Bitti Ekranı
+            let performans = puan === 4 ? "Kral Hammurabi seninle gurur duyuyor! Babil'in en acımasız ve adil yargıcısın." : "Babil'in sert kurallarına henüz alışamadın. Modern düşüncelerini kapıda bırakmalısın!";
+            mapCanvas.innerHTML = `
+                <div style="display:flex; flex-direction:column; align-items:center; justify-content:center; height:100%; background:var(--container-bg); color:var(--text-color); padding:20px; text-align:center;">
+                    <i class="fa-solid fa-scale-balanced" style="font-size: 60px; color: #8e44ad; margin-bottom: 20px;"></i>
+                    <h2 style="margin: 0 0 10px 0;">MAHKEME SONA ERDİ</h2>
+                    <h3 style="margin: 0; color: #e67e22;">Skor: ${puan} / ${davalar.length}</h3>
+                    <p style="margin: 20px 0; max-width: 400px; line-height: 1.5;">${performans}</p>
+                    <button onclick="window.HARITA_MOTORU['hammurabi_mahkemesi']()" style="padding: 10px 20px; background: #8e44ad; color: white; border: none; border-radius: 8px; font-weight: bold; cursor: pointer;">Yeniden Yargıla</button>
+                    
+                    <div style="font-size: 11px; font-weight: bold; opacity: 0.5; margin-top: 30px;">
+                        <i class="fa-solid fa-graduation-cap"></i> Eğitim Modülü: Murat Mutlu
+                    </div>
+                </div>
+            `;
+            return;
+        }
+
+        const dava = davalar[aktifDava];
+        
+        mapCanvas.innerHTML = `
+            <div style="width: 100%; height: 100%; padding: 20px; background: var(--container-bg); display: flex; flex-direction: column; align-items: center; box-sizing: border-box; overflow-y:auto; font-family: 'Segoe UI', sans-serif;">
+                <div style="max-width: 600px; width: 100%; background: var(--option-bg); border-radius: 12px; border: 3px solid #8e44ad; padding: 25px; box-shadow: 0 10px 25px rgba(0,0,0,0.2);">
+                    
+                    <div style="text-align: center; border-bottom: 2px dashed rgba(142,68,173,0.3); padding-bottom: 15px; margin-bottom: 20px;">
+                        <span style="background: #8e44ad; color: white; padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: bold;">DAVA DOSYASI #${aktifDava + 1}</span>
+                        <h2 style="margin: 15px 0 5px 0; color: #8e44ad;">${dava.konu}</h2>
+                    </div>
+
+                    <div style="background: rgba(0,0,0,0.03); border-left: 5px solid #8e44ad; padding: 20px; border-radius: 8px; margin-bottom: 25px;">
+                        <p style="margin: 0; font-size: 16px; color: var(--text-color); line-height: 1.6;">${dava.olay}</p>
+                    </div>
+
+                    <div id="seceneklerAlani" style="display: flex; flex-direction: column; gap: 12px;">
+                        ${dava.secenekler.map((secenek, index) => `
+                            <button onclick="window.HUKUM_VER(${index})" style="background: var(--container-bg); color: var(--text-color); border: 2px solid #ccc; padding: 15px; border-radius: 8px; font-weight: 600; cursor: pointer; font-size: 14px; text-align: left; transition: 0.3s;" onmouseover="this.style.borderColor='#8e44ad'" onmouseout="this.style.borderColor='#ccc'">
+                                <i class="fa-solid fa-gavel" style="color: #8e44ad; margin-right: 10px;"></i> ${secenek.metin}
+                            </button>
+                        `).join('')}
+                    </div>
+
+                    <div id="sonucAlani" style="display: none; margin-top: 20px; padding: 20px; border-radius: 8px; color: white; animation: fadeIn 0.4s;">
+                        <h3 id="sonucBaslik" style="margin: 0 0 10px 0; font-size: 18px;"></h3>
+                        <p id="sonucMesaj" style="margin: 0 0 15px 0; font-size: 14px; line-height: 1.5;"></p>
+                        <div style="background: rgba(0,0,0,0.2); padding: 12px; border-radius: 5px; font-style: italic; font-size: 13px; margin-bottom: 15px;">
+                            <i class="fa-solid fa-scroll"></i> <b>Tarihi Gerçek:</b> <span id="sonucMadde"></span>
+                        </div>
+                        <button onclick="window.SONRAKI_DAVA()" style="background: rgba(255,255,255,0.3); border: 1px solid white; color: white; padding: 8px 15px; border-radius: 5px; cursor: pointer; font-weight: bold; width: 100%;">Sıradaki Davaya Geç <i class="fa-solid fa-arrow-right"></i></button>
+                    </div>
+
+                    <div style="font-size: 11px; font-weight: bold; opacity: 0.5; margin-top: 25px; text-align: center;">
+                        <i class="fa-solid fa-graduation-cap"></i> Eğitim Modülü: Murat Mutlu
+                    </div>
+
+                </div>
+            </div>
+        `;
+    }
+
+    window.HUKUM_VER = function(secilenIndex) {
+        const dava = davalar[aktifDava];
+        const secim = dava.secenekler[secilenIndex];
+        
+        document.getElementById('seceneklerAlani').style.display = 'none';
+        const sonucAlani = document.getElementById('sonucAlani');
+        sonucAlani.style.display = 'block';
+
+        if(secim.dogruMu) {
+            puan++;
+            sonucAlani.style.background = "#27ae60";
+            document.getElementById('sonucBaslik').innerHTML = '<i class="fa-solid fa-check"></i> TOKMAK DOĞRU VURULDU!';
+        } else {
+            sonucAlani.style.background = "#c0392b";
+            document.getElementById('sonucBaslik').innerHTML = '<i class="fa-solid fa-xmark"></i> ANAKRONİZM HATASI!';
+        }
+
+        document.getElementById('sonucMesaj').innerText = secim.mesaj;
+        document.getElementById('sonucMadde').innerText = dava.madde;
+    };
+
+    window.SONRAKI_DAVA = function() {
+        aktifDava++;
+        davaCiz();
+    };
+
+    davaCiz();
+};
+// 22. ARAÇ: ANTİK ŞİFRE ÇÖZÜCÜ (MİRAS ATÖLYESİ)
+window.HARITA_MOTORU["antik_sifre"] = function() {
+    const controlsContainer = document.getElementById('mapControlsContainer');
+    const mapCanvas = document.getElementById('mapCanvas');
+
+    // Üst Kontrol Paneli
+    controlsContainer.style.display = 'block';
+    controlsContainer.style.padding = '10px';
+    controlsContainer.innerHTML = `
+        <div style="text-align: center;">
+            <h4 style="margin: 0 0 5px 0; color: #16a085; font-size: 18px; font-weight: 800;"><i class="fa-solid fa-scroll"></i> Antik Şifre Çözücü</h4>
+            <div style="font-size: 12px; opacity: 0.9; margin-bottom: 5px; color: var(--text-color);">İsminizi veya gizli mesajınızı yazın, İlk Çağ alfabelerine çevrilsin!</div>
+        </div>
+    `;
+
+    // Leaflet motorunu devreden çıkar (Sadece arayüz kullanacağız)
+    window.currentMapInstance = { remove: function() { mapCanvas.innerHTML = ''; mapCanvas.style.display = 'block'; } };
+
+    // Alfabe Veritabanı (Unicode Karşılıkları)
+    const alfabeler = {
+        hiyeroglif: {
+            isim: "Mısır Hiyeroglifi",
+            arkaplan: "#f4e7c3", // Papirüs rengi
+            renk: "#8e44ad",
+            aciklama: "<b>Kısa Bilgi:</b> Hiyeroglifler (Kutsal Oyma), nesneleri temsil eden resim yazısıdır (İdeogram). Her sembol bir sesi veya kelimeyi ifade eder.",
+            sozluk: {
+                'A': '𓄿', 'B': '𓃀', 'C': '𓎡', 'D': '𓂧', 'E': '𓇋', 'F': '𓆑', 'G': '𓎼', 'H': '𓉔', 'I': '𓇋', 
+                'J': '𓆓', 'K': '𓎡', 'L': '𓃭', 'M': '𓅓', 'N': '𓈖', 'O': '𓍯', 'P': '𓊪', 'Q': '𓈎', 'R': '𓂋', 
+                'S': '𓋴', 'T': '𓏏', 'U': '𓅱', 'V': '𓆑', 'W': '𓅱', 'X': '𓎡𓋴', 'Y': '𓇌', 'Z': '𓊃'
+            }
+        },
+        civi: {
+            isim: "Sümer Çivi Yazısı",
+            arkaplan: "#d2b48c", // Kil tablet rengi
+            renk: "#d35400",
+            aciklama: "<b>Kısa Bilgi:</b> Tarihin ilk yazısıdır. Sümerler tarafından ıslak kil tabletler üzerine çiviye benzeyen kamışlarla (stylus) yazılmıştır. Hecelerden oluşur.",
+            sozluk: {
+                'A': '𒀀', 'B': '𒁀', 'C': ' فونبټ', 'D': '𒁕', 'E': '𒂊', 'F': '𒉺', 'G': '𒂵', 'H': '𒄩', 'I': '𒄿', 
+                'J': '𒅀', 'K': '𒅗', 'L': '𒆷', 'M': '𒈠', 'N': '𒈾', 'O': '𒌋', 'P': '𒉺', 'Q': '𒋡', 'R': '𒊏', 
+                'S': '𒊓', 'T': '𒋫', 'U': '𒌋', 'V': '𒉿', 'W': '𒉿', 'X': '𒆜', 'Y': '𒅀', 'Z': '𒍝'
+            }
+        },
+        fenike: {
+            isim: "Fenike Alfabesi",
+            arkaplan: "#bdc3c7", // Taş/Mermer rengi
+            renk: "#2c3e50",
+            aciklama: "<b>Kısa Bilgi:</b> Tarihteki ilk ses tabanlı harf sistemidir. Resimlerden kurtulup tamamen seslere (fonetik) odaklanmıştır. Günümüz Latin alfabesinin atasıdır. Sağdan sola yazılır.",
+            sozluk: {
+                'A': '𐤀', 'B': '𐤁', 'C': '𐤂', 'D': '𐤃', 'E': '𐤄', 'F': '𐤅', 'G': '𐤂', 'H': '𐤇', 'I': '𐤉', 
+                'J': '𐤉', 'K': '𐤊', 'L': '𐤋', 'M': '𐤌', 'N': '𐤍', 'O': '𐤏', 'P': '𐤐', 'Q': '𐤒', 'R': '𐤓', 
+                'S': '𐤎', 'T': '𐤕', 'U': '𐤅', 'V': '𐤅', 'W': '𐤅', 'X': '𐤎', 'Y': '𐤉', 'Z': '𐤆'
+            }
+        }
+    };
+
+    let aktifAlfabe = 'hiyeroglif';
+
+    // Arayüzü Çizme
+    mapCanvas.innerHTML = `
+        <div style="width: 100%; height: 100%; display: flex; flex-direction: column; background: var(--container-bg); padding: 15px; box-sizing: border-box; overflow-y:auto; font-family: 'Segoe UI', sans-serif;">
+            
+            <div style="max-width: 700px; margin: 0 auto; width: 100%;">
+                
+                <div style="display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; justify-content: center;">
+                    <button id="btn_hiyeroglif" onclick="window.ALFABE_DEGISTIR('hiyeroglif')" style="flex:1; min-width:120px; padding: 12px; border: none; border-radius: 8px; background: #8e44ad; color: white; font-weight: bold; cursor: pointer; transition: 0.3s; box-shadow: 0 4px 6px rgba(0,0,0,0.2);"><i class="fa-solid fa-eye"></i> Mısır Hiyeroglifi</button>
+                    <button id="btn_civi" onclick="window.ALFABE_DEGISTIR('civi')" style="flex:1; min-width:120px; padding: 12px; border: none; border-radius: 8px; background: #95a5a6; color: white; font-weight: bold; cursor: pointer; transition: 0.3s;"><i class="fa-solid fa-align-left"></i> Sümer Çivi Yazısı</button>
+                    <button id="btn_fenike" onclick="window.ALFABE_DEGISTIR('fenike')" style="flex:1; min-width:120px; padding: 12px; border: none; border-radius: 8px; background: #95a5a6; color: white; font-weight: bold; cursor: pointer; transition: 0.3s;"><i class="fa-solid fa-a"></i> Fenike Alfabesi</button>
+                </div>
+
+                <div style="background: var(--option-bg); padding: 20px; border-radius: 12px; border: 2px solid var(--card-border); margin-bottom: 20px; text-align: center;">
+                    <h3 style="margin: 0 0 10px 0; color: var(--text-color); font-size: 16px;">Şifrelenecek Metni Girin:</h3>
+                    <input type="text" id="sifreGirdisi" placeholder="Örn: MURAT MUTLU" onkeyup="window.SIFRE_CEVIR()" style="width: 80%; padding: 15px; font-size: 20px; border-radius: 8px; border: 2px solid #16a085; text-align: center; text-transform: uppercase; font-weight: bold; outline: none; background: var(--container-bg); color: var(--text-color);">
+                </div>
+
+                <div id="tabletEkrani" style="background: #f4e7c3; padding: 30px; border-radius: 15px; text-align: center; min-height: 150px; display: flex; align-items: center; justify-content: center; box-shadow: inset 0 0 20px rgba(0,0,0,0.2), 0 10px 20px rgba(0,0,0,0.3); border: 8px solid rgba(0,0,0,0.1); margin-bottom: 20px; position: relative;">
+                    <div id="cevirilenMetin" style="font-size: 55px; color: #2c3e50; line-height: 1.5; word-break: break-all; letter-spacing: 5px;"></div>
+                </div>
+
+                <div id="bilgiKarti" style="background: rgba(0,0,0,0.05); border-left: 5px solid #8e44ad; padding: 15px; border-radius: 5px; color: var(--text-color); font-size: 14px; line-height: 1.5;">
+                    ${alfabeler['hiyeroglif'].aciklama}
+                </div>
+
+                <div style="font-size: 11px; font-weight: bold; color: var(--text-color); opacity: 0.5; margin-top: 30px; text-align: center;">
+                    <i class="fa-solid fa-graduation-cap"></i> Miras Atölyesi: Murat Mutlu
+                </div>
+
+            </div>
+        </div>
+    `;
+
+    // Türkçe Karakterleri Temizleme Fonksiyonu
+    function turkceTemizle(metin) {
+        return metin.replace(/Ğ/g, 'G').replace(/Ü/g, 'U').replace(/Ş/g, 'S').replace(/İ/g, 'I').replace(/Ö/g, 'O').replace(/Ç/g, 'C')
+                    .replace(/ğ/g, 'G').replace(/ü/g, 'U').replace(/ş/g, 'S').replace(/ı/g, 'I').replace(/ö/g, 'O').replace(/ç/g, 'C');
+    }
+
+    // Çeviri Motoru
+    window.SIFRE_CEVIR = function() {
+        let girdi = document.getElementById('sifreGirdisi').value.toUpperCase();
+        girdi = turkceTemizle(girdi);
+        
+        const sozluk = alfabeler[aktifAlfabe].sozluk;
+        let sonuc = "";
+
+        for(let i = 0; i < girdi.length; i++) {
+            let harf = girdi[i];
+            if(harf === " ") {
+                sonuc += "&nbsp;&nbsp;&nbsp;"; // Boşluk
+            } else if (sozluk[harf]) {
+                sonuc += sozluk[harf];
+            } else {
+                sonuc += harf; // Sözlükte yoksa kendisini yaz (Noktalama işaretleri vs)
+            }
+        }
+
+        // Fenike alfabesi sağdan sola yazılır
+        if(aktifAlfabe === 'fenike') {
+            document.getElementById('cevirilenMetin').style.direction = "rtl";
+            document.getElementById('cevirilenMetin').style.textAlign = "right";
+        } else {
+            document.getElementById('cevirilenMetin').style.direction = "ltr";
+            document.getElementById('cevirilenMetin').style.textAlign = "center";
+        }
+
+        document.getElementById('cevirilenMetin').innerHTML = sonuc;
+    };
+
+    // Alfabe Sekme Değiştirici
+    window.ALFABE_DEGISTIR = function(alfabeId) {
+        aktifAlfabe = alfabeId;
+        const veri = alfabeler[alfabeId];
+
+        // Buton renklerini sıfırla
+        document.getElementById('btn_hiyeroglif').style.background = "#95a5a6";
+        document.getElementById('btn_civi').style.background = "#95a5a6";
+        document.getElementById('btn_fenike').style.background = "#95a5a6";
+        document.getElementById('btn_hiyeroglif').style.boxShadow = "none";
+        document.getElementById('btn_civi').style.boxShadow = "none";
+        document.getElementById('btn_fenike').style.boxShadow = "none";
+
+        // Aktif butonu renklendir
+        const aktifBtn = document.getElementById(`btn_${alfabeId}`);
+        aktifBtn.style.background = veri.renk;
+        aktifBtn.style.boxShadow = "0 4px 6px rgba(0,0,0,0.2)";
+
+        // Tablet arka planını ve bilgi notunu değiştir
+        document.getElementById('tabletEkrani').style.background = veri.arkaplan;
+        document.getElementById('bilgiKarti').innerHTML = veri.aciklama;
+        document.getElementById('bilgiKarti').style.borderLeftColor = veri.renk;
+
+        // Mevcut metni yeni alfabeyle tekrar çevir
+        window.SIFRE_CEVIR();
+    };
+};
+// 23. ARAÇ: NEOLİTİK KÖY KURUCUSU (ÇATALHÖYÜK SİMÜLASYONU) - 7 AŞAMALI SÜRÜM
+window.HARITA_MOTORU["neolitik_koy"] = function() {
+    const controlsContainer = document.getElementById('mapControlsContainer');
+    const mapCanvas = document.getElementById('mapCanvas');
+
+    controlsContainer.style.display = 'block';
+    controlsContainer.style.padding = '10px';
+    controlsContainer.innerHTML = `
+        <div style="text-align: center;">
+            <h4 style="margin: 0 0 5px 0; color: #27ae60; font-size: 18px; font-weight: 800;"><i class="fa-solid fa-wheat-awn"></i> Neolitik Köy Kurucusu</h4>
+            <div style="font-size: 12px; opacity: 0.9; margin-bottom: 5px; color: var(--text-color);">Kabileni Paleolitik mağaralardan çıkarıp, Çatalhöyük'te ilk medeniyeti kur!</div>
+        </div>
+    `;
+
+    window.currentMapInstance = { remove: function() { mapCanvas.innerHTML = ''; mapCanvas.style.display = 'block'; } };
+
+    // 7 AŞAMALI DEVASA EVRİM AĞACI
+    const asamalar = [
+        {
+            id: "tarim",
+            renk: "#34495e", // Karanlık Mağara -> Tarım
+            ikon: "fa-seedling",
+            baslik: "Aşama 1: İklim Değişiyor (MÖ 10.000)",
+            metin: "Buzul Çağı sona eriyor. Havalar ısınıyor, buzullar eriyor. Ancak alıştığınız büyük av hayvanları (mamutlar) kuzeye göç etti. Kabilen açlıkla yüz yüze. Doğa sana yeni bitkiler (yabani buğday) sunuyor. Ne yapacaksın?",
+            secenekler: [
+                { metin: "Hayvanların peşinden göç etmeye devam et.", dogruMu: false, sonuc: "Yanlış Karar! Hayvanlar çok uzağa gitti ve kabilen donarak telef oldu. Tüketici olarak kaldın." },
+                { metin: "Buğday tohumlarını topla ve nehir kenarına ek.", dogruMu: true, sonuc: "Muazzam Karar! Tarımı (Üretici Hayatı) başlattın. Artık yiyecek aramak için göçmene gerek yok." }
+            ]
+        },
+        {
+            id: "evcillestirme",
+            renk: "#27ae60", // Doğa/Yeşil
+            ikon: "fa-paw",
+            baslik: "Aşama 2: Hayvanların Evcilleştirilmesi (MÖ 8.500)",
+            metin: "Tarlaların ürün veriyor ama sadece buğday yemek kabileni zayıf düşürüyor. Kışın et bulmak için hala tehlikeli ormanlara girip vahşi hayvanları avlıyorsunuz ve kayıplar veriyorsunuz. Çözümün nedir?",
+            secenekler: [
+                { metin: "Avlanmak bizim doğamızda var, mızrakları sivriltin!", dogruMu: false, sonuc: "Ölümcül Hata! Kışın çıkan fırtınada en iyi avcılarını kaybettin ve kabile açlıktan dağıldı." },
+                { metin: "Yavru koyun ve keçileri yakalayıp köyde besleyelim.", dogruMu: true, sonuc: "Harika! Hayvanları evcilleştirdin. Artık et, süt ve yün her an elinin altında. Göçebe avcılık tamamen bitti." }
+            ]
+        },
+        {
+            id: "mimari",
+            renk: "#d35400", // Toprak/Kerpiç
+            ikon: "fa-house-chimney",
+            baslik: "Aşama 3: Çatalhöyük Mimarisi (MÖ 7.400)",
+            metin: "Konya Ovası'na yerleştin. Tarım ürünlerinizin ve hayvanlarınızın kokusu, yırtıcıları ve diğer kabileleri çekiyor. Taş duvar (Sur) örmeyi henüz bilmiyorsunuz. Kabileni nasıl koruyacaksın?",
+            secenekler: [
+                { metin: "Her aileyi birbirinden uzak, geniş bahçeli müstakil evlere yerleştir.", dogruMu: false, sonuc: "Ölümcül Hata! Dağınık evler savunmasız kaldı. Gece gelen yağmacılar kabileni yok etti." },
+                { metin: "Evleri bitişik, kapısız ve penceresiz yap. Evlere çatıdan merdivenle girilsin.", dogruMu: true, sonuc: "Harika Bir Savunma İçgüdüsü! Çatalhöyük mimarisini icat ettin. Düşman geldiğinde merdivenleri yukarı çektin ve dış duvarlar doğal bir 'Sur' oldu." }
+            ]
+        },
+        {
+            id: "comlek",
+            renk: "#c0392b", // Ateş ve Kil
+            ikon: "fa-fire-burner",
+            baslik: "Aşama 4: Seramik ve Çömlek (MÖ 7.000)",
+            metin: "Tahıl hasadı muazzam. Ancak buğdayı kemirgenlerden korumak ve ateşte sulu yemek (çorba) pişirmek için hasır sepetler işe yaramıyor. Sepetler ateşte yanıyor. Ne yapacaksın?",
+            secenekler: [
+                { metin: "Sadece etleri közde kızartıp, buğdayı çiğ yemeye devam edelim.", dogruMu: false, sonuc: "Beslenme Hatası! Hastalıklar baş gösterdi ve nüfusun azaldı." },
+                { metin: "Kili (çamuru) şekillendirip ateşte pişirelim ve kaplar yapalım.", dogruMu: true, sonuc: "Zeka Pırıltısı! Seramik (Çanak Çömlek) sanatını başlattın. Artık yiyecekleri güvenle depoluyor ve kaynatarak sağlıklı pişiriyorsun." }
+            ]
+        },
+        {
+            id: "inanc",
+            renk: "#8e44ad", // Mistisizm/Sanat
+            ikon: "fa-palette",
+            baslik: "Aşama 5: Sanat ve İnanç (MÖ 6.500)",
+            metin: "Karınları doyan ve güvende olan kabilenin artık korkuları (ölüm, doğa olayları) üzerine düşünecek vakti var. Evlerin iç duvarları çok boş. Onları nasıl değerlendireceksin?",
+            secenekler: [
+                { metin: "Duvarlara leopar, boğa başı ve bereket tanrıçası (Kybele) figürleri çizelim.", dogruMu: true, sonuc: "Muazzam! İnsanlığın ilk inanç sistemlerini ve iç mekan sanatını (Bükranion) yarattın. Toplumun manevi olarak birbirine bağlandı." },
+                { metin: "Duvarlar sadece taşıyıcıdır, süslemeye ve inanca gerek yok.", dogruMu: false, sonuc: "Bağlar Koptu! İnsanlar manevi bir amaç bulamadı ve kabile içi çatışmalar başlayarak köy dağıldı." }
+            ]
+        },
+        {
+            id: "sosyoloji",
+            renk: "#2980b9", // Toplum/Mülkiyet
+            ikon: "fa-people-carry-box",
+            baslik: "Aşama 6: Artı Ürün ve İş Bölümü (MÖ 6.000)",
+            metin: "Evlerin depoları tıka basa buğday dolu (Artı Ürün). Artık herkesin tarlada çalışmasına gerek yok. Bu durumu nasıl yöneteceksin?",
+            secenekler: [
+                { metin: "Tahılı depola ve birilerini çömlekçi, rahip, asker olarak görevlendir.", dogruMu: true, sonuc: "Tebrikler! Mülkiyet kavramını ve Mesleki İş Bölümünü başlattın. Sınıflı toplumların temeli atıldı." },
+                { metin: "Çalışmaya gerek yok, ambarlar bitene kadar yatıp dinlenelim.", dogruMu: false, sonuc: "Tembellik Sonunuz Oldu! Bir sonraki yıl kuraklık vurdu ve stoklar yetmedi." }
+            ]
+        },
+        {
+            id: "ticaret",
+            renk: "#f39c12", // Ticaret/Altın
+            ikon: "fa-handshake",
+            baslik: "Aşama 7: Obsidyen Ticareti (MÖ 5.500)",
+            metin: "Köyün büyüdü ama tarım aletleriniz ve silahlarınız kemik/taş olduğu için kırılıyor. Yakındaki Hasan Dağı eteklerinde çok keskin volkanik camlar (Obsidyen) var. Ama o bölge başka kabilelerin elinde.",
+            secenekler: [
+                { metin: "Elimizdeki fazla buğdayı verip onlardan obsidyen alalım.", dogruMu: true, sonuc: "Tarihi Bir Adım! Takas usulüyle tarihin ilk ticaret ağlarından birini kurdun. Çatalhöyük artık sadece bir köy değil, ticaret merkezi!" },
+                { metin: "Onlara saldırıp obsidyenleri zorla alalım.", dogruMu: false, sonuc: "Savaş Hatası! Surlarınız ve yeterli silahınız olmadığı için düşman kabile sizi püskürttü ve köyünüzü yaktı." }
+            ]
+        }
+    ];
+
+    let mevcutAsama = 0;
+
+    function arayuzCiz() {
+        if (mevcutAsama >= asamalar.length) {
+            finalEkrani();
+            return;
+        }
+
+        const asama = asamalar[mevcutAsama];
+        
+        mapCanvas.innerHTML = `
+            <div style="width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; background: var(--container-bg); padding: 20px; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; overflow-y:auto;">
+                <div style="max-width: 650px; width: 100%; background: var(--option-bg); border-radius: 15px; border-top: 8px solid ${asama.renk}; padding: 30px; box-shadow: 0 15px 35px rgba(0,0,0,0.2);">
+                    
+                    <div style="text-align: center; margin-bottom: 25px;">
+                        <div style="background: ${asama.renk}; color: white; width: 60px; height: 60px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 28px; margin: 0 auto 15px auto; box-shadow: 0 5px 15px rgba(0,0,0,0.3);">
+                            <i class="fa-solid ${asama.ikon}"></i>
+                        </div>
+                        <h2 style="margin: 0 0 10px 0; color: ${asama.renk}; font-size: 20px;">${asama.baslik}</h2>
+                        <div style="display:flex; justify-content:center; gap:5px; margin-bottom:15px;">
+                            ${asamalar.map((a, i) => `<div style="width:15px; height:5px; border-radius:3px; background:${i <= mevcutAsama ? asama.renk : '#ccc'};"></div>`).join('')}
+                        </div>
+                        <p style="margin: 0; color: var(--text-color); font-size: 15px; line-height: 1.6; padding: 15px; background: rgba(0,0,0,0.03); border-radius: 8px; border-left: 4px solid ${asama.renk}; text-align: left;">
+                            ${asama.metin}
+                        </p>
+                    </div>
+
+                    <div id="secenekKutusu" style="display: flex; flex-direction: column; gap: 15px;">
+                        ${asama.secenekler.map((sec, index) => `
+                            <button onclick="window.KARAR_VER(${index})" style="background: var(--container-bg); color: var(--text-color); border: 2px solid var(--card-border); padding: 15px 20px; border-radius: 10px; font-size: 14px; font-weight: bold; cursor: pointer; text-align: left; transition: all 0.3s;" onmouseover="this.style.borderColor='${asama.renk}'; this.style.transform='scale(1.02)'" onmouseout="this.style.borderColor='var(--card-border)'; this.style.transform='scale(1)'">
+                                <i class="fa-solid fa-arrow-right" style="color: ${asama.renk}; margin-right: 10px;"></i> ${sec.metin}
+                            </button>
+                        `).join('')}
+                    </div>
+
+                    <div id="sonucAlani" style="display: none; margin-top: 25px; padding: 20px; border-radius: 10px; color: white; animation: fadeIn 0.4s; text-align: center;">
+                        <h3 id="sonucBaslik" style="margin: 0 0 10px 0; font-size: 18px;"></h3>
+                        <p id="sonucMetin" style="margin: 0 0 20px 0; font-size: 14px; line-height: 1.5;"></p>
+                        <button id="btnDevam" style="background: rgba(255,255,255,0.3); border: 2px solid white; color: white; padding: 10px 25px; border-radius: 8px; font-size: 15px; font-weight: bold; cursor: pointer; transition: 0.3s;" onmouseover="this.style.background='rgba(255,255,255,0.5)'" onmouseout="this.style.background='rgba(255,255,255,0.3)'">Devam Et <i class="fa-solid fa-forward"></i></button>
+                    </div>
+
+                    <div style="font-size: 11px; font-weight: bold; color: var(--text-color); opacity: 0.4; margin-top: 30px; text-align: center; border-top: 1px dashed var(--card-border); padding-top: 10px;">
+                        <i class="fa-solid fa-graduation-cap"></i> Oyun Kurgusu: Murat Mutlu
+                    </div>
+
+                </div>
+            </div>
+        `;
+    }
+
+    window.KARAR_VER = function(secimIndex) {
+        const secim = asamalar[mevcutAsama].secenekler[secimIndex];
+        document.getElementById('secenekKutusu').style.display = 'none';
+        
+        const sonucAlani = document.getElementById('sonucAlani');
+        const btnDevam = document.getElementById('btnDevam');
+        sonucAlani.style.display = 'block';
+
+        if (secim.dogruMu) {
+            sonucAlani.style.background = "#27ae60";
+            document.getElementById('sonucBaslik').innerHTML = '<i class="fa-solid fa-circle-check"></i> DOĞRU HAMLE!';
+            btnDevam.onclick = () => { mevcutAsama++; arayuzCiz(); };
+        } else {
+            sonucAlani.style.background = "#c0392b";
+            document.getElementById('sonucBaslik').innerHTML = '<i class="fa-solid fa-skull"></i> KABİLEN YOK OLDU!';
+            btnDevam.innerHTML = '<i class="fa-solid fa-rotate-left"></i> Yeniden Dene';
+            btnDevam.onclick = () => { arayuzCiz(); }; 
+        }
+        
+        document.getElementById('sonucMetin').innerHTML = secim.sonuc;
+    };
+
+    function finalEkrani() {
+        mapCanvas.innerHTML = `
+            <div style="width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; background: var(--container-bg); padding: 20px; box-sizing: border-box; font-family: 'Segoe UI', sans-serif;">
+                <div style="max-width: 600px; width: 100%; background: #27ae60; border-radius: 15px; padding: 40px; text-align: center; color: white; box-shadow: 0 15px 35px rgba(0,0,0,0.3); animation: fadeIn 0.8s;">
+                    <i class="fa-solid fa-city" style="font-size: 80px; margin-bottom: 20px; text-shadow: 0 5px 15px rgba(0,0,0,0.3);"></i>
+                    <h1 style="margin: 0 0 15px 0; font-size: 32px; text-transform: uppercase;">Medeniyeti Kurdun!</h1>
+                    <p style="font-size: 16px; line-height: 1.6; margin-bottom: 30px; opacity: 0.9;">
+                        Buzul Çağı'nın zorluklarını aştın. Çatalhöyük'ün eşsiz savunma mimarisini icat ettin, çanak çömlek yaptın, duvarlara sanat eserleri çizdin, iş bölümünü ve Obsidyen ticaretini başlattın. Sen gerçek bir <b>Neolitik Lidersin!</b>
+                    </p>
+                    <button onclick="window.HARITA_MOTORU['neolitik_koy']()" style="background: white; color: #27ae60; border: none; padding: 12px 30px; border-radius: 30px; font-size: 16px; font-weight: bold; cursor: pointer; box-shadow: 0 5px 15px rgba(0,0,0,0.2);"><i class="fa-solid fa-rotate-left"></i> Oyunu Tekrar Oyna</button>
+                    
+                    <div style="font-size: 12px; font-weight: bold; margin-top: 30px; opacity: 0.8;">
+                        Kurgu: Murat Mutlu
+                    </div>
+                </div>
+            </div>
+        `;
+    }
+
+    arayuzCiz(); 
+};
+// 24. ARAÇ: GÖBEKLİTEPE (PROFESYONEL ARKEOLOG VE ANALİZ PANELİ)
+window.HARITA_MOTORU["gobeklitepe_kazi"] = function() {
+    const controlsContainer = document.getElementById('mapControlsContainer');
+    const mapCanvas = document.getElementById('mapCanvas');
+
+    controlsContainer.style.display = 'block';
+    controlsContainer.style.padding = '10px';
+    controlsContainer.innerHTML = `
+        <div style="text-align: center;">
+            <h4 style="margin: 0 0 5px 0; color: #e67e22; font-size: 18px; font-weight: 800;"><i class="fa-solid fa-shovels"></i> Göbeklitepe Arkeoloji Laboratuvarı</h4>
+            <div style="font-size: 11px; opacity: 0.8; color: var(--text-color);">Tarihin akışını değiştirecek kanıtları gün yüzüne çıkarın.</div>
+        </div>
+    `;
+
+    window.currentMapInstance = { remove: function() { mapCanvas.innerHTML = ''; mapCanvas.style.display = 'block'; } };
+
+    mapCanvas.innerHTML = `
+        <div style="width: 100%; height: 100%; background: #1a1a1a; display: flex; flex-direction: column; align-items: center; justify-content: center; font-family: 'Segoe UI', sans-serif; overflow: hidden; position: relative;">
+            
+            <div id="kaziHeader" style="position: absolute; top: 20px; text-align: center; width: 100%; color: #f1c40f; z-index: 5;">
+                <h2 style="margin: 0; font-size: 20px; text-transform: uppercase; letter-spacing: 2px;">Saha Çalışması: Şanlıurfa / Göbeklitepe</h2>
+                <p style="margin: 5px 0; font-size: 13px; color: #fff; opacity: 0.7;">Toprak katmanını temizlemek için fırçayı (fareyi) yüzeyde gezdirin.</p>
+            </div>
+
+            <div id="kaziViewport" style="position: relative; width: 320px; height: 320px; border: 10px solid #333; box-shadow: 0 0 50px rgba(0,0,0,0.5); border-radius: 5px;">
+                <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: #c2b280; display: flex; justify-content: space-around; align-items: flex-end; padding-bottom: 20px;">
+                    <div style="display: flex; flex-direction: column; align-items: center; opacity: 0.9;">
+                        <div style="width: 60px; height: 20px; background: #555; border-radius: 2px;"></div>
+                        <div style="width: 25px; height: 80px; background: #666; display: flex; align-items: center; justify-content: center; color: #444; font-size: 14px;"><i class="fa-solid fa-spider"></i></div>
+                    </div>
+                    <div style="display: flex; flex-direction: column; align-items: center;">
+                        <div style="width: 80px; height: 25px; background: #444; border-radius: 2px;"></div>
+                        <div style="width: 35px; height: 120px; background: #555; display: flex; flex-direction: column; align-items: center; justify-content: center; color: #333; font-size: 20px;">
+                            <i class="fa-solid fa-kiwi-bird"></i>
+                            <i class="fa-solid fa-worm"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="dirtGrid" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: grid; grid-template-columns: repeat(8, 1fr); grid-template-rows: repeat(8, 1fr); z-index: 2;">
+                </div>
+            </div>
+
+            <div style="width: 320px; height: 10px; background: #333; border-radius: 5px; margin-top: 20px; overflow: hidden;">
+                <div id="progressBar" style="width: 0%; height: 100%; background: #e67e22; transition: width 0.3s;"></div>
+            </div>
+
+            <div id="analysisPanel" style="display: none; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); z-index: 100; align-items: center; justify-content: center; padding: 20px; box-sizing: border-box;">
+                <div style="max-width: 500px; width: 100%; border: 1px solid #e67e22; padding: 30px; border-radius: 10px; background: #1a1a1a; box-shadow: 0 0 30px rgba(230, 126, 34, 0.2);">
+                    <h2 style="color: #e67e22; margin-top: 0; text-align: center; border-bottom: 2px solid #e67e22; padding-bottom: 15px; font-size: 22px;">BULUNTU ANALİZ RAPORU</h2>
+                    
+                    <div style="margin: 20px 0; color: #ddd; font-size: 15px; line-height: 1.6;">
+                        <p><b>Saha Gözlemi:</b> Kazı alanında yerleşik hayata dair (ev, mutfak) hiçbir iz yok. Su kaynağı kilometrelerce uzakta. Ancak devasa tapınak sütunları ve ritüel alanları bulundu.</p>
+                        <p style="background: rgba(230,126,34,0.1); padding: 10px; border-radius: 5px; color: #f1c40f; font-weight: bold; text-align: center;">
+                            SORU: Bu keşif, tarihin akışını nasıl değiştirir?
+                        </p>
+                    </div>
+
+                    <div style="display: flex; flex-direction: column; gap: 15px;">
+                        <button onclick="window.ANALYZE(false)" style="padding: 15px; background: transparent; border: 1px solid #444; color: #888; border-radius: 5px; cursor: pointer; font-size: 14px; transition: 0.3s;">İnsanların önce tarım yapıp sonra burayı bulduğunu kanıtlar.</button>
+                        <button onclick="window.ANALYZE(true)" style="padding: 15px; background: #e67e22; border: none; color: white; border-radius: 5px; cursor: pointer; font-size: 14px; font-weight: bold; box-shadow: 0 5px 15px rgba(230,126,34,0.3);">İnancın, tarım ve yerleşik hayattan DAHA ÖNCE başladığını kanıtlar.</button>
+                    </div>
+                </div>
+            </div>
+
+            <div id="finalReport" style="display: none; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: #1a1a1a; z-index: 110; align-items: center; justify-content: center; padding: 20px; box-sizing: border-box; text-align: center;">
+                <div style="max-width: 550px;">
+                    <i class="fa-solid fa-scroll" style="font-size: 60px; color: #2ecc71; margin-bottom: 20px;"></i>
+                    <h2 style="color: #2ecc71; margin-bottom: 20px;">TARİH YENİDEN YAZILDI!</h2>
+                    <div style="background: #2c3e50; padding: 25px; border-radius: 15px; border-top: 5px solid #2ecc71; color: #fff; text-align: left; line-height: 1.7;">
+                        <p style="margin-top: 0;"><b>Göbeklitepe Paradigması:</b></p>
+                        <p>Dünya tarihinin "Sıfır Noktası" kabul edilen bu keşif, şu klasik sıralamayı altüst etti:</p>
+                        <div style="display: flex; align-items: center; justify-content: center; gap: 10px; margin: 20px 0; font-weight: bold; color: #f1c40f; font-size: 14px;">
+                            <span>DİN</span> <i class="fa-solid fa-arrow-right"></i> <span>TARIM</span> <i class="fa-solid fa-arrow-right"></i> <span>YERLEŞİK HAYAT</span>
+                        </div>
+                        <p>İnsanlar önce bir inanç etrafında toplandı; bu kalabalığı doyurma ihtiyacı tarımı, tarım ise yerleşik hayatı doğurdu.</p>
+                    </div>
+                    <div style="margin-top: 30px; font-size: 12px; font-weight: bold; color: #666;">MODÜL TASARIMI: MURAT MUTLU</div>
+                </div>
+            </div>
+        </div>
+    `;
+
+    // Kazı Mekaniği
+    const grid = document.getElementById('dirtGrid');
+    let clearedTiles = 0;
+    const totalTiles = 64;
+
+    for (let i = 0; i < totalTiles; i++) {
+        const tile = document.createElement('div');
+        tile.style.cssText = `background: #5d4037; border: 1px solid rgba(0,0,0,0.2); transition: opacity 0.4s ease; cursor: crosshair;`;
+        
+        const clear = function() {
+            if (this.style.opacity !== '0') {
+                this.style.opacity = '0';
+                clearedTiles++;
+                const progress = (clearedTiles / totalTiles) * 100;
+                document.getElementById('progressBar').style.width = progress + '%';
+                
+                if (progress > 85) {
+                    setTimeout(() => {
+                        document.getElementById('analysisPanel').style.display = 'flex';
+                    }, 800);
+                }
+            }
+        };
+
+        tile.addEventListener('mouseenter', clear);
+        tile.addEventListener('touchstart', clear, {passive: true});
+        grid.appendChild(tile);
+    }
+
+    window.ANALYZE = function(isCorrect) {
+        if (!isCorrect) {
+            alert("Dikkat Arkeolog! Kanıtlar bunu söylemiyor. Ev ve su olmayan bir yerde önce tarım yapılamazdı. Tekrar analiz et!");
+            return;
+        }
+        document.getElementById('finalReport').style.display = 'flex';
+    };
+};
+// 25. ARAÇ: BİLİMİN SOYAĞACI (10 DEV MİRAS - Murat Mutlu)
+window.HARITA_MOTORU["bilim_soyagaci"] = function() {
+    const controlsContainer = document.getElementById('mapControlsContainer');
+    const mapCanvas = document.getElementById('mapCanvas');
+
+    controlsContainer.style.display = 'block';
+    controlsContainer.style.padding = '10px';
+    controlsContainer.innerHTML = `
+        <div style="text-align: center;">
+            <h4 style="margin: 0 0 5px 0; color: #f39c12; font-size: 18px; font-weight: 800;"><i class="fa-solid fa-tree"></i> Bilimin Dev Soyağacı</h4>
+            <div style="font-size: 11px; opacity: 0.9; color: var(--text-color);">10 Büyük İlk Çağ mirasını modern dünya ile eşleştirin.</div>
+        </div>
+    `;
+
+    window.currentMapInstance = { remove: function() { mapCanvas.innerHTML = ''; mapCanvas.style.display = 'block'; } };
+
+    // 10 KİLİT EŞLEŞME
+    const eslesmeler = [
+        { id: "saat", antik: "60'lık Sayı Sistemi (Sümer)", modern: "Modern Saat ve Dakika", ikon: "fa-clock", bilgi: "Sümerlerin 60 tabanlı sistemi sayesinde bugün hala 1 saat 60 dakikadır." },
+        { id: "hukuk", antik: "Hammurabi Kanunları (Babil)", modern: "Anayasa ve Hukuk Devleti", ikon: "fa-scale-balanced", bilgi: "Tarihin ilk yazılı ve kapsamlı kanunları, modern hukuk sistemlerinin temel taşıdır." },
+        { id: "tip", antik: "Mumyalama Teknikleri (Mısır)", modern: "Tıp ve Anatomi Bilimi", ikon: "fa-stethoscopes", bilgi: "Mısırlılar mumyalama sayesinde insan vücudunu tanımış, eczacılık ve anatominin temelini atmıştır." },
+        { id: "para", antik: "Lidya Sikkesi (Lidya)", modern: "Küresel Ekonomi ve Bankacılık", ikon: "fa-money-bill-transfer", bilgi: "Takas usulüne son veren Lidyalılar, bugün kullandığımız para sistemini başlattı." },
+        { id: "yazi", antik: "Fenike Alfabesi (Fenike)", modern: "Latin Alfabesi ve İletişim", ikon: "fa-font", bilgi: "Ses temelli ilk alfabe olan Fenike sistemi, bugün kullandığımız alfabenin atasıdır." },
+        { id: "astronomi", antik: "Ziggurat Gözlemleri (Sümer)", modern: "Uzay İstasyonları ve NASA", ikon: "fa-user-astronaut", bilgi: "Gök cisimlerini ilk kez sistematik gözleyen Mezopotamyalılar, uzay bilimini başlattı." },
+        { id: "geometri", antik: "Nil Taşkın Ölçümleri (Mısır)", modern: "Modern Geometri ve Mimari", ikon: "fa-ruler-combined", bilgi: "Nil sularının tarlaları bozması sonucu arazi ölçümü için geliştirilen teknikler Geometriyi doğurdu." },
+        { id: "burokrasi", antik: "Katiplik Sistemi (Sümer/Mısır)", modern: "Memurluk ve Devlet Arşivi", ikon: "fa-file-signature", bilgi: "Kayıt tutma ihtiyacı, bugünkü modern devlet bürokrasisinin ve arşivciliğin ilk örneğidir." },
+        { id: "diplomasi", antik: "Kadeş Barış Antlaşması (Hitit)", modern: "Uluslararası Diplomasi ve BM", ikon: "fa-handshake", bilgi: "Tarihin ilk yazılı barış antlaşması, bugünkü uluslararası diplomasinin başlangıcıdır." },
+        { id: "ulasim", antik: "Kral Yolu (Persler/Lidyalılar)", modern: "Otoyollar ve Kargo Ağı", ikon: "fa-truck-fast", bilgi: "Antik çağın otoyolu olan Kral Yolu, posta teşkilatının ve düzenli ulaşımın ilk modelidir." }
+    ];
+
+    mapCanvas.innerHTML = `
+        <div style="width: 100%; height: 100%; background: #1a1a1a; display: flex; flex-direction: column; align-items: center; padding: 15px; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; overflow-y:auto;">
+            
+            <div style="width: 100%; max-width: 900px; display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                
+                <div style="display: flex; flex-direction: column; gap: 10px;">
+                    <div style="color: #f39c12; text-align: center; font-weight: bold; border-bottom: 2px solid #f39c12; padding-bottom: 5px; margin-bottom: 5px;">ANTİK MİRAS</div>
+                    ${eslesmeler.map(item => `
+                        <div draggable="true" ondragstart="window.BILIM_DRAG(event, '${item.id}')" style="background: #eee; padding: 10px; border-radius: 6px; cursor: grab; font-size: 12px; font-weight: bold; color: #2c3e50; border-left: 4px solid #d35400; box-shadow: 0 2px 5px rgba(0,0,0,0.2);">
+                            <i class="fa-solid fa-seedling" style="margin-right: 5px; color: #d35400;"></i> ${item.antik}
+                        </div>
+                    `).join('')}
+                </div>
+
+                <div style="display: flex; flex-direction: column; gap: 10px;">
+                    <div style="color: #3498db; text-align: center; font-weight: bold; border-bottom: 2px solid #3498db; padding-bottom: 5px; margin-bottom: 5px;">MODERN KARŞILIK</div>
+                    ${eslesmeler.map(item => `
+                        <div id="target_${item.id}" ondragover="window.BILIM_ALLOW(event)" ondrop="window.BILIM_DROP(event, '${item.id}')" style="background: rgba(255,255,255,0.05); padding: 10px; border-radius: 6px; border: 1.5px dashed #3498db; min-height: 40px; display: flex; align-items: center; gap: 8px; transition: 0.3s;">
+                            <i class="fa-solid ${item.ikon}" style="color: #3498db; opacity: 0.3;"></i>
+                            <span style="color: #fff; opacity: 0.4; font-size: 11px;">Hedef nokta...</span>
+                        </div>
+                    `).join('')}
+                </div>
+
+            </div>
+
+            <div id="bilimOverlay" style="display: none; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); z-index: 100; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 30px; box-sizing: border-box;">
+                <div style="max-width: 450px; border: 2px solid #f39c12; padding: 30px; border-radius: 15px; background: #1a1a1a;">
+                    <i id="infoIkon" class="fa-solid" style="font-size: 50px; color: #f39c12; margin-bottom: 15px;"></i>
+                    <h2 id="infoBaslik" style="color: #f39c12; margin: 0 0 15px 0; font-size: 22px;"></h2>
+                    <p id="infoMetin" style="color: #fff; line-height: 1.6; font-size: 15px;"></p>
+                    <button onclick="document.getElementById('bilimOverlay').style.display='none'" style="margin-top: 20px; padding: 10px 30px; background: #f39c12; border: none; color: #fff; border-radius: 5px; cursor: pointer; font-weight: bold;">Keşfe Devam Et</button>
+                </div>
+            </div>
+
+            <div style="margin-top: 20px; font-size: 11px; color: #fff; opacity: 0.5; font-weight: bold;">
+                <i class="fa-solid fa-graduation-cap"></i> Eğitim Modülü: Murat Mutlu
+            </div>
+        </div>
+    `;
+
+    // Sürükle-Bırak Mantığı
+    window.BILIM_DRAG = (ev, id) => { ev.dataTransfer.setData("text", id); };
+    window.BILIM_ALLOW = (ev) => { ev.preventDefault(); };
+
+    window.BILIM_DROP = (ev, targetId) => {
+        ev.preventDefault();
+        const draggedId = ev.dataTransfer.getData("text");
+        const targetEl = document.getElementById(`target_${targetId}`);
+
+        if (draggedId === targetId) {
+            const data = eslesmeler.find(x => x.id === draggedId);
+            targetEl.style.background = "#27ae60";
+            targetEl.style.border = "none";
+            targetEl.innerHTML = `<i class="fa-solid ${data.ikon}" style="color: white;"></i> <span style="color:white; font-weight:bold; font-size:12px;">${data.modern}</span>`;
+            
+            // Bilgi Panelini Aç
+            setTimeout(() => {
+                document.getElementById('infoIkon').className = `fa-solid ${data.ikon}`;
+                document.getElementById('infoBaslik').innerText = data.modern;
+                document.getElementById('infoMetin').innerText = data.bilgi;
+                document.getElementById('bilimOverlay').style.display = 'flex';
+            }, 300);
+        } else {
+            targetEl.style.borderColor = "#c0392b";
+            setTimeout(() => targetEl.style.borderColor = "#3498db", 500);
+        }
+    };
+};
+// 26. ARAÇ: PİRAMİDİN Basamakları (MISIR SOSYAL HİYERARŞİSİ)
+window.HARITA_MOTORU["misir_piramidi"] = function() {
+    const controlsContainer = document.getElementById('mapControlsContainer');
+    const mapCanvas = document.getElementById('mapCanvas');
+
+    controlsContainer.style.display = 'block';
+    controlsContainer.style.padding = '10px';
+    controlsContainer.innerHTML = `
+        <div style="text-align: center;">
+            <h4 style="margin: 0 0 5px 0; color: #d4af37; font-size: 18px; font-weight: 800;"><i class="fa-solid fa-pyramids"></i> Piramidin Basamakları</h4>
+            <div style="font-size: 11px; opacity: 0.9; color: var(--text-color);">Sınıf kartlarını piramitteki doğru statü basamağına yerleştirin.</div>
+        </div>
+    `;
+
+    window.currentMapInstance = { remove: function() { mapCanvas.innerHTML = ''; mapCanvas.style.display = 'block'; } };
+
+    // Sınıf Verileri (En üstten en alta)
+    const sınıflar = [
+        { id: "firavun", isim: "Firavun", ikon: "fa-crown", detay: "<b>Tanrı-Kral:</b> Mısır'da her şeyin sahibi ve yaşayan bir tanrıdır. En tepede o bulunur; yasalar onun ağzından çıkar." },
+        { id: "rahip", isim: "Vezirler ve Rahipler", ikon: "fa-ankh", detay: "<b>Dini ve Siyasi Güç:</b> Firavundan sonraki en yetkili gruptur. Tapınakları yönetir ve devlet işlerini firavun adına yürütürler." },
+                { id: "katip", isim: "Katipler (Yazıcılar)", ikon: "fa-scroll", detay: "<b>Arşiv ve Vergi:</b> Okuma-yazma bilen nadir sınıftır. Hasadı sayar, vergileri kaydeder ve hiyeroglifi kullanarak devletin hafızasını oluştururlar." },
+        { id: "mimar", isim: "Mimarlar ve Sanatçılar", ikon: "fa-compass-drafting", detay: "<b>İnşa ve Estetik:</b> Piramitlerin ve tapınakların tasarımcılarıdır. Zanaatları sayesinde toplumda saygın bir orta sınıfa sahiptirler." },
+        { id: "serf", isim: "Çiftçiler ve Serfler", ikon: "fa-wheat-awn", detay: "<b>Temel Üreticiler:</b> Piramidin en geniş ve en alt tabakasıdır. Nil'in bereketiyle ülkeyi doyurur ve devasa yapıların inşaatında işçi olarak çalışırlar." }
+    ];
+
+    mapCanvas.innerHTML = `
+        <div style="width: 100%; height: 100%; background: #2c3e50; display: flex; flex-direction: column; align-items: center; justify-content: center; font-family: 'Segoe UI', sans-serif; padding: 20px; box-sizing: border-box;">
+            
+            <div style="display: flex; gap: 40px; align-items: center; justify-content: center; flex-wrap: wrap;">
+                
+                <div id="piramitContainer" style="display: flex; flex-direction: column; align-items: center; gap: 5px;">
+                    ${sınıflar.map((s, index) => `
+                        <div id="drop_${s.id}" ondragover="window.PIRAMIT_ALLOW(event)" ondrop="window.PIRAMIT_DROP(event, '${s.id}')" style="
+                            width: ${100 + (index * 60)}px; 
+                            height: 60px; 
+                            background: rgba(255, 255, 255, 0.05); 
+                            border: 2px dashed #d4af37; 
+                            display: flex; 
+                            align-items: center; 
+                            justify-content: center; 
+                            color: #d4af37; 
+                            font-weight: bold; 
+                            font-size: 14px; 
+                            transition: 0.3s;
+                            clip-path: polygon(${10 - (index*2)}% 0%, ${90 + (index*2)}% 0%, 100% 100%, 0% 100%);
+                        ">
+                            <i class="fa-solid fa-lock" style="opacity: 0.3; margin-right: 8px;"></i> Hedef Katman
+                        </div>
+                    `).join('')}
+                </div>
+
+                <div id="kartlarContainer" style="display: flex; flex-direction: column; gap: 10px;">
+                    <h3 style="color: #d4af37; font-size: 16px; text-align: center; border-bottom: 1px solid #d4af37; padding-bottom: 5px;">Sosyal Sınıflar</h3>
+                    ${[...sınıflar].sort(() => Math.random() - 0.5).map(s => `
+                        <div draggable="true" ondragstart="window.PIRAMIT_DRAG(event, '${s.id}')" style="
+                            background: #f1c40f; 
+                            color: #2c3e50; 
+                            padding: 12px 20px; 
+                            border-radius: 5px; 
+                            cursor: grab; 
+                            font-weight: bold; 
+                            display: flex; 
+                            align-items: center; 
+                            gap: 10px; 
+                            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+                            min-width: 180px;
+                        ">
+                            <i class="fa-solid ${s.ikon}"></i> ${s.isim}
+                        </div>
+                    `).join('')}
+                </div>
+            </div>
+
+            <div id="piramitOverlay" style="display: none; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 100; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 25px;">
+                <div style="max-width: 450px; background: #1a1a1a; border: 3px solid #d4af37; padding: 30px; border-radius: 15px; box-shadow: 0 0 30px #d4af3755;">
+                    <i id="pInfoIkon" class="fa-solid" style="font-size: 60px; color: #d4af37; margin-bottom: 20px;"></i>
+                    <h2 id="pInfoBaslik" style="color: #d4af37; margin-bottom: 15px;"></h2>
+                    <p id="pInfoMetin" style="color: #fff; line-height: 1.6; font-size: 15px;"></p>
+                    <button onclick="document.getElementById('piramitOverlay').style.display='none'" style="margin-top: 20px; padding: 10px 30px; background: #d4af37; border: none; color: #1a1a1a; border-radius: 5px; cursor: pointer; font-weight: bold;">Devam Et</button>
+                </div>
+            </div>
+
+            <div style="margin-top: 30px; font-size: 11px; color: #d4af37; opacity: 0.6; font-weight: bold;">
+                <i class="fa-solid fa-graduation-cap"></i> Modül Tasarımı: Murat Mutlu
+            </div>
+        </div>
+    `;
+
+    // Sürükle-Bırak Mantığı
+    window.PIRAMIT_DRAG = (ev, id) => {
+        ev.dataTransfer.setData("text", id);
+    };
+
+    window.PIRAMIT_ALLOW = (ev) => {
+        ev.preventDefault();
+    };
+
+    window.PIRAMIT_DROP = (ev, targetId) => {
+        ev.preventDefault();
+        const draggedId = ev.dataTransfer.getData("text");
+        const targetEl = document.getElementById(`drop_${targetId}`);
+
+        if (draggedId === targetId) {
+            const data = sınıflar.find(x => x.id === draggedId);
+            targetEl.style.background = "#d4af37";
+            targetEl.style.borderStyle = "solid";
+            targetEl.style.color = "#1a1a1a";
+            targetEl.innerHTML = `<i class="fa-solid ${data.ikon}" style="margin-right:8px;"></i> ${data.isim}`;
+            
+            // Bilgi Panelini Aç
+            setTimeout(() => {
+                document.getElementById('pInfoIkon').className = `fa-solid ${data.ikon}`;
+                document.getElementById('pInfoBaslik').innerText = data.isim;
+                document.getElementById('pInfoMetin').innerHTML = data.detay;
+                document.getElementById('piramitOverlay').style.display = 'flex';
+            }, 300);
+        } else {
+            // Hata Durumu
+            alert("Hiyerarşi Bozuldu! Bu sınıfın toplumdaki statüsü burası değil. Daha dikkatli analiz etmelisin!");
+            targetEl.style.borderColor = "#c0392b";
+            setTimeout(() => targetEl.style.borderColor = "#d4af37", 500);
+        }
+    };
+};
+// 27. ARAÇ: ANTİK KOLONİ ROTASI (AKDENİZ'İN EFENDİLERİ)
+window.HARITA_MOTORU["antik_koloni_rotasi"] = function() {
+    const controlsContainer = document.getElementById('mapControlsContainer');
+    const mapCanvas = document.getElementById('mapCanvas');
+
+    controlsContainer.style.display = 'block';
+    controlsContainer.style.padding = '10px';
+    controlsContainer.innerHTML = `
+        <div style="text-align: center;">
+            <h4 style="margin: 0 0 5px 0; color: #2980b9; font-size: 18px; font-weight: 800;"><i class="fa-solid fa-anchor"></i> Akdeniz'in Efendileri</h4>
+            <div style="font-size: 11px; opacity: 0.9; color: var(--text-color);">Fenike gemisine 'Alfabe' yükle ve Akdeniz kolonilerine dağıt!</div>
+            <div style="margin-top: 8px;">
+                <button id="btnGemiYukle" onclick="window.KOLONI_YUKLE()" style="background: #2980b9; color: white; border: none; padding: 6px 15px; border-radius: 20px; font-weight: bold; cursor: pointer; transition: 0.3s;"><i class="fa-solid fa-scroll"></i> Alfabeyi Gemice Yükle</button>
+            </div>
+            <div style="font-size: 11px; font-weight: bold; color: #2980b9; margin-top: 8px; border-top: 1px dashed rgba(41, 128, 185, 0.5); padding-top: 8px;">
+                <i class="fa-solid fa-graduation-cap"></i> Modül Kurgusu: Murat Mutlu
+            </div>
+        </div>
+    `;
+
+    // Harita Başlangıcı (Akdeniz Havzası)
+    window.currentMapInstance = L.map('mapCanvas', { zoomControl: false }).setView([36.0, 20.0], 5);
+    L.control.zoom({ position: 'bottomright' }).addTo(window.currentMapInstance);
+
+    L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
+        maxZoom: 10,
+        attribution: '© OpenStreetMap'
+    }).addTo(window.currentMapInstance);
+
+    // Durak Verileri
+    const duraklar = {
+        sur: { id: "sur", isim: "Sur (Fenike)", koor: [33.27, 35.19], tip: "merkez", durum: "hazir", detay: "<b>Fenike (Lübnan):</b> Dağlık coğrafya tarıma izin vermeyince Fenikeliler denize yöneldi. Burada ilk 'Alfabe'yi icat ettiler." },
+        kartaca: { id: "kartaca", isim: "Kartaca (Tunus)", koor: [36.85, 10.33], tip: "koloni", durum: "yok", detay: "<b>Kuzey Afrika:</b> Alfabeniz buraya ulaştı! Artık Kartacalı tüccarlar kayıtlarını bu 22 harfli sistemle tutacak." },
+        iyonya: { id: "iyonya", isim: "İyonya (İzmir/Aydın)", koor: [38.41, 27.12], tip: "koloni", durum: "yok", detay: "<b>Anadolu Kıyıları:</b> Dağların denize dik uzanması İyonya'yı deniz ticaretine itti. Alfabeniz burada bilim ve felsefenin dili olacak." },
+        atina: { id: "atina", isim: "Atina (Yunanistan)", koor: [37.98, 23.72], tip: "koloni", durum: "yok", detay: "<b>Avrupa Kapısı:</b> Alfabeniz Yunanlılar tarafından geliştirilerek Latin alfabesinin temelini oluşturacak." }
+    };
+
+    let gemiYuklu = false;
+    let gemiMarker = null;
+    let durakMarkerlari = {};
+
+    // Durakları Çiz
+    Object.values(duraklar).forEach(durak => {
+        const icon = L.divIcon({
+            className: 'durak-ikon',
+            html: `<div id="icon_${durak.id}" style="background:${durak.tip === 'merkez' ? '#2c3e50' : '#bdc3c7'}; color:white; width:30px; height:30px; border-radius:50%; display:flex; align-items:center; justify-content:center; border:2px solid white; box-shadow:0 0 10px rgba(0,0,0,0.3); font-size:14px;"><i class="fa-solid ${durak.tip === 'merkez' ? 'fa-scroll' : 'fa-anchor'}"></i></div>`,
+            iconSize: [30, 30]
+        });
+
+        const marker = L.marker(durak.koor, { icon: icon }).addTo(window.currentMapInstance);
+        marker.bindPopup(`<div style="text-align:center;"><b>${durak.isim}</b><br><small id="status_${durak.id}">${durak.tip === 'merkez' ? 'Alfabenin Doğduğu Yer' : 'Yazı henüz ulaşmadı'}</small></div>`);
+        
+        marker.on('click', () => {
+            if (gemiYuklu && durak.tip === 'koloni' && durak.durum === 'yok') {
+                window.GEMI_HAREKET(durak.id);
+            }
+        });
+
+        durakMarkerlari[durak.id] = marker;
+    });
+
+    // Gemiyi Başlat
+    const shipIcon = L.divIcon({
+        className: 'ship-ikon',
+        html: `<div id="gemi_visual" style="background:#2980b9; color:white; width:36px; height:36px; border-radius:50%; display:none; align-items:center; justify-content:center; border:2px solid white; box-shadow:0 0 15px #2980b9; font-size:18px;"><i class="fa-solid fa-ship"></i></div>`,
+        iconSize: [36, 36]
+    });
+    gemiMarker = L.marker(duraklar.sur.koor, { icon: shipIcon }).addTo(window.currentMapInstance);
+
+    window.KOLONI_YUKLE = function() {
+        gemiYuklu = true;
+        document.getElementById('gemi_visual').style.display = 'flex';
+        document.getElementById('btnGemiYukle').disabled = true;
+        document.getElementById('btnGemiYukle').style.opacity = '0.5';
+        alert("🚢 Gemiye 'Fenike Alfabesi' yüklendi! Şimdi harita üzerindeki çapa (⚓) ikonlarına tıklayarak alfabeyi Akdeniz'e yay.");
+    };
+
+    window.GEMI_HAREKET = function(targetId) {
+        const hedef = duraklar[targetId];
+        
+        // Basit "Işınlanma" yerine küçük bir animasyon hissi (FlyTo ile gemiyi takip et)
+        gemiMarker.setLatLng(hedef.koor);
+        window.currentMapInstance.flyTo(hedef.koor, 6, { duration: 1.5 });
+
+        setTimeout(() => {
+            // Yazıyı Değiştir
+            duraklar[targetId].durum = "var";
+            document.getElementById(`icon_${targetId}`).style.background = "#2ecc71"; // Yeşerdi
+            document.getElementById(`icon_${targetId}`).innerHTML = '<i class="fa-solid fa-font"></i>';
+            document.getElementById(`status_${targetId}`).innerText = "Alfabe Kullanılıyor!";
+            
+            // Bilgi Penceresi
+            durakMarkerlari[targetId].bindPopup(`
+                <div style="text-align:center; min-width:150px;">
+                    <h4 style="color:#2ecc71; margin:0 0 8px 0;"><i class="fa-solid fa-check-double"></i> Görev Başarılı</h4>
+                    <p style="font-size:12px; margin:0;">${hedef.detay}</p>
+                </div>
+            `).openPopup();
+
+            // Tüm duraklar doldu mu?
+            const bittiMi = Object.values(duraklar).every(d => d.durum === 'var' || d.tip === 'merkez');
+            if (bittiMi) {
+                setTimeout(() => {
+                    alert("🏆 TEBRİKLER! Fenike Alfabesini tüm Akdeniz'e yaydın. Ticaret sayesinde medeniyetlerin dili değişti ve Latin alfabesinin temeli atıldı!");
+                }, 1000);
+            }
+        }, 1600);
+    };
+};
