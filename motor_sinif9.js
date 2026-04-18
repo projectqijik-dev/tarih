@@ -417,6 +417,15 @@ function materyalleriYukle(uniteId) {
                 { baslik: "İlk Çağ Haritası", tur: "İnteraktif Harita", icon: "fa-map-location-dot", renk: "#2ecc71", link: "ilk_cag" },
                 { baslik: "Göç Yolları Haritası", tur: "İnteraktif Harita", icon: "fa-map-location-dot", renk: "#2ecc71", link: "goc_yollari" },
 				{ baslik: "Anadolu Uygarlıkları", tur: "İnteraktif Harita", icon: "fa-map-location-dot", renk: "#2ecc71", link: "anadolu_uygarliklari" },
+				{ baslik: "Babil Yüksek Mahkemesi (Hammurabi Kanunları)", tur: "İnteraktif Harita", icon: "fa-gavel", renk: "#8e44ad", link: "hammurabi_mahkemesi" },
+				{ baslik: "Antik Şifre Çözücü: Miras Atölyesi", tur: "İnteraktif Harita", icon: "fa-scroll", renk: "#16a085", link: "antik_sifre" },
+				{ baslik: "Piramidin Basamakları: Sosyal Sınıflar", tur: "İnteraktif Harita", icon: "fa-layer-group", renk: "#d4af37", link: "misir_piramidi" },
+				{ baslik: "Neolitik Köy Kurucusu (Çatalhöyük)", tur: "İnteraktif Harita", icon: "fa-wheat-awn", renk: "#27ae60", link: "neolitik_koy" },
+				{ baslik: "Göbeklitepe: Tarihi Yeniden Yazan Keşif", tur: "İnteraktif Harita", icon: "fa-person-digging", renk: "#d35400", link: "gobeklitepe_kazi" },
+				{ baslik: "Bilimin Soyağacı: Mezopotamya Mirası", tur: "İnteraktif Harita", icon: "fa-seedling", renk: "#f39c12", link: "bilim_soyagaci" },
+				{ baslik: "Coğrafya Kaderdir: Su ve Medeniyet", tur: "İnteraktif Harita", icon: "fa-water", renk: "#3498db", link: "cografya_kaderdir" },
+				{ baslik: "Antik Koloni Rotası: Akdeniz", tur: "İnteraktif Harita", icon: "fa-ship", renk: "#2980b9", link: "antik_koloni_rotasi" },
+				
             ];
         } else if (uniteId === 'u3') {
             aktifMateryaller = [
