@@ -4191,3 +4191,1027 @@ window.HARITA_MOTORU["antik_koloni_rotasi"] = function() {
         }, 1600);
     };
 };
+// 28. ARAÇ: BOZKIRIN ATLILARI (YAYLAK VE KIŞLAK SİMÜLASYONU)
+// ID: klasik_u3_bozkir_1
+window.HARITA_MOTORU["bozkir_atlilari"] = function() {
+    const controlsContainer = document.getElementById('mapControlsContainer');
+    const mapCanvas = document.getElementById('mapCanvas');
+
+    controlsContainer.style.display = 'block';
+    controlsContainer.style.padding = '10px';
+    controlsContainer.innerHTML = `
+        <div style="text-align: center;">
+            <h4 style="margin: 0 0 5px 0; color: #d35400; font-size: 18px; font-weight: 800;"><i class="fa-solid fa-horse"></i> Bozkırın Atlıları</h4>
+            <div id="sezonBilgi" style="font-size: 12px; font-weight: bold; color: #2c3e50; background: #ecf0f1; padding: 5px; border-radius: 5px;">Mevsim: Bahar | Kervan Hazırlanıyor...</div>
+        </div>
+    `;
+
+    window.currentMapInstance = { remove: function() { mapCanvas.innerHTML = ''; mapCanvas.style.display = 'block'; } };
+
+    // Oyun Değişkenleri
+    let mevsim = 0; // 0: Bahar, 1: Yaz, 2: Güz, 3: Kış
+    let konum = "kislak"; // Başlangıç kışlakta
+    let suruSagligi = 100;
+    const mevsimler = [
+        { ad: "Bahar", renk: "#2ecc71", mesaj: "Otlar yeşeriyor. Sürüler canlandı.", hedef: "yaylak", uyari: "Yaz yaklaşıyor! Sürüleri yüksek yaylaklara (serin yere) çıkarmazsan hayvanlar sıcaktan telef olur." },
+        { ad: "Yaz", renk: "#f1c40f", mesaj: "Hava çok sıcak. Vadiler kurudu.", hedef: "yaylak", hata: "KIŞLAKTA KALDIN! Alçak yerlerde su bitti, sürüler susuzluktan kırılıyor!" },
+        { ad: "Güz", renk: "#e67e22", mesaj: "Havalar soğuyor, yükseklere kar düşebilir.", hedef: "kislak", uyari: "Kış yaklaşıyor! Vadilerdeki korunaklı kışlaklara inmezsen sürüler dondurucu rüzgarda yok olur." },
+        { ad: "Kış", renk: "#3498db", mesaj: "Dondurucu Sibirya soğukları geldi.", hedef: "kislak", hata: "YAYLAKTA KALDIN! Yüksek yerlere dev kar kütleleri indi, kervanın buz tuttu!" }
+    ];
+
+    mapCanvas.innerHTML = `
+        <div style="width: 100%; height: 100%; display: flex; flex-direction: column; background: #e0d6c8; font-family: 'Segoe UI', sans-serif; position: relative; overflow: hidden;">
+            
+            <div id="bozkirHarita" style="flex: 1; position: relative; background: url('https://www.transparenttextures.com/patterns/paper-fibers.png'); transition: 1s;">
+                
+                <div id="area_yaylak" onclick="window.GOC_ET('yaylak')" style="position: absolute; top: 15%; left: 50%; transform: translateX(-50%); width: 220px; height: 120px; border: 3px dashed #2980b9; border-radius: 50% 50% 0 0; display: flex; flex-direction: column; align-items: center; justify-content: center; background: rgba(255,255,255,0.2); cursor: pointer;">
+                    <i class="fa-solid fa-mountain" style="font-size: 30px; color: #2980b9;"></i>
+                    <span style="font-weight: 900; color: #2980b9;">YAYLAK (Yüksekler)</span>
+                </div>
+
+                <div id="area_kislak" onclick="window.GOC_ET('kislak')" style="position: absolute; bottom: 15%; left: 50%; transform: translateX(-50%); width: 220px; height: 120px; border: 3px dashed #d35400; border-radius: 0 0 50% 50%; display: flex; flex-direction: column; align-items: center; justify-content: center; background: rgba(255,255,255,0.2); cursor: pointer;">
+                    <i class="fa-solid fa-tent" style="font-size: 30px; color: #d35400;"></i>
+                    <span style="font-weight: 900; color: #d35400;">KIŞLAK (Vadi)</span>
+                </div>
+
+                <div id="kervanOba" style="position: absolute; width: 50px; height: 50px; background: #8e44ad; border: 3px solid white; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; transition: all 1.5s cubic-bezier(0.4, 0, 0.2, 1); z-index: 10; box-shadow: 0 5px 15px rgba(0,0,0,0.3); left: 50%; transform: translateX(-50%); bottom: 20%;">
+                    <i class="fa-solid fa-horse"></i>
+                </div>
+
+            </div>
+
+            <div style="background: #2c3e50; padding: 15px; color: white; display: flex; flex-direction: column; gap: 10px;">
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <div style="font-size: 14px; font-weight: bold;"><i class="fa-solid fa-heart-pulse"></i> Sürü Sağlığı: <span id="healthDisplay">100</span>%</div>
+                    <button onclick="window.MEVSIM_İLERLET()" style="background: #27ae60; color: white; border: none; padding: 8px 15px; border-radius: 5px; font-weight: bold; cursor: pointer;"><i class="fa-solid fa-forward-step"></i> Mevsimi Geç</button>
+                </div>
+                <div id="asamaMesaj" style="font-size: 13px; line-height: 1.4; background: rgba(0,0,0,0.2); padding: 8px; border-radius: 4px; border-left: 4px solid #f1c40f;">
+                    Bahar geldi. Sürüleri hazırlayın Beyim! Yaz gelmeden serin yaylaklara çıkmalıyız.
+                </div>
+            </div>
+
+            <div id="simFinal" style="display: none; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 100; align-items: center; justify-content: center; padding: 20px; text-align: center;">
+                <div style="background: white; padding: 30px; border-radius: 15px; max-width: 400px;">
+                    <i id="finalIkon" class="fa-solid" style="font-size: 50px; margin-bottom: 15px;"></i>
+                    <h2 id="finalBaslik" style="margin: 0 0 10px 0;"></h2>
+                    <p id="finalMetin" style="font-size: 14px; color: #333; line-height: 1.6;"></p>
+                    <button onclick="window.HARITA_MOTORU['bozkir_atlilari']()" style="margin-top: 20px; padding: 10px 20px; background: #2c3e50; color: white; border: none; border-radius: 5px; cursor: pointer; font-weight: bold;">Tekrar Dene</button>
+                </div>
+            </div>
+        </div>
+    `;
+
+    // Mobil Uyumlu Hareket Fonksiyonu
+    window.GOC_ET = function(hedef) {
+        const kervan = document.getElementById('kervanOba');
+        if (hedef === "yaylak") {
+            kervan.style.bottom = "auto";
+            kervan.style.top = "20%";
+            konum = "yaylak";
+        } else {
+            kervan.style.top = "auto";
+            kervan.style.bottom = "20%";
+            konum = "kislak";
+        }
+    };
+
+    window.MEVSIM_İLERLET = function() {
+        mevsim = (mevsim + 1) % 4;
+        const mVeri = mevsimler[mevsim];
+
+        // Görsel Güncelleme
+        document.getElementById('bozkirHarita').style.backgroundColor = mVeri.renk;
+        document.getElementById('sezonBilgi').innerText = `Mevsim: ${mVeri.ad} | ${mVeri.mesaj}`;
+        document.getElementById('sezonBilgi').style.color = mVeri.renk;
+        document.getElementById('asamaMesaj').innerText = mVeri.uyari || mVeri.mesaj;
+
+        // Kontrol: Sürü Doğru Yerde mi?
+        // Yazın yaylakta, Kışın kışlakta olunmalı.
+        if ((mevsim === 1 && konum !== "yaylak") || (mevsim === 3 && konum !== "kislak")) {
+            suruSagligi -= 40;
+            document.getElementById('healthDisplay').innerText = suruSagligi;
+            document.getElementById('asamaMesaj').innerHTML = `<span style="color:#e74c3c; font-weight:bold;"><i class="fa-solid fa-triangle-exclamation"></i> ${mVeri.hata}</span>`;
+            
+            if (suruSagligi <= 0) {
+                window.BITIR(false, "Sürüleriniz yok oldu. Halkınız bozkırın çetin şartlarına yenik düştü. Konar-göçer yaşam hata kabul etmez!");
+            }
+        }
+
+        // Bir tam tur döndüyse (Kış bittiyse ve sağ kaldıysa)
+        if (mevsim === 0 && suruSagligi > 0) {
+            window.BITIR(true, "Tebrikler Beyim! Mevsim döngüsünü başarıyla tamamladınız. Öğrencileriniz artık Türklerin neden yer değiştirmediğini, 'planlı göç' (Konar-Göçer) ile hayatta kaldıklarını anladı.");
+        }
+    };
+
+    window.BITIR = function(basari, mesaj) {
+        document.getElementById('simFinal').style.display = 'flex';
+        document.getElementById('finalIkon').className = basari ? "fa-solid fa-trophy" : "fa-solid fa-skull-crossbones";
+        document.getElementById('finalIkon').style.color = basari ? "#27ae60" : "#c0392b";
+        document.getElementById('finalBaslik').innerText = basari ? "Bozkırın Hakimi!" : "Kervan Dağıldı!";
+        document.getElementById('finalMetin').innerText = mesaj;
+    };
+};
+// 29. ARAÇ: İPEK YOLU DİPLOMASİSİ (5 AŞAMALI BÜYÜK STRATEJİ)
+// ID: diplomasi_u4_ipekyolu_v2
+window.HARITA_MOTORU["ipek_yolu_diplomasi"] = function() {
+    const controlsContainer = document.getElementById('mapControlsContainer');
+    const mapCanvas = document.getElementById('mapCanvas');
+
+    controlsContainer.style.display = 'block';
+    controlsContainer.style.padding = '10px';
+    controlsContainer.innerHTML = `
+        <div style="text-align: center; position: relative;">
+            <h4 style="margin: 0 0 5px 0; color: #8e44ad; font-size: 18px; font-weight: 800;"><i class="fa-solid fa-chess-knight"></i> İpek Yolu Diplomasisi</h4>
+            <div id="sezonBilgi" style="font-size: 11px; font-weight: bold; color: #2c3e50; background: #f1c40f; padding: 4px; border-radius: 4px;">Hedef: Orta Asya Hakimiyeti</div>
+            <div style="position: absolute; right: 0; top: 0; font-size: 10px; font-style: italic; color: #8e44ad; opacity: 0.7; font-weight: bold;">
+                <i class="fa-solid fa-pen-nib"></i> Simülasyon: Murat Mutlu
+            </div>
+        </div>
+    `;
+
+    window.currentMapInstance = { remove: function() { mapCanvas.innerHTML = ''; mapCanvas.style.display = 'block'; } };
+
+    let asama = 1;
+
+    const hikaye = {
+        1: {
+            baslik: "1. Aşama: Ortak Düşman (Akhunlar)",
+            metin: "MÖ 557. İpek Yolu Akhunların kontrolünde. Sasaniler de bu durumdan rahatsız. İstemi Yabgu olarak ilk hamlen ne olacak?",
+            butonlar: [
+                { metin: "Sasanilerle İttifak Yap", aksiyon: "ittifak_sasani", dogru: true },
+                { metin: "Bizans ile Uzlaş", aksiyon: "hata_bizans_erken", dogru: false }
+            ]
+        },
+        2: {
+            baslik: "2. Aşama: Akhunların Sonu",
+            metin: "Müttefikin Sasanilerle birlikte Akhunları yıktın. Topraklar paylaşıldı. Ancak Sasaniler İpek Yolu'ndaki geçiş ücretlerini aşırı artırdı. Ne yapmalı?",
+            butonlar: [
+                { metin: "Sasanilere Elçi Gönder", aksiyon: "elci_sasani", dogru: true },
+                { metin: "Hemen Savaş İlan Et", aksiyon: "hata_savas_erken", dogru: false }
+            ]
+        },
+        3: {
+            baslik: "3. Aşama: İhanet ve Zehir",
+            metin: "Sasanilere gönderdiğin elçiler sarayda zehirlenerek öldürüldü! Sasani Şahı yolu tamamen kapattı. Ticaret durdu. Devlet zor durumda.",
+            butonlar: [
+                { metin: "Elçin Maniakh'ı ve heyeti Bizans'a Gönder", aksiyon: "elci_bizans", dogru: true },
+                { metin: "Geri Adım At, Vergi Ver", aksiyon: "hata_taviz", dogru: false }
+            ]
+        },
+        4: {
+            baslik: "4. Aşama: İlk Temas (Konstantinopolis)",
+            metin: "Elçin Maniakh, Bizans imparatoruna ulaştı. Türk tarihinde Avrupa'ya giden ilk heyet! Bizans, Sasanileri arkadan vurmayı kabul etti.",
+            butonlar: [
+                { metin: "Kıskaç Harekatını Başlat", aksiyon: "kiskac", dogru: true },
+                { metin: "İttifakı Gizli Tut", aksiyon: "hata_bekle", dogru: false }
+            ]
+        },
+        5: {
+            baslik: "5. Aşama: Büyük Zafer",
+            metin: "Doğudan Göktürkler, Batıdan Bizans saldırdı. Sasaniler iki ateş arasında kaldı! İpek Yolu artık tamamen senin kontrolünde.",
+            butonlar: [
+                { metin: "Tarihi Tescille", aksiyon: "final", dogru: true }
+            ]
+        }
+    };
+
+    mapCanvas.innerHTML = `
+        <div style="width: 100%; height: 100%; display: flex; flex-direction: column; background: #fdf5e6; font-family: 'Segoe UI', sans-serif; position: relative;">
+            
+            <div id="stratHarita" style="flex: 1; position: relative; background: url('https://www.transparenttextures.com/patterns/papyros.png'); overflow: hidden;">
+                <div id="bizans" style="position: absolute; left: 10%; top: 40%; text-align: center; transition: 0.5s;"><i class="fa-solid fa-place-of-worship" style="color:#2980b9; font-size:25px;"></i><br><small>BİZANS</small></div>
+                <div id="sasani" style="position: absolute; left: 45%; top: 45%; text-align: center; transition: 0.5s;"><i class="fa-solid fa-fire-flame-curved" style="color:#c0392b; font-size:25px;"></i><br><small>SASANİ</small></div>
+                <div id="akhun" style="position: absolute; left: 65%; top: 30%; text-align: center; transition: 0.5s;"><i class="fa-solid fa-shield-halved" style="color:#7f8c8d; font-size:20px;"></i><br><small>AKHUN</small></div>
+                <div id="gokturk" style="position: absolute; right: 10%; top: 35%; text-align: center; transition: 0.5s;"><i class="fa-solid fa-wolf-pack-white" style="color:#27ae60; font-size:30px;"></i><br><small>GÖKTÜRK</small></div>
+                
+                <div id="elciMarker" style="position: absolute; display: none; transition: 1.5s linear; z-index: 100; color: #8e44ad; font-size: 20px;"><i class="fa-solid fa-person-walking-luggage"></i></div>
+            </div>
+
+            <div id="decisionPanel" style="background: white; padding: 20px; box-shadow: 0 -5px 15px rgba(0,0,0,0.1); z-index: 10; border-top: 4px solid #8e44ad;">
+                <div id="prog" style="display:flex; gap:4px; margin-bottom:10px;">
+                    ${[1,2,3,4,5].map(i => `<div id="p${i}" style="flex:1; height:4px; background:#ddd;"></div>`).join('')}
+                </div>
+                <h3 id="panelBaslik" style="margin:0 0 10px 0; color:#8e44ad; font-size:16px;"></h3>
+                <p id="panelMetin" style="font-size:13px; color:#333; line-height:1.5; margin-bottom:15px;"></p>
+                <div id="panelButtons" style="display:flex; gap:10px; flex-wrap: wrap;"></div>
+            </div>
+
+            <div id="finalScreen" style="display:none; position:absolute; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.9); z-index:1000; align-items:center; justify-content:center; padding:20px; text-align:center; color:white;">
+                <div style="max-width:400px; border:2px solid #f1c40f; padding:30px; border-radius:15px;">
+                    <i id="finalIcon" class="fa-solid" style="font-size:60px; margin-bottom:20px;"></i>
+                    <h2 id="finalTitle"></h2>
+                    <p id="finalText" style="font-size:14px; line-height:1.6;"></p>
+                    <button onclick="window.HARITA_MOTORU['ipek_yolu_diplomasi']()" style="margin-top:20px; padding:12px 30px; background:#f1c40f; border:none; border-radius:5px; font-weight:bold; cursor:pointer;">Yeniden Başla</button>
+                    <div style="margin-top:20px; font-size:10px; opacity:0.6;"></div>
+                </div>
+            </div>
+        </div>
+    `;
+
+    window.RENDER_ASAMA = function() {
+        const d = hikaye[asama];
+        document.getElementById('panelBaslik').innerText = d.baslik;
+        document.getElementById('panelMetin').innerText = d.metin;
+        const btnBox = document.getElementById('panelButtons');
+        btnBox.innerHTML = '';
+        
+        // Progress bar güncelle
+        for(let i=1; i<=5; i++) {
+            document.getElementById(`p${i}`).style.background = i <= asama ? "#8e44ad" : "#ddd";
+        }
+
+        d.butonlar.forEach(btn => {
+            const b = document.createElement('button');
+            b.innerText = btn.metin;
+            b.style.cssText = `flex:1; min-width:140px; padding:12px; border:none; border-radius:8px; background:${btn.dogru ? '#8e44ad' : '#95a5a6'}; color:white; font-weight:bold; cursor:pointer; font-size:12px;`;
+            b.onclick = () => window.HAMLE_YAP(btn);
+            btnBox.appendChild(b);
+        });
+    };
+
+    window.HAMLE_YAP = function(btn) {
+        if (!btn.dogru) {
+            window.FINISH(false, btn.aksiyon);
+            return;
+        }
+
+        const marker = document.getElementById('elciMarker');
+        
+        if (asama === 1) { // Akhunlara karşı ittifak
+            document.getElementById('akhun').style.transform = "scale(0)";
+            setTimeout(() => { asama = 2; window.RENDER_ASAMA(); }, 1000);
+        } else if (asama === 2) { // Sasani elçisi
+            marker.style.display = 'block';
+            marker.style.left = "90%"; marker.style.top = "35%";
+            setTimeout(() => {
+                marker.style.left = "45%"; marker.style.top = "45%";
+                setTimeout(() => {
+                    alert("⚠️ Acı Haber: Sasaniler elçilerini zehirleyerek öldürdü!");
+                    asama = 3; window.RENDER_ASAMA();
+                }, 1600);
+            }, 100);
+        } else if (asama === 3) { // Bizans elçisi (Maniakh)
+            marker.style.left = "90%"; marker.style.top = "35%";
+            setTimeout(() => {
+                marker.style.left = "10%"; marker.style.top = "40%";
+                setTimeout(() => {
+                    alert("🤝 Bizans İmparatoru müttefiklik teklifini kabul etti!");
+                    asama = 4; window.RENDER_ASAMA();
+                }, 1600);
+            }, 100);
+        } else if (asama === 4) { // Kıskaç
+            document.getElementById('sasani').style.boxShadow = "0 0 30px red";
+            asama = 5; window.RENDER_ASAMA();
+        } else if (asama === 5) {
+            window.FINISH(true);
+        }
+    };
+
+    window.FINISH = function(basari, hata) {
+        const screen = document.getElementById('finalScreen');
+        const fTitle = document.getElementById('finalTitle');
+        const fText = document.getElementById('finalText');
+        const fIcon = document.getElementById('finalIcon');
+        screen.style.display = 'flex';
+
+        if (basari) {
+            fIcon.className = "fa-solid fa-crown"; fIcon.style.color = "#f1c40f";
+            fTitle.innerText = "DİPLOMASİ ÜSTADI";
+            fText.innerHTML = "Tebrikler Beyim! İstemi Yabgu'nun meşhur <b>'Sasanileri iki ateş arasında bırakma'</b> stratejisini başarıyla uyguladın. İpek Yolu artık Türklerin kontrolünde!";
+        } else {
+            fIcon.className = "fa-solid fa-skull"; fIcon.style.color = "#c0392b";
+            fTitle.innerText = "STRATEJİK HATA";
+            if (hata === "hata_bizans_erken") fText.innerText = "Sasanilerle birleşmeden Bizans'a gitmek Akhunları güçlendirdi. Göktürk orduları Orta Asya'da sıkıştı.";
+            else if (hata === "hata_savas_erken") fText.innerText = "Hazırlıksız savaş ilan etmek Sasanilerin fillerine karşı ordunu bozguna uğrattı.";
+            else fText.innerText = "Verdiğin tavizler devletin bağımsızlığını yitirmesine neden oldu.";
+        }
+    };
+
+    window.RENDER_ASAMA();
+};
+// 30. ARAÇ: FEODAL MALİKÂNE YÖNETİMİ (COĞRAFİ STRATEJİ VE OTARŞİ)
+// ID: ekonomi_u3_feodalizm_v2
+window.HARITA_MOTORU["feodal_malikane"] = function() {
+    const controlsContainer = document.getElementById('mapControlsContainer');
+    const mapCanvas = document.getElementById('mapCanvas');
+
+    controlsContainer.style.display = 'block';
+    controlsContainer.style.padding = '10px';
+    controlsContainer.innerHTML = `
+        <div style="text-align: center; position: relative;">
+            <h4 style="margin: 0 0 5px 0; color: #5d4037; font-size: 18px; font-weight: 800;"><i class="fa-solid fa-chess-rook"></i> Feodal Strateji Merkezi</h4>
+            <div id="ekonomiDurum" style="font-size: 11px; font-weight: bold; color: #fff; background: #8d6e63; padding: 4px; border-radius: 4px;">Hedef: Yapıları doğru coğrafi konumlara inşa ederek Otarşi'yi sağla.</div>
+            <div style="position: absolute; right: 0; top: 0; font-size: 10px; font-style: italic; color: #5d4037; opacity: 0.7; font-weight: bold;">
+                <i class="fa-solid fa-feather-pointed"></i> Simülasyon: Murat Mutlu
+            </div>
+        </div>
+    `;
+
+    window.currentMapInstance = { remove: function() { mapCanvas.innerHTML = ''; mapCanvas.style.display = 'block'; } };
+
+    // Malikâne Verileri (Coğrafi Doğruluk Eklendi)
+    const yapilar = [
+        { id: "tarla", isim: "Tahıl Tarlaları", ikon: "fa-wheat-awn", dogruSlot: "ova", hata: "Tarlayı buraya kuramazsın! Tarım yapmak için düz, yumuşak ve geniş bir <b>Verimli Ova</b> bulmalısın.", bilgi: "<b>Ova Üretimi:</b> Halkın ve senyörün ekmeği buradan gelir. Köylüler 'Angarya' usulü burada çalışır." },
+        { id: "degirmen", isim: "Su Değirmeni", ikon: "fa-wind", dogruSlot: "nehir", hata: "Su değirmeni buraya kurulamaz! Çarkların dönmesi için hızlı akan bir <b>Nehir Kenarı</b> bulmalısın.", bilgi: "<b>Nehir İşlemesi:</b> Tarladan gelen buğday nehir gücüyle burada un olur. Değirmen senyöründür, köylü kullanmak için vergi öder." },
+        { id: "kilise", isim: "Köy Kilisesi", ikon: "fa-church", dogruSlot: "merkez", hata: "Kilise dış sınırlara kurulmaz! Halkın kolayca ulaşıp kontrol edilebilmesi için <b>Köy Merkezine</b> inşa edilmelidir.", bilgi: "<b>Merkezi Otorite:</b> Orta Çağ'da kilise sadece ibadet yeri değil, eğitimin ve toplumsal kontrolün merkezidir." },
+        { id: "demirhane", isim: "Demirhane", ikon: "fa-hammer", dogruSlot: "dag", hata: "Demirhane ovaya kurulmaz! Kömür ve maden yataklarına yakın olmak için <b>Dağ Eteği'ne</b> kurulmalıdır.", bilgi: "<b>Madencilik & Teknoloji:</b> Saban demiri ve şövalye zırhları burada dövülür. Dışarıya bağımlılığı bitiren kilit yapıdır." },
+        { id: "ahira", isim: "Ortak Otlak", ikon: "fa-cow", dogruSlot: "mera", hata: "Hayvanları buraya salamazsın! Sürünün güvenle yayılması için geniş <b>Bozkır / Mera</b> alanına ihtiyaç var.", bilgi: "<b>Bozkır Hayvancılığı:</b> Hayvanlar burada otlar. Et, süt ve deri ihtiyacı malikâne içinde karşılanır." },
+        { id: "sur", isim: "Savunma Hattı", ikon: "fa-shield-halved", dogruSlot: "sinir", hata: "Savunma hattı iç bölgelere kurulmaz! Saldırıları önceden kesmek için <b>Açık Sınır</b> bölgelerine inşa edilmelidir.", bilgi: "<b>Sınır Güvenliği:</b> Saldırı anında köylüler bu surların arkasına sığınır. Güvenlik karşılığında sadakat verilir." }
+    ];
+
+    const slotlar = [
+        { id: "ova", isim: "Verimli Ova", ikon: "fa-leaf", pos: [-100, -110], renk: "#aed581" },
+        { id: "nehir", isim: "Nehir Kenarı", ikon: "fa-water", pos: [100, -110], renk: "#4fc3f7" },
+        { id: "merkez", isim: "Köy Merkezi", ikon: "fa-map-pin", pos: [-140, 0], renk: "#ffb74d" },
+        { id: "sinir", isim: "Açık Sınır", ikon: "fa-route", pos: [140, 0], renk: "#90a4ae" },
+        { id: "dag", isim: "Dağ Eteği", ikon: "fa-mountain", pos: [-100, 110], renk: "#a1887f" },
+        { id: "mera", isim: "Geniş Mera", ikon: "fa-tree", pos: [100, 110], renk: "#81c784" }
+    ];
+
+    let seciliYapi = null;
+    let insaEdilenler = 0;
+
+    mapCanvas.innerHTML = `
+        <div style="width: 100%; height: 100%; display: flex; flex-direction: column; background: #f5f5f5; font-family: 'Segoe UI', sans-serif; position: relative;">
+            
+            <div id="manorMap" style="flex: 1; position: relative; background: #c5e1a5; overflow: hidden; display: flex; align-items: center; justify-content: center;">
+                
+                <div style="position: absolute; width: 60px; height: 100%; background: #4fc3f7; right: 20%; top: 0; opacity: 0.6; transform: skewX(-15deg);"></div>
+
+                <div style="z-index: 5; text-align: center;">
+                    <i class="fa-solid fa-castle" style="font-size: 80px; color: #5d4037; filter: drop-shadow(0 10px 15px rgba(0,0,0,0.3));"></i>
+                    <div style="background: #5d4037; color: white; padding: 4px 12px; border-radius: 10px; font-size: 12px; margin-top: 5px; font-weight: 800; box-shadow: 0 4px 6px rgba(0,0,0,0.3);">SENYÖRÜN ŞATOSU</div>
+                </div>
+
+                ${slotlar.map(s => `
+                    <div id="slot_${s.id}" onclick="window.INSA_ET('${s.id}')" style="position: absolute; width: 75px; height: 75px; border: 3px dashed ${s.renk}; border-radius: 12px; display: flex; flex-direction: column; align-items: center; justify-content: center; transition: 0.3s; cursor: pointer; background: rgba(255,255,255,0.4); transform: translate(${s.pos[0]}px, ${s.pos[1]}px);">
+                        <i class="fa-solid ${s.ikon}" style="font-size: 20px; color: ${s.renk}; opacity: 0.8;"></i>
+                        <span style="font-size: 9px; font-weight: bold; color: #333; margin-top: 3px; text-align: center;">${s.isim}</span>
+                    </div>
+                `).join('')}
+            </div>
+
+            <div id="structureMenu" style="background: #fff; padding: 15px; border-top: 5px solid #5d4037; display: flex; gap: 10px; overflow-x: auto; -webkit-overflow-scrolling: touch;">
+                ${yapilar.map(y => `
+                    <div id="card_${y.id}" onclick="window.YAPI_SEC('${y.id}')" style="min-width: 85px; background: #fdf5e6; padding: 10px; border-radius: 8px; text-align: center; border: 2px solid #ccc; cursor: pointer; transition: 0.3s;">
+                        <i class="fa-solid ${y.ikon}" style="font-size: 24px; color: #5d4037;"></i>
+                        <div style="font-size: 11px; font-weight: 900; margin-top: 8px; color: #5d4037 !important;">${y.isim}</div>
+                    </div>
+                `).join('')}
+            </div>
+
+            <div id="yapiBilgi" style="display: none; position: absolute; bottom: 120px; left: 50%; transform: translateX(-50%); width: 90%; background: #5d4037; color: white; padding: 15px; border-radius: 10px; z-index: 100; box-shadow: 0 10px 25px rgba(0,0,0,0.6); animation: slideUp 0.3s;">
+                <h4 id="bilgiBaslik" style="margin: 0 0 8px 0; color: #f1c40f; font-size: 16px;"></h4>
+                <p id="bilgiMetin" style="font-size: 13px; margin: 0; line-height: 1.5; color: #fff !important;"></p>
+                <button onclick="this.parentElement.style.display='none'" style="margin-top: 15px; background: #f1c40f; border: none; color: #5d4037; padding: 8px 20px; border-radius: 5px; font-size: 13px; font-weight: bold; cursor: pointer;">Anladım</button>
+            </div>
+
+            <div id="hataPanel" style="display: none; position: absolute; top: 30%; left: 50%; transform: translate(-50%, -50%); width: 85%; background: #c0392b; color: white; padding: 15px; border-radius: 10px; z-index: 200; box-shadow: 0 10px 25px rgba(0,0,0,0.6); text-align: center;">
+                <i class="fa-solid fa-triangle-exclamation" style="font-size: 30px; margin-bottom: 10px; color: #f1c40f;"></i>
+                <h4 style="margin: 0 0 5px 0;">STRATEJİK HATA!</h4>
+                <p id="hataMetin" style="font-size: 13px; margin: 0; line-height: 1.5;"></p>
+                <button onclick="this.parentElement.style.display='none'" style="margin-top: 15px; background: white; border: none; color: #c0392b; padding: 6px 15px; border-radius: 5px; font-size: 12px; font-weight: bold; cursor: pointer;">Pardon Senyör</button>
+            </div>
+        </div>
+    `;
+
+    window.YAPI_SEC = function(yid) {
+        yapilar.forEach(y => {
+            document.getElementById(`card_${y.id}`).style.borderColor = "#ccc";
+            document.getElementById(`card_${y.id}`).style.background = "#fdf5e6";
+        });
+        
+        seciliYapi = yapilar.find(y => y.id === yid);
+        document.getElementById(`card_${yid}`).style.borderColor = "#5d4037";
+        document.getElementById(`card_${yid}`).style.background = "#e8d5b5"; 
+    };
+
+    window.INSA_ET = function(slotId) {
+        if (!seciliYapi) {
+            alert("Önce inşa etmek istediğiniz yapıyı alttaki menüden seçin Beyim!");
+            return;
+        }
+
+        const slot = document.getElementById(`slot_${slotId}`);
+        
+        // Eğer o slot zaten doluysa işlem yapma
+        if (!slot.innerHTML.includes('fa-solid')) return; 
+
+        // STRATEJİ KONTROLÜ
+        if (seciliYapi.dogruSlot !== slotId) {
+            // Hata göster (Sarsıntı efekti)
+            slot.style.transform = slot.style.transform + " rotate(5deg)";
+            setTimeout(() => slot.style.transform = slot.style.transform.replace(" rotate(5deg)", ""), 100);
+            
+            document.getElementById('hataMetin').innerHTML = seciliYapi.hata;
+            document.getElementById('hataPanel').style.display = 'block';
+            return; // İNŞAATA İZİN VERME
+        }
+
+        // DOĞRU YERLEŞİM! İnşaata İzin Ver
+        slot.style.border = "none";
+        slot.style.background = "white";
+        slot.style.boxShadow = "0 5px 10px rgba(0,0,0,0.3)";
+        slot.innerHTML = `<i class="fa-solid ${seciliYapi.ikon}" style="font-size: 35px; color: #5d4037;"></i>`;
+        
+        document.getElementById('bilgiBaslik').innerText = seciliYapi.isim + " Kuruldu!";
+        document.getElementById('bilgiMetin').innerHTML = seciliYapi.bilgi;
+        document.getElementById('yapiBilgi').style.display = 'block';
+
+        const card = document.getElementById(`card_${seciliYapi.id}`);
+        card.style.opacity = "0.2";
+        card.style.pointerEvents = "none";
+        
+        seciliYapi = null;
+        insaEdilenler++;
+
+        if (insaEdilenler === 6) {
+            window.FEODAL_FINAL();
+        }
+    };
+
+    window.FEODAL_FINAL = function() {
+        setTimeout(() => {
+            mapCanvas.innerHTML = `
+                <div style="width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; background: #5d4037; color: white; padding: 30px; text-align: center; font-family: 'Segoe UI', sans-serif;">
+                    <div style="max-width: 450px;">
+                        <i class="fa-solid fa-crown" style="font-size: 70px; color: #f1c40f; margin-bottom: 20px;"></i>
+                        <h2 style="color: #f1c40f; margin-top: 0;">OTARŞİ VE STRATEJİ BAŞARILDI!</h2>
+                        <p style="font-size: 15px; line-height: 1.7; color: #fff !important;">
+                            Tebrikler Senyör! Hem <b>Coğrafyayı</b> doğru okudunuz hem de malikânenizi dışa bağımlılıktan kurtardınız.<br><br>
+                            Artık nehriniz unu öğütüyor, dağınız kılıç dövüyor, ovasınız ekmek veriyor. Feodal Avrupa'da hayatta kalmanın tek yolu bu eşsiz dengedir.
+                        </p>
+                        <button onclick="window.HARITA_MOTORU['feodal_malikane']()" style="margin-top: 25px; padding: 12px 30px; background: #f1c40f; color: #5d4037; border: none; border-radius: 5px; font-weight: bold; cursor: pointer; box-shadow: 0 4px 6px rgba(0,0,0,0.3);">Yeniden Yönet</button>
+                        <div style="margin-top: 30px; font-size: 11px; opacity: 0.7; color: #ccc;"></div>
+                    </div>
+                </div>
+            `;
+        }, 1200);
+    };
+};
+// 31. ARAÇ: MAGNA CARTA (İLERİ SEVİYE LİSE SİMÜLASYONU - ANAKRONİZM VE TUZAKLAR)
+// ID: siyaset_u3_magnacarta_v2
+window.HARITA_MOTORU["magna_carta"] = function() {
+    const controlsContainer = document.getElementById('mapControlsContainer');
+    const mapCanvas = document.getElementById('mapCanvas');
+
+    controlsContainer.style.display = 'block';
+    controlsContainer.style.padding = '10px';
+    controlsContainer.innerHTML = `
+        <div style="text-align: center; position: relative;">
+            <h4 style="margin: 0 0 5px 0; color: #8e44ad; font-size: 18px; font-weight: 800;"><i class="fa-solid fa-scale-balanced"></i> Magna Carta: Runnymede Müzakereleri</h4>
+            <div id="adaletDurum" style="font-size: 11px; font-weight: bold; color: #fff; background: #2c3e50; padding: 4px; border-radius: 4px;">Hedef: Anakronizme düşmeden (zaman hatası yapmadan) kralı sınırlandır.</div>
+            <div style="position: absolute; right: 0; top: 0; font-size: 10px; font-style: italic; color: #8e44ad; opacity: 0.7; font-weight: bold;">
+                <i class="fa-solid fa-feather-pointed"></i>Modül: Murat Mutlu
+            </div>
+        </div>
+    `;
+
+    window.currentMapInstance = { remove: function() { mapCanvas.innerHTML = ''; mapCanvas.style.display = 'block'; } };
+
+    // İLERİ SEVİYE KARTLAR (DOĞRULAR VE TUZAKLAR)
+    const maddeler = [
+        // DOĞRULAR (1215 Bağlamı)
+        { id: "vergi", tip: "dogru", baslik: "Vergi Onayı", ikon: "fa-coins", metin: "Kral, Büyük Meclis'in (Baronların) onayı olmadan 'Kalkan Parası' (Scutage) veya yeni vergiler toplayamaz.", aciklama: "<b>Mali Denetim:</b> Kralın cüzdanı meclise bağlandı. Bu madde, ileride 'Parlamento' fikrinin doğmasına zemin hazırlamıştır." },
+        { id: "yargi", tip: "dogru", baslik: "Adil Yargılanma", ikon: "fa-gavel", metin: "Özgür hiç kimse, kendi dengi olanların yasal kararı olmadan tutuklanamaz veya mülküne el konulamaz.", aciklama: "<b>Hukuk Devleti (Habeas Corpus):</b> Kralın keyfi tutuklama yetkisi bitmiştir. 'Yargı gücü' kanunlara devredilmiştir." },
+        { id: "adalet", tip: "dogru", baslik: "Adaletin Satılamaması", ikon: "fa-handshake-angle", metin: "Adalet kimseye satılamaz, geciktirilemez ve reddedilemez.", aciklama: "<b>Rüşvetin Önlenmesi:</b> Kralın mahkemeleri bir gelir kapısı gibi kullanması ve parayı vereni haklı bulması yasaklanmıştır." },
+        { id: "kilise", tip: "dogru", baslik: "Kilisenin Özgürlüğü", ikon: "fa-church", metin: "İngiliz Kilisesi özgür olacak ve hakları eksiksiz tanınacaktır.", aciklama: "<b>Dini Denge:</b> Dönemin Papası III. Innocentius çok güçlüydü. Belge, din adamlarının devlet içindeki özerkliğini garanti altına almıştır." },
+        
+        // TUZAKLAR (Lise Seviyesi Anakronizm ve Yanılgılar)
+        { id: "esitlik", tip: "tuzak", baslik: "Sınıf Eşitliği", ikon: "fa-users-slash", metin: "Serfler (Köylüler) dahil tüm İngiltere halkı mutlak olarak eşittir.", hataBaslik: "TARİHSEL YANILGI (Kavram Hatası)", hataMetin: "Magna Carta halka değil, <b>'Özgür Adamlara' (Baronlar, Tüccarlar, Rahipler)</b> haklar vermiştir. Nüfusun çoğunluğunu oluşturan Serfler (toprağa bağlı köylüler) bu haklardan faydalanamadı. Mutlak eşitlik çok daha modern bir kavramdır!" },
+        { id: "kuvvetler", tip: "tuzak", baslik: "Kuvvetler Ayrılığı", ikon: "fa-code-branch", metin: "Yasama, Yürütme ve Yargı güçleri birbirinden tamamen ayrılacaktır.", hataBaslik: "ANAKRONİZM (Zaman Hatası)", hataMetin: "Bu kavramı 18. yüzyılda <b>Montesquieu</b> ortaya atmıştır! 1215 yılında kuvvetler ayrılığı yoktur, sadece kralın mutlak yetkilerinin 'ortaklaşa' kullanılması (Meclis onayı) vardır." },
+        { id: "cumhuriyet", tip: "tuzak", baslik: "Cumhuriyetin İlanı", ikon: "fa-building-columns", metin: "Monarşi yıkılacak ve halk kendi yöneticilerini oylamayla seçecektir.", hataBaslik: "ANAKRONİZM (Zaman Hatası)", hataMetin: "Magna Carta kralı devirmeyi değil, kralı kanunlarla sınırlandırmayı (Meşruti Monarşiye doğru ilk adımı) hedefler. İngiltere hala bir krallıktır." },
+        { id: "laiklik", tip: "tuzak", baslik: "Laik Devlet", ikon: "fa-book-open-reader", metin: "Kilise devlet işlerine karışmayacak ve din ile devlet ayrılacaktır.", hataBaslik: "ANAKRONİZM (Zaman Hatası)", hataMetin: "Orta Çağ'ın zirvesindesiniz! Din ve devlet işlerinin ayrılması (Laiklik) Avrupa'da Fransız İhtilali'nden sonra tartışılmaya başlanmıştır. Aksine Magna Carta, kiliseye özerklik vermiştir." }
+    ];
+
+    let dogruSayisi = 0; // Hedef 4
+    let kralGucu = 100;
+    let baronGucu = 20;
+    let yerlesenKartlar = [];
+
+    mapCanvas.innerHTML = `
+        <div style="width: 100%; height: 100%; display: flex; flex-direction: column; background: #e0d6c8; font-family: 'Segoe UI', sans-serif; position: relative; overflow: hidden;">
+            
+            <div style="flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; position: relative; background: url('https://www.transparenttextures.com/patterns/aged-paper.png');">
+                
+                <div style="position: absolute; top: 10px; width: 100%; text-align: center; color: #5d4037; opacity: 0.8; font-weight: bold;">
+                    <i>"Hukuk, Kraldan Üstündür."</i>
+                </div>
+
+                <div style="position: relative; width: 340px; height: 250px;">
+                    <div style="position: absolute; bottom: 0; left: 165px; width: 10px; height: 200px; background: #3e2723; border-radius: 5px;"></div>
+                    <div style="position: absolute; bottom: 0; left: 130px; width: 80px; height: 20px; background: #3e2723; border-radius: 10px 10px 0 0;"></div>
+
+                    <div id="teraziCubuk" style="position: absolute; top: 40px; left: 0; width: 340px; height: 12px; background: #5d4037; transform-origin: center center; transform: rotate(-25deg); transition: transform 1s cubic-bezier(0.4, 0, 0.2, 1); border-radius: 5px; z-index: 10;">
+                        <div style="position: absolute; top: -6px; left: 158px; width: 24px; height: 24px; background: #f1c40f; border-radius: 50%; border: 3px solid #3e2723;"></div>
+                        
+                        <div id="kefe_kral" style="position: absolute; top: 12px; left: 0; transform-origin: top center; transform: rotate(25deg); transition: transform 1s;">
+                            <div style="width: 2px; height: 70px; background: #2c3e50; margin: 0 auto;"></div>
+                            <div style="width: 100px; height: 35px; background: #c0392b; border-radius: 0 0 50px 50px; display: flex; align-items: center; justify-content: center; transform: translateX(-49px); box-shadow: 0 10px 15px rgba(0,0,0,0.3);">
+                                <i class="fa-solid fa-chess-king" style="color: #f1c40f; font-size: 30px; margin-top: -35px; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.5));"></i>
+                            </div>
+                            <div style="position: absolute; top: 105px; left: -49px; width: 100px; text-align: center; font-weight: 900; font-size: 11px; color: #c0392b; background: rgba(255,255,255,0.7); border-radius: 4px;">KRAL YURTSUZ JOHN</div>
+                        </div>
+
+                        <div id="kefe_baron" style="position: absolute; top: 12px; right: 0; transform-origin: top center; transform: rotate(25deg); transition: transform 1s;">
+                            <div style="width: 2px; height: 70px; background: #2c3e50; margin: 0 auto;"></div>
+                            <div style="width: 100px; height: 35px; background: #2980b9; border-radius: 0 0 50px 50px; display: flex; align-items: center; justify-content: center; transform: translateX(-49px); box-shadow: 0 10px 15px rgba(0,0,0,0.3);">
+                                <div id="baronIcerik" style="display: flex; gap: 3px; flex-wrap: wrap; justify-content: center; width: 80px; margin-top: -25px;"></div>
+                            </div>
+                            <div style="position: absolute; top: 105px; left: -49px; width: 100px; text-align: center; font-weight: 900; font-size: 11px; color: #2980b9; background: rgba(255,255,255,0.7); border-radius: 4px;">BARONLAR & KANUN</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="maddeMenu" style="background: #3e2723; padding: 15px; border-top: 4px solid #f1c40f; overflow-y: auto; max-height: 40%;">
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 10px;">
+                    ${[...maddeler].sort(() => Math.random() - 0.5).map(m => `
+                        <div id="kart_${m.id}" onclick="window.MADDE_ONAYLA('${m.id}')" style="background: #fdf5e6; padding: 10px; border-radius: 8px; text-align: center; border: 2px solid #a1887f; cursor: pointer; transition: 0.3s; box-shadow: 0 4px 6px rgba(0,0,0,0.3);">
+                            <i class="fa-solid ${m.ikon}" style="font-size: 20px; color: #5d4037;"></i>
+                            <div style="font-size: 11px; font-weight: 900; margin-top: 8px; color: #5d4037 !important;">${m.baslik}</div>
+                        </div>
+                    `).join('')}
+                </div>
+            </div>
+
+            <div id="modalPanel" style="display: none; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 100; align-items: center; justify-content: center; padding: 20px;">
+                <div id="modalIcerik" style="width: 100%; max-width: 450px; background: #fff; padding: 25px; border-radius: 12px; text-align: center; box-shadow: 0 15px 30px rgba(0,0,0,0.5);">
+                    <i id="modalIkon" class="fa-solid" style="font-size: 45px; margin-bottom: 15px;"></i>
+                    <h3 id="modalBaslik" style="margin: 0 0 10px 0; font-size: 18px; text-transform: uppercase;"></h3>
+                    <p id="modalMetin" style="font-size: 14px; color: #333; line-height: 1.6; margin-bottom: 20px; text-align: left; padding: 10px; background: #f9f9f9; border-radius: 5px;"></p>
+                    <button onclick="document.getElementById('modalPanel').style.display='none'" style="background: #5d4037; color: white; border: none; padding: 10px 30px; border-radius: 6px; font-weight: bold; cursor: pointer; font-size: 14px;">Müzakereye Dön</button>
+                </div>
+            </div>
+
+            <div id="finalPanel" style="display: none; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(62, 39, 35, 0.95); z-index: 200; align-items: center; justify-content: center; padding: 20px;">
+                <div style="max-width: 480px; text-align: center; color: white;">
+                    <i class="fa-solid fa-scroll" style="font-size: 70px; color: #f1c40f; margin-bottom: 20px;"></i>
+                    <h2 style="color: #f1c40f; margin-top: 0;">MUTLAKİYET SINIRLANDI!</h2>
+                    <div style="background: rgba(255,255,255,0.1); padding: 20px; border-radius: 10px; border-left: 5px solid #f1c40f; text-align: left; line-height: 1.6; font-size: 14px;">
+                        Tebrikler! Anakronizm tuzaklarına düşmeden 1215 tarihsel bağlamına uygun olarak Magna Carta'yı oluşturdunuz.<br><br>
+                        Dünya tarihinde ilk kez bir kral, yetkilerini kendi isteği dışında kanunlara (ve soylulara) devretmiştir. Bu olay <b>Meşrutiyete ve Demokrasiye</b> giden uzun yolun ilk taşıdır.
+                    </div>
+                    <button onclick="window.HARITA_MOTORU['magna_carta']()" style="margin-top: 25px; padding: 12px 30px; background: #f1c40f; color: #3e2723; border: none; border-radius: 5px; font-weight: bold; cursor: pointer;">Simülasyonu Sıfırla</button>
+                    <div style="margin-top: 30px; font-size: 11px; opacity: 0.5;">Lise Tarih Laboratuvarı - Murat Mutlu</div>
+                </div>
+            </div>
+
+        </div>
+    `;
+
+    function teraziGuncelle() {
+        // Matematiksel denge (100 - 100 = 0 derece)
+        let fark = kralGucu - baronGucu; // Başlangıç: 100 - 20 = 80
+        let aci = fark / 3.2; // 80 / 3.2 = 25 derece sola yatık
+        
+        document.getElementById('teraziCubuk').style.transform = `rotate(${-aci}deg)`;
+        document.getElementById('kefe_kral').style.transform = `rotate(${aci}deg)`;
+        document.getElementById('kefe_baron').style.transform = `rotate(${aci}deg)`;
+    }
+
+    window.MADDE_ONAYLA = function(mid) {
+        if (yerlesenKartlar.includes(mid)) return;
+
+        const madde = maddeler.find(m => m.id === mid);
+        
+        if (madde.tip === "tuzak") {
+            // Hata Modalı
+            document.getElementById('modalIkon').className = "fa-solid fa-triangle-exclamation";
+            document.getElementById('modalIkon').style.color = "#c0392b";
+            document.getElementById('modalBaslik').innerText = madde.hataBaslik;
+            document.getElementById('modalBaslik').style.color = "#c0392b";
+            document.getElementById('modalMetin').innerHTML = madde.hataMetin;
+            document.getElementById('modalPanel').style.display = 'flex';
+            
+            // Ceza: Kral güçlenir
+            kralGucu += 5; 
+            teraziGuncelle();
+            
+            // Kartı hafif kızartıp geri eski haline getir (Tıklandığını anlasın ama yok olmasın)
+            const kart = document.getElementById(`kart_${mid}`);
+            kart.style.borderColor = "#c0392b";
+            setTimeout(() => kart.style.borderColor = "#a1887f", 1000);
+
+        } else {
+            // Doğru Madde
+            baronGucu += 20; // 4 doğrudan sonra 20+80 = 100.
+            yerlesenKartlar.push(mid);
+            teraziGuncelle();
+
+            // Kefeye ikon ekle
+            document.getElementById('baronIcerik').innerHTML += `<div style="background:#f1c40f; padding:4px; border-radius:4px;"><i class="fa-solid ${madde.ikon}" style="color:#2c3e50; font-size:12px;"></i></div>`;
+
+            // Kartı yok et (Silikleştir)
+            const kart = document.getElementById(`kart_${mid}`);
+            kart.style.opacity = "0.2";
+            kart.style.pointerEvents = "none";
+            kart.style.background = "#bdc3c7";
+
+            // Bilgi Modalı
+            document.getElementById('modalIkon').className = "fa-solid fa-check-double";
+            document.getElementById('modalIkon').style.color = "#27ae60";
+            document.getElementById('modalBaslik').innerText = "DOĞRU HAMLE: " + madde.baslik;
+            document.getElementById('modalBaslik').style.color = "#27ae60";
+            document.getElementById('modalMetin').innerHTML = madde.aciklama;
+            document.getElementById('modalPanel').style.display = 'flex';
+
+            dogruSayisi++;
+
+            if (dogruSayisi === 4) {
+                setTimeout(() => {
+                    document.getElementById('modalPanel').style.display = 'none';
+                    document.getElementById('finalPanel').style.display = 'flex';
+                }, 3000);
+            }
+        }
+    };
+};
+// 32. ARAÇ: İPEK YOLU TİCARET SİMÜLASYONU (İLERİ SEVİYE LİSE MODÜLÜ)
+// ID: ticaret_u3_yollar_v3_lise
+window.HARITA_MOTORU["ticaret_duraklari"] = function() {
+    const controlsContainer = document.getElementById('mapControlsContainer');
+    const mapCanvas = document.getElementById('mapCanvas');
+
+    controlsContainer.style.display = 'block';
+    controlsContainer.style.padding = '10px';
+    controlsContainer.innerHTML = `
+        <div style="text-align: center; position: relative;">
+            <h4 style="margin: 0 0 5px 0; color: #d35400; font-size: 18px; font-weight: 800;"><i class="fa-solid fa-gem"></i> İpek Yolu: Kervanbaşı Simülatörü</h4>
+            <div id="ticaretDurum" style="font-size: 12px; font-weight: bold; color: #fff; background: #2c3e50; padding: 5px; border-radius: 5px; display: flex; justify-content: space-between; align-items: center; padding: 5px 15px;">
+                <span><i class="fa-solid fa-map-location-dot"></i> Hedef: Ticaret Ağını Tamamla</span>
+                <span id="sermayeEkran" style="color: #f1c40f; font-size: 14px;"><i class="fa-solid fa-coins"></i> 1000 Altın</span>
+            </div>
+            <div style="position: absolute; right: 0; top: 0; font-size: 10px; font-style: italic; color: #d35400; opacity: 0.7; font-weight: bold;">
+                <i class="fa-solid fa-feather-pointed"></i>Modül: Murat Mutlu
+            </div>
+        </div>
+    `;
+
+    window.currentMapInstance = { remove: function() { mapCanvas.innerHTML = ''; mapCanvas.style.display = 'block'; } };
+
+    const styleObj = document.createElement('style');
+    styleObj.innerHTML = `
+        @keyframes pulseAlert { 0% { box-shadow: 0 0 0 0 rgba(241, 196, 15, 0.7); } 70% { box-shadow: 0 0 0 15px rgba(241, 196, 15, 0); } 100% { box-shadow: 0 0 0 0 rgba(241, 196, 15, 0); } }
+        .aktif-durak { animation: pulseAlert 1.5s infinite; background: #f1c40f !important; border-color: #2c3e50 !important; transform: translate(-50%, -50%) scale(1.1); z-index: 15 !important; }
+        .durak-isim { position: absolute; top: 25px; width: 100px; text-align: center; font-size: 10px; font-weight: 900; color: #2c3e50; background: rgba(255,255,255,0.8); border-radius: 3px; padding: 2px; }
+    `;
+    document.head.appendChild(styleObj);
+
+    let sermaye = 1000;
+    
+    // LİSE SEVİYESİ 6 KİLİT MEKAN
+    const duraklar = [
+        { 
+            id: "sinir", isim: "Karahanlı Sınırı", pos: [20, 15],
+            soru: "Maveraünnehir sınırındasın. Önceden sadece askeri amaçlı bir sınır karakolu olan bu yapı, sınırların genişlemesiyle güvenli bir ticaret ve konaklama merkezine dönüştürülmüş. İlk molanı nerede vereceksin?",
+            secenekler: [{id: "kervansaray", ad: "Kervansaray"}, {id: "ribat", ad: "Ribat"}, {id: "han", ad: "Şehir Hanı"}],
+            dogruCevap: "ribat",
+            hataMesaji: "Kervansaray doğru bir tahmin gibi dursa da, İLK dönem Türk-İslam devletlerinde (Karahanlılar) sınır karakolundan ticarethaneye dönüşen özel yapıların bir adı vardır!",
+            bilgi: "<b>Ribat:</b> İlk Türk-İslam devletlerinde (örneğin Karahanlılar) başlangıçta sınır güvenliği için yapılan, sonradan ticari konaklama merkezlerine dönüşen yapılardır."
+        },
+        { 
+            id: "yol_uzeri", isim: "Issız Bozkır", pos: [35, 35],
+            soru: "Sınırı geçtin ve ıssız bozkırda günlerdir ilerliyorsun. Hayvanların yoruldu, eşkıya korkusu başladı. Vakıf sistemiyle kurulan ve sana 3 gün ücretsiz yeme-içme-barınma sağlayacak o meşhur menzil yapısına sığınmalısın.",
+            secenekler: [{id: "kervansaray", ad: "Kervansaray"}, {id: "arasta", ad: "Arasta"}, {id: "bedesten", ad: "Bedesten"}],
+            dogruCevap: "kervansaray",
+            hataMesaji: "Bozkırın ortasında Arasta veya Bedesten gibi şehir içi çarşılar bulunmaz. Yolcuları koruyan kale gibi bir yapı aramalısın.",
+            bilgi: "<b>Kervansaray:</b> Ana ticaret yolları üzerinde, bir kervanın günlük yürüyüş mesafesinde (menzil) kurulan ve 3 gün ücretsiz hizmet veren devasa konaklama ve güvenlik yapılarıdır."
+        },
+        { 
+            id: "toptanci", isim: "Bursa Girişi", pos: [55, 50],
+            soru: "Büyük bir Osmanlı şehrine (Bursa'ya) ulaştın! Develerindeki tonlarca unu ve pamuğu şehre sokmadan önce 'toptan' olarak tarttırman, vergisini ödemen ve toptancılara satman gerekiyor. Nereye gitmelisin?",
+            secenekler: [{id: "bedesten", ad: "Bedesten"}, {id: "kapan", ad: "Kapan Hanı"}, {id: "imaret", ad: "İmaret"}],
+            dogruCevap: "kapan",
+            hataMesaji: "Bedesten kıymetli mallar içindir, İmaret ise aşevidir. Şehre giren tek cins (örneğin sadece un) toptan malların tartıldığı ve fiyatının belirlendiği yeri bulmalısın.",
+            bilgi: "<b>Kapan (Kapan Hanı):</b> Şehre dışarıdan gelen malların toptan olarak tartıldığı (Kabban=Büyük Terazi), vergilendirildiği ve perakendecilere dağıtıldığı hallerdir (Örn: Un Kapanı, Yağ Kapanı)."
+        },
+        { 
+            id: "kiymetli", isim: "Şehir Merkezi", pos: [40, 70],
+            soru: "Toptan malları sattın ama heybende Şam çeliği kılıçlar, mücevherler ve değerli ipekler kaldı. Bunları satmak ve elde ettiğin altınları güvenle saklamak için şehrin en korunaklı, banka gibi çalışan kapalı çarşısına girmelisin.",
+            secenekler: [{id: "arasta", ad: "Arasta"}, {id: "bedesten", ad: "Bedesten"}, {id: "kapan", ad: "Kapan"}],
+            dogruCevap: "bedesten",
+            hataMesaji: "Arasta sıradan esnaf sokağıdır, altın ve mücevher orada korunamaz. Şehrin ticari kalbi olan kalın duvarlı, kilitli yapıya ihtiyacın var.",
+            bilgi: "<b>Bedesten:</b> Şehir merkezinde değerli eşyaların (mücevher, ipek, silah) satıldığı, aynı zamanda tüccarların parasını sakladığı (banka işlevi gören) çok korunaklı kapalı çarşılardır."
+        },
+        { 
+            id: "perakende", isim: "Esnaf Sokağı", pos: [65, 85],
+            soru: "Son durak! Elinde kalan standart ayakkabıları ve kumaşları doğrudan halka (perakende) satacaksın. Sadece senin gibi aynı işi yapan esnafın (ayakkabıcıların) karşılıklı dükkanlarının dizildiği o özel sokağa girmelisin.",
+            secenekler: [{id: "imaret", ad: "İmaret"}, {id: "kervansaray", ad: "Kervansaray"}, {id: "arasta", ad: "Arasta"}],
+            dogruCevap: "arasta",
+            hataMesaji: "Halka perakende satış yapmak için aynı meslek grubunun bir arada bulunduğu üstü açık veya kapalı çarşı sokaklarına girmelisin.",
+            bilgi: "<b>Arasta:</b> Şehirlerde aynı işi yapan esnaf grubunun (Örn: Bakırcılar, Ayakkabıcılar) yan yana dizildiği perakende alışveriş sokaklarıdır."
+        }
+    ];
+
+    let aktifDurak = 0;
+
+    mapCanvas.innerHTML = `
+        <div style="width: 100%; height: 100%; display: flex; flex-direction: column; background: #fdf5e6; font-family: 'Segoe UI', sans-serif; position: relative; overflow: hidden;">
+            
+            <div style="flex: 1; position: relative; background: url('https://www.transparenttextures.com/patterns/old-map.png'); border-bottom: 5px solid #d35400;">
+                
+                <svg viewBox="0 0 100 100" preserveAspectRatio="none" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 5;">
+                    <path d="M 15 20 L 35 35 L 50 55 L 70 40 L 85 65" fill="transparent" stroke="#5d4037" stroke-width="1.5" stroke-dasharray="2 2" opacity="0.8"/>
+                </svg>
+
+                ${duraklar.map((d, i) => `
+                    <div id="nokta_${i}" onclick="window.DURAK_AC(${i})" class="${i === 0 ? 'aktif-durak' : ''}" style="position: absolute; top: ${d.pos[1]}%; left: ${d.pos[0]}%; transform: translate(-50%, -50%); width: 40px; height: 40px; border-radius: 50%; background: #bdc3c7; border: 3px solid #fff; box-shadow: 0 4px 10px rgba(0,0,0,0.4); display: flex; align-items: center; justify-content: center; cursor: pointer; transition: 0.3s; z-index: 10;">
+                        <i id="ikon_${i}" class="fa-solid fa-location-dot" style="color: #2c3e50; font-size: 18px;"></i>
+                        <div class="durak-isim">${d.isim}</div>
+                    </div>
+                `).join('')}
+
+                <div id="kervan" style="position: absolute; top: 15%; left: 15%; transform: translate(-50%, -50%); width: 50px; height: 50px; background: #5d4037; border-radius: 50%; border: 2px solid #f1c40f; color: #f1c40f; display: flex; align-items: center; justify-content: center; font-size: 24px; transition: all 1.5s ease-in-out; z-index: 20; box-shadow: 0 5px 15px rgba(0,0,0,0.5); pointer-events: none;">
+                    <i class="fa-solid fa-camel"></i>
+                </div>
+            </div>
+
+            <div id="kararPanel" style="display: none; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 100; align-items: center; justify-content: center; padding: 20px;">
+                <div style="width: 100%; max-width: 500px; background: #fff; padding: 25px; border-radius: 12px; box-shadow: 0 15px 30px rgba(0,0,0,0.8); text-align: center; border-top: 5px solid #d35400;">
+                    <div style="margin-bottom: 15px;">
+                        <span id="pKonum" style="background: #d35400; color: #fff; padding: 5px 15px; border-radius: 20px; font-size: 13px; font-weight: bold; text-transform: uppercase;"></span>
+                    </div>
+                    <p id="pSoru" style="font-size: 15px; color: #333; line-height: 1.6; font-weight: 500; margin-bottom: 25px; text-align: left; background: #fdf5e6; padding: 15px; border-radius: 8px; border-left: 4px solid #d35400;"></p>
+                    
+                    <div id="btnKapsayici" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 10px;">
+                        </div>
+                </div>
+            </div>
+
+            <div id="bilgiPanel" style="display: none; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); z-index: 150; align-items: center; justify-content: center; padding: 20px; text-align: center;">
+                <div style="max-width: 450px; border: 2px solid #27ae60; background: #1a1a1a; padding: 30px; border-radius: 12px;">
+                    <i class="fa-solid fa-check-double" style="font-size: 50px; color: #27ae60; margin-bottom: 15px;"></i>
+                    <h3 style="color: #27ae60; margin: 0 0 15px 0;">STRATEJİK BAŞARI!</h3>
+                    <p id="bMetin" style="color: #fff; line-height: 1.6; font-size: 14px; text-align: left; background: rgba(255,255,255,0.1); padding: 15px; border-radius: 8px;"></p>
+                    <button onclick="window.SONRAKI_DURAK()" style="margin-top: 20px; background: #27ae60; color: #fff; border: none; padding: 12px 30px; border-radius: 5px; font-weight: bold; cursor: pointer; font-size: 14px;">Menzile Devam Et</button>
+                </div>
+            </div>
+
+            <div id="hataPanel" style="display: none; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 200; align-items: center; justify-content: center; padding: 20px; text-align: center;">
+                <div style="max-width: 400px; background: #c0392b; padding: 25px; border-radius: 12px; color: white;">
+                    <i class="fa-solid fa-sack-xmark" style="font-size: 50px; color: #f1c40f; margin-bottom: 15px;"></i>
+                    <h3 style="margin: 0 0 10px 0;">TİCARİ ZARAR! (-200 Altın)</h3>
+                    <p id="hMetin" style="font-size: 14px; line-height: 1.5; margin-bottom: 20px; background: rgba(0,0,0,0.2); padding: 15px; border-radius: 5px; text-align: left;"></p>
+                    <button onclick="document.getElementById('hataPanel').style.display='none'" style="background: white; color: #c0392b; border: none; padding: 10px 20px; border-radius: 5px; font-weight: bold; cursor: pointer;">Zararı Kabullen ve Dön</button>
+                </div>
+            </div>
+
+            <div id="finalPanel" style="display: none; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(44, 62, 80, 0.95); z-index: 250; align-items: center; justify-content: center; padding: 20px; text-align: center;">
+                <div style="max-width: 480px; color: white;">
+                    <i class="fa-solid fa-chess-knight" style="font-size: 70px; color: #f1c40f; margin-bottom: 20px;"></i>
+                    <h2 style="color: #f1c40f; margin-top: 0; text-transform: uppercase;">İpek Yolu Efsanesi!</h2>
+                    <div style="background: rgba(255,255,255,0.1); padding: 20px; border-radius: 10px; border-left: 5px solid #f1c40f; text-align: left; line-height: 1.6; font-size: 14px;">
+                        Tebrikler! Kervanını batırmadan İpek Yolu güzergahını tamamladın.<br><br>
+                        Bu zorlu yolculukta <b>Ribat, Kervansaray, Kapan, Bedesten ve Arasta</b> arasındaki o ince farkları yaşayarak öğrendin. Kalan Sermayen: <span id="finalSermaye" style="color: #f1c40f; font-weight: bold;"></span>
+                    </div>
+                    <button onclick="window.HARITA_MOTORU['ticaret_duraklari']()" style="margin-top: 25px; padding: 12px 30px; background: #f1c40f; color: #2c3e50; border: none; border-radius: 5px; font-weight: bold; cursor: pointer;">Yeni Sefere Çık</button>
+                    <div style="margin-top: 30px; font-size: 11px; opacity: 0.5;">İleri Düzey Tarih Laboratuvarı - Murat Mutlu</div>
+                </div>
+            </div>
+        </div>
+    `;
+
+    function sermayeGuncelle() {
+        document.getElementById('sermayeEkran').innerHTML = `<i class="fa-solid fa-coins"></i> ${sermaye} Altın`;
+        if(sermaye <= 0) {
+            document.getElementById('sermayeEkran').style.color = "#c0392b";
+            alert("İFLAS ETTİNİZ! Yanlış kararlar kervanın tüm sermayesini tüketti.");
+            window.HARITA_MOTORU["ticaret_duraklari"](); // Oyunu sıfırla
+        }
+    }
+
+    window.DURAK_AC = function(index) {
+        if (index !== aktifDurak) {
+            document.getElementById('hMetin').innerText = "Kervanınız henüz bu durağa ulaşmadı! Yolculuğa sırayla devam etmelisiniz.";
+            document.getElementById('hataPanel').style.display = 'flex';
+            return;
+        }
+        
+        const durak = duraklar[index];
+        document.getElementById('pKonum').innerText = durak.isim;
+        document.getElementById('pSoru').innerText = durak.soru;
+        
+        // Butonları dinamik oluştur
+        const btnAlan = document.getElementById('btnKapsayici');
+        btnAlan.innerHTML = "";
+        durak.secenekler.forEach(sec => {
+            btnAlan.innerHTML += `<button onclick="window.CEVAPLA('${sec.id}')" style="background: #5d4037; color: #fff; border: none; padding: 12px; border-radius: 8px; font-weight: bold; font-size: 13px; cursor: pointer; transition: 0.2s;">${sec.ad}</button>`;
+        });
+
+        document.getElementById('kararPanel').style.display = 'flex';
+    };
+
+    window.CEVAPLA = function(cevap) {
+        const durak = duraklar[aktifDurak];
+        if (cevap !== durak.dogruCevap) {
+            sermaye -= 200; // Zarar!
+            sermayeGuncelle();
+            document.getElementById('hMetin').innerText = durak.hataMesaji;
+            document.getElementById('hataPanel').style.display = 'flex';
+            return;
+        }
+        
+        document.getElementById('kararPanel').style.display = 'none';
+        document.getElementById('bMetin').innerHTML = durak.bilgi;
+        document.getElementById('bilgiPanel').style.display = 'flex';
+    };
+
+    window.SONRAKI_DURAK = function() {
+        document.getElementById('bilgiPanel').style.display = 'none';
+        
+        const bitenDurak = document.getElementById(`nokta_${aktifDurak}`);
+        bitenDurak.classList.remove('aktif-durak');
+        bitenDurak.style.background = "#27ae60";
+        document.getElementById(`ikon_${aktifDurak}`).className = "fa-solid fa-check";
+        document.getElementById(`ikon_${aktifDurak}`).style.color = "#fff";
+
+        aktifDurak++;
+
+        if (aktifDurak < duraklar.length) {
+            const hedef = duraklar[aktifDurak];
+            const kervan = document.getElementById('kervan');
+            
+            kervan.style.left = hedef.pos[0] + "%";
+            kervan.style.top = hedef.pos[1] + "%";
+
+            const yeniDurak = document.getElementById(`nokta_${aktifDurak}`);
+            yeniDurak.classList.add('aktif-durak');
+        } else {
+            setTimeout(() => {
+                document.getElementById('finalSermaye').innerText = sermaye + " Altın";
+                document.getElementById('finalPanel').style.display = 'flex';
+            }, 800);
+        }
+    };
+};
+// 33. ARAÇ: KÜRESEL VEBA SALGINI (AFRO-AVRASYA VE SİSTEMLERİN ÇÖKÜŞÜ)
+// ID: sosyal_u3_veba_v2_kuresel
+window.HARITA_MOTORU["veba_salgini"] = function() {
+    const controlsContainer = document.getElementById('mapControlsContainer');
+    const mapCanvas = document.getElementById('mapCanvas');
+
+    controlsContainer.style.display = 'block';
+    controlsContainer.style.padding = '10px';
+    controlsContainer.innerHTML = `
+        <div style="text-align: center; position: relative;">
+            <h4 style="margin: 0 0 5px 0; color: #2c3e50; font-size: 18px; font-weight: 800;"><i class="fa-solid fa-earth-africa"></i> Kara Ölüm: Küresel Yıkım</h4>
+            <div id="vebaDurum" style="font-size: 11px; font-weight: bold; color: #fff; background: #c0392b; padding: 4px; border-radius: 4px;">Hedef: Vebanın Afro-Avrasya'ya yayılımını ve sistemleri nasıl yıktığını analiz et.</div>
+            <div style="margin-top: 10px;">
+                <button id="btnSalginiBaslat" onclick="window.SALGINI_BASLAT()" style="background: #2c3e50; color: #fff; border: none; padding: 8px 20px; border-radius: 20px; font-weight: bold; cursor: pointer; transition: 0.3s; box-shadow: 0 4px 6px rgba(0,0,0,0.3);"><i class="fa-solid fa-biohazard"></i> 1330'lar: Salgını Asya'da Başlat</button>
+            </div>
+            <div style="position: absolute; right: 0; top: 0; font-size: 10px; font-style: italic; color: #2c3e50; opacity: 0.7; font-weight: bold;">
+                <i class="fa-solid fa-feather-pointed"></i> İleri Düzey Analiz: Murat Mutlu
+            </div>
+        </div>
+    `;
+
+    window.currentMapInstance = { remove: function() { mapCanvas.innerHTML = ''; mapCanvas.style.display = 'block'; } };
+
+    const styleObj = document.createElement('style');
+    styleObj.innerHTML = `
+        @keyframes pulseBubble { 0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(192, 57, 43, 0.7); } 50% { transform: scale(1.1); box-shadow: 0 0 0 15px rgba(192, 57, 43, 0); } 100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(192, 57, 43, 0); } }
+        .veba-balon { animation: pulseBubble 2s infinite; cursor: pointer; transition: 0.3s; z-index: 20; }
+        .veba-balon:hover { transform: scale(1.2) !important; }
+        .karanlik-bolge { background: rgba(0,0,0,0.7); border-radius: 50%; filter: blur(18px); transition: all 2.5s ease-in-out; position: absolute; z-index: 5; pointer-events: none; }
+    `;
+    document.head.appendChild(styleObj);
+
+    // KÜRESEL YAYILIM AŞAMALARI
+    const bölgeler = [
+        { 
+            id: "asya", ad: "Orta Asya (1330'lar)", pos: [40, 80], r: 130, 
+            ikon: "fa-camel", 
+            baslik: "Pax Mongolica'nın Bedeli",
+            zincir: "Moğol Barışı Kuruldu <i class='fa-solid fa-arrow-right'></i> İpek Yolu Canlandı <i class='fa-solid fa-arrow-right'></i> Hastalık Küreselleşti",
+            aciklama: "Veba yerel bir hastalıktı. Ancak Moğol İmparatorluğu'nun kurduğu güvenli ticaret ağı (Pax Mongolica) sayesinde tüccarlar ve pireler hızla batıya doğru hareket etti. <b>Sonuç:</b> Ticaret yolları ölüm yollarına dönüştü."
+        },
+        { 
+            id: "kefe", ad: "Kırım / Kefe (1347)", pos: [35, 55], r: 100, 
+            ikon: "fa-skull-crossbones", 
+            baslik: "Tarihin İlk Biyolojik Savaşı",
+            zincir: "Altın Orda Kuşattı <i class='fa-solid fa-arrow-right'></i> Vebalı Cesetler Atıldı <i class='fa-solid fa-arrow-right'></i> Cenevizliler Kaçtı",
+            aciklama: "Altın Orda ordusu, Ceneviz ticaret kolonisi Kefe'yi kuşattığında vebalı askerlerinin cesetlerini mancınıkla surlardan içeri attı. <b>Sonuç:</b> Hastalıktan kaçan İtalyan gemileri vebayı Avrupa ve Akdeniz'e taşıdı."
+        },
+        { 
+            id: "ortadogu", ad: "Kuzey Afrika ve Ortadoğu (1348)", pos: [65, 50], r: 140, 
+            ikon: "fa-wheat-awn-circle-exclamation", 
+            baslik: "İslam Dünyasında Çöküş",
+            zincir: "İskenderiye'ye Ulaştı <i class='fa-solid fa-arrow-right'></i> Tarım Nüfusu Öldü <i class='fa-solid fa-arrow-right'></i> İkta Sistemi Sarsıldı",
+            aciklama: "Veba, Avrupa'dan önce İslam dünyasının kalbi Mısır ve Şam'a vurdu. Tarlayı ekecek çiftçi kalmadığı için Memlüklerin bel kemiği olan 'İkta' (Tarım ve Askeri) sistemi ağır yara aldı. <b>Sonuç:</b> Ortadoğu ekonomisi durma noktasına geldi."
+        },
+        { 
+            id: "avrupa", ad: "Avrupa (1348-1350)", pos: [40, 25], r: 160, 
+            ikon: "fa-chess-rook", 
+            baslik: "Feodalitenin Yıkılışı",
+            zincir: "İş Gücü Azaldı <i class='fa-solid fa-arrow-right'></i> Köylü Ücret Talep Etti <i class='fa-solid fa-arrow-right'></i> Derebeyleri Zayıfladı",
+            aciklama: "Avrupa nüfusunun üçte biri yok oldu. İşçi kıtlığı yaşanınca, köle konumundaki Serfler güçlendi ve isyanlar çıkardı. <b>Sonuç:</b> Ücretsiz emeğe dayalı Feodalite (Derebeylik) çatırdadı ve Merkezi Krallıklar güçlenmeye başladı."
+        }
+    ];
+
+    let patlayanBalon = 0;
+    let yayilimSirasi = 0;
+
+    mapCanvas.innerHTML = `
+        <div style="width: 100%; height: 100%; display: flex; flex-direction: column; background: #e0d6c8; font-family: 'Segoe UI', sans-serif; position: relative; overflow: hidden;">
+            
+            <div style="flex: 1; position: relative; background: url('https://www.transparenttextures.com/patterns/old-map.png'); background-color: #d1ccbd;">
+                
+                <div style="position: absolute; top: 85%; left: 10%; font-weight: 900; color: #7f8c8d; opacity: 0.4; font-size: 14px;">KUZEY AFRİKA</div>
+                <div style="position: absolute; top: 60%; left: 55%; font-weight: 900; color: #7f8c8d; opacity: 0.4; font-size: 14px;">ORTADOĞU</div>
+                <div style="position: absolute; top: 30%; left: 55%; font-weight: 900; color: #2980b9; opacity: 0.4; font-size: 12px; transform: rotate(-15deg);">KARADENİZ</div>
+                <div style="position: absolute; top: 35%; left: 20%; font-weight: 900; color: #7f8c8d; opacity: 0.4; font-size: 16px;">AVRUPA</div>
+                <div style="position: absolute; top: 35%; left: 80%; font-weight: 900; color: #7f8c8d; opacity: 0.4; font-size: 16px;">ORTA ASYA</div>
+
+                ${bölgeler.map(b => `
+                    <div id="karanlik_${b.id}" class="karanlik-bolge" style="top: ${b.pos[0]}%; left: ${b.pos[1]}%; width: 0px; height: 0px; transform: translate(-50%, -50%); opacity: 0;"></div>
+                `).join('')}
+
+                ${bölgeler.map(b => `
+                    <div id="balon_${b.id}" onclick="window.BALON_PATLAT('${b.id}')" class="veba-balon" style="display: none; position: absolute; top: ${b.pos[0]}%; left: ${b.pos[1]}%; transform: translate(-50%, -50%); width: 55px; height: 55px; background: #c0392b; border: 3px solid #fff; border-radius: 50%; color: #fff; align-items: center; justify-content: center; font-size: 24px; box-shadow: 0 5px 15px rgba(0,0,0,0.5);">
+                        <i class="fa-solid ${b.ikon}"></i>
+                        <div style="position: absolute; top: -25px; width: 140px; text-align: center; font-size: 10px; font-weight: 900; color: #c0392b; background: rgba(255,255,255,0.9); padding: 3px; border-radius: 4px; border: 1px solid #c0392b;">${b.ad}</div>
+                    </div>
+                `).join('')}
+            </div>
+
+            <div id="analizPanel" style="display: none; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 100; align-items: center; justify-content: center; padding: 20px;">
+                <div style="width: 100%; max-width: 550px; background: #fff; padding: 25px; border-radius: 12px; box-shadow: 0 15px 30px rgba(0,0,0,0.8); text-align: center; border-top: 6px solid #c0392b;">
+                    <i id="aIkon" class="fa-solid" style="font-size: 45px; color: #c0392b; margin-bottom: 15px;"></i>
+                    <h3 id="aBaslik" style="margin: 0 0 15px 0; color: #2c3e50; font-size: 22px;"></h3>
+                    
+                    <div id="aZincir" style="background: #2c3e50; color: #f1c40f; padding: 15px; border-radius: 8px; font-size: 14px; font-weight: bold; margin-bottom: 20px; display: flex; align-items: center; justify-content: center; gap: 8px; flex-wrap: wrap;"></div>
+                    
+                    <p id="aMetin" style="font-size: 15px; color: #333; line-height: 1.6; text-align: left; background: #fdf5e6; padding: 15px; border-radius: 8px; border-left: 4px solid #c0392b;"></p>
+                    
+                    <button onclick="document.getElementById('analizPanel').style.display='none'; window.SIRADAKI_YAYILIM();" style="margin-top: 20px; background: #c0392b; color: #fff; border: none; padding: 12px 30px; border-radius: 8px; font-weight: bold; font-size: 14px; cursor: pointer;">Tarihi Analizi Kaydet ve Devam Et</button>
+                </div>
+            </div>
+
+            <div id="finalPanel" style="display: none; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(44, 62, 80, 0.95); z-index: 200; align-items: center; justify-content: center; padding: 20px; text-align: center;">
+                <div style="max-width: 500px; color: white;">
+                    <i class="fa-solid fa-earth-africa" style="font-size: 70px; color: #e74c3c; margin-bottom: 20px;"></i>
+                    <h2 style="color: #e74c3c; margin-top: 0; text-transform: uppercase;">Dünya Düzeni Değişti!</h2>
+                    <div style="background: rgba(255,255,255,0.1); padding: 20px; border-radius: 10px; border-left: 5px solid #e74c3c; text-align: left; line-height: 1.6; font-size: 14px;">
+                        Tebrikler! Kara Ölüm'ün sadece Avrupa'yı değil, tüm Eski Dünya'yı nasıl dönüştürdüğünü kanıtladın.<br><br>
+                        <b>Evrensel Çıkarım:</b> Veba; Moğol ticaret ağlarıyla Asya'da doğmuş, Kırım'da biyolojik silaha dönüşmüş, Ortadoğu'da İslam ekonomisini çökertmiş ve Avrupa'da Feodaliteyi yıkmıştır. Küreselleşmenin ilk acı meyvesidir.
+                    </div>
+                    <button onclick="window.HARITA_MOTORU['veba_salgini']()" style="margin-top: 25px; padding: 12px 30px; background: #e74c3c; color: #fff; border: none; border-radius: 5px; font-weight: bold; cursor: pointer;">Tarihi Baştan Yaz</button>
+                    <div style="margin-top: 30px; font-size: 11px; opacity: 0.5;">İleri Seviye Tarih Laboratuvarı - Murat Mutlu</div>
+                </div>
+            </div>
+        </div>
+    `;
+
+    window.SALGINI_BASLAT = function() {
+        document.getElementById('btnSalginiBaslat').style.display = 'none';
+        document.getElementById('vebaDurum').innerText = "Kıtalararası yayılım başladı... Kırmızı balonlara dokunarak sosyal sistemlerin çöküşünü analiz et!";
+        window.SIRADAKI_YAYILIM();
+    };
+
+    window.SIRADAKI_YAYILIM = function() {
+        if (yayilimSirasi < bölgeler.length) {
+            const bolge = bölgeler[yayilimSirasi];
+            const leke = document.getElementById(`karanlik_${bolge.id}`);
+            const balon = document.getElementById(`balon_${bolge.id}`);
+            
+            // Karanlık Leke Animasyonu
+            leke.style.opacity = "1";
+            leke.style.width = bolge.r + "px";
+            leke.style.height = bolge.r + "px";
+
+            // Biraz bekleyip balonu çıkart
+            setTimeout(() => {
+                balon.style.display = "flex";
+            }, 1200);
+            
+            yayilimSirasi++;
+        } else if (patlayanBalon === 4) {
+            // Hepsi bittiyse finali göster
+            setTimeout(() => {
+                document.getElementById('finalPanel').style.display = 'flex';
+            }, 1000);
+        }
+    };
+
+    window.BALON_PATLAT = function(bid) {
+        const bolge = bölgeler.find(b => b.id === bid);
+        const balon = document.getElementById(`balon_${bid}`);
+        
+        // Balonu patlat
+        balon.style.background = "#7f8c8d";
+        balon.style.borderColor = "#bdc3c7";
+        balon.style.animation = "none";
+        balon.style.pointerEvents = "none";
+        balon.innerHTML = `<i class="fa-solid fa-check-double"></i>`;
+
+        // Analiz Panelini Doldur
+        document.getElementById('aIkon').className = `fa-solid ${bolge.ikon}`;
+        document.getElementById('aBaslik').innerText = bolge.baslik;
+        document.getElementById('aZincir').innerHTML = bolge.zincir;
+        document.getElementById('aMetin').innerHTML = bolge.aciklama;
+        
+        document.getElementById('analizPanel').style.display = 'flex';
+        patlayanBalon++;
+    };
+};
