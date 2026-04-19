@@ -482,6 +482,12 @@ function materyalleriYukle(uniteId) {
 				{ baslik: "İslam Devleti'nin Genişlemesi", tur: "İnteraktif Harita", icon: "fa-map-location-dot", renk: "#2ecc71", link: "islam_genisleme" },
 				{ baslik: "Emeviler ve Abbasiler", tur: "İnteraktif Harita", icon: "fa-map-location-dot", renk: "#2ecc71", link: "emevi_abbasi_degisim" },
 				{ baslik: "Orta Çağ'ın Büyük Devletleri", tur: "İnteraktif Harita", icon: "fa-map-location-dot", renk: "#2ecc71", link: "ortacag_devletleri" },
+				{ baslik: "Bozkırın Atlıları: Yaylak ve Kışlak", tur: "İnteraktif Harita", icon: "fa-horse", renk: "#d35400", link: "bozkir_atlilari" },
+				{ baslik: "İpek Yolu Diplomasisi: Büyük İttifak", tur: "İnteraktif Harita", icon: "fa-handshake-angle", renk: "#8e44ad", link: "ipek_yolu_diplomasi" },
+				{ baslik: "Feodal Malikâne Yönetimi: Otarşi", tur: "İnteraktif Harita", icon: "fa-chess-rook", renk: "#5d4037", link: "feodal_malikane" },
+				{ baslik: "Magna Carta: Kral vs Baronlar", tur: "İnteraktif Harita", icon: "fa-scale-balanced", renk: "#8e44ad", link: "magna_carta" },
+				{ baslik: "Ticaret Durakları: Han, Kervansaray, Arasta", tur: "İnteraktif Harita", icon: "fa-horse", renk: "#d35400", link: "ticaret_duraklari" },
+				{ baslik: "Veba Salgını: Avrupa'nın Kaderi", tur: "İnteraktif Harita", icon: "fa-skull", renk: "#2c3e50", link: "veba_salgini" },
             ];
         }
     }
