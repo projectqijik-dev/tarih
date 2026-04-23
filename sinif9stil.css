@@ -7,7 +7,7 @@
     --card-border: #e2e8f0;
     --option-hover: #f0f8ff;
     --font-size-base: 16px;
-    /* YENİ EKLENEN: SİZİN SEÇTİĞİNİZ VİDEO OYNATICI RENGİ */
+    /* YENİ EKLENEN: VİDEO OYNATICI RENGİ */
     --plyr-color-main: #1673a6; 
 }
 
@@ -825,4 +825,113 @@ audio { width: 100%; height: 40px; outline: none; }
     .bottom-audio-bar .player-right-actions { flex: 0; }
     .bottom-audio-bar .time-display { display: none; /* Mobilde yerden tasarruf için zaman gizlenir */ }
     .bottom-audio-bar .player-title-custom { font-size: 13px; }
+}
+/* ==========================================================================
+   10. SINIF (OTTOMAN THEME) SIFIR HATA REVİZYONLARI
+   (Sadece body.ottoman-theme aktifken devreye girer, 9. Sınıfı etkilemez)
+   ========================================================================== */
+
+/* 1. Tema Renk Tanımlamaları (Menülerin siyah/altın olması için) */
+body.ottoman-theme {
+    --bg-color: #0D1117;
+    --container-bg: rgba(13, 17, 23, 0.95);
+    --text-color: #F4E4B0;
+    --accent-color: #C9A84C;
+    --card-border: rgba(201, 168, 76, 0.4);
+    --option-hover: rgba(139, 26, 26, 0.2);
+}
+
+/* 2. Giriş Sayfasını Tek Kareye Sığdırma (Scroll Engelleme) */
+body.ottoman-theme .container.login-mode {
+    min-height: 100vh !important;
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: center !important;
+    align-items: center !important;
+    overflow: hidden !important;
+    padding: 10px !important;
+}
+
+body.ottoman-theme .login-box {
+    margin: auto !important;
+    padding: 20px 25px !important;
+    max-width: 350px !important;
+}
+
+/* 3. Giriş Ekranındaki Menüyü (Hamburger) ve İkonları Temaya Sabitleme */
+body.ottoman-theme .settings-panel,
+body.ottoman-theme .menu-btn {
+    background: rgba(13, 17, 23, 0.95) !important;
+    border: 1px solid rgba(201, 168, 76, 0.3) !important;
+    color: #C9A84C !important;
+}
+
+/* 4. Giriş Yap Butonunu Bordo ve Altın Yapma */
+body.ottoman-theme .login-btn {
+    background: linear-gradient(135deg, #8B1A1A, #A83232) !important;
+    color: #F4E4B0 !important;
+    border: 1px solid #C9A84C !important;
+    box-shadow: 0 4px 10px rgba(139, 26, 26, 0.3) !important;
+    text-shadow: none !important;
+}
+
+body.ottoman-theme .login-btn:hover {
+    background: linear-gradient(135deg, #A83232, #A83232) !important;
+    box-shadow: 0 6px 15px rgba(201, 168, 76, 0.4) !important;
+    transform: translateY(-2px) !important;
+}
+
+/* 5. Modal Pencerelerin Menü Üstünde Açılması (Z-Index Fix) */
+body.ottoman-theme .modal {
+    z-index: 9999 !important;
+}
+/* === MÜZİK PANELİ – BUZLU CAM TASARIMI === */
+.muzik-panel {
+    position: fixed; top: 0; right: -400px; width: 350px; height: 100vh;
+    background: rgba(13, 17, 23, 0.85); backdrop-filter: blur(15px);
+    border-left: 1px solid var(--accent-color); box-shadow: -5px 0 30px rgba(0,0,0,0.6);
+    z-index: 9998; transition: right 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    display: flex; flex-direction: column;
+}
+
+.muzik-panel.aktif { right: 0; }
+
+.muzik-panel-header { display: flex; justify-content: space-between; align-items: center; padding: 20px; border-bottom: 1px solid var(--card-border); background: rgba(0,0,0,0.2); }
+.muzik-panel-header h3 { margin: 0; color: var(--text-color); font-family: 'Marcellus', serif; font-size: 18px; }
+.muzik-kapat-btn { background: none; border: none; color: var(--accent-color); font-size: 22px; cursor: pointer; transition: 0.2s; }
+.muzik-kapat-btn:hover { transform: rotate(90deg); color: #fff; }
+
+.muzik-liste-container { flex: 1; overflow-y: auto; padding: 15px; }
+.muzik-liste-item {
+    display: flex; align-items: center; padding: 12px; margin-bottom: 10px;
+    background: rgba(255,255,255,0.05); border-radius: 8px; cursor: pointer; transition: 0.2s;
+}
+.muzik-liste-item:hover { background: rgba(201,168,76,0.15); transform: translateX(5px); }
+.muzik-liste-item.caliyor { border-left: 4px solid var(--accent-color); background: rgba(201,168,76,0.1); }
+
+.muzik-kontrol-alani { padding: 20px; background: rgba(0,0,0,0.4); border-top: 1px solid var(--card-border); }
+.calan-bilgi { text-align: center; margin-bottom: 15px; }
+#calanSarkiBaslik { color: var(--accent-color); font-weight: 700; font-size: 14px; display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.alt-bilgi { color: var(--text-color); opacity: 0.6; font-size: 11px; margin-top: 4px; display: block; }
+
+.muzik-butonlar { display: flex; justify-content: center; align-items: center; gap: 20px; margin-bottom: 15px; }
+.m-ctrl-btn { background: none; border: none; color: var(--text-color); font-size: 18px; cursor: pointer; transition: 0.2s; }
+.m-play-btn { width: 45px; height: 45px; border-radius: 50%; background: var(--accent-color); color: #000; display: flex; justify-content: center; align-items: center; font-size: 18px; }
+
+.muzik-ilerleme { width: 100%; height: 5px; background: rgba(255,255,255,0.1); border-radius: 3px; cursor: pointer; position: relative; }
+.muzik-dolgu { height: 100%; width: 0%; background: var(--accent-color); transition: width 0.1s linear; }
+/* === KAVRAM KARTLARI 3D DÖNÜŞÜM DÜZELTMESİ === */
+.flashcard {
+    transform-style: preserve-3d !important;
+    -webkit-transform-style: preserve-3d !important;
+}
+
+.flashcard-face {
+    -webkit-backface-visibility: hidden !important;
+    backface-visibility: hidden !important;
+}
+
+.flashcard-back {
+    transform: rotateY(180deg) !important;
+    -webkit-transform: rotateY(180deg) !important;
 }
