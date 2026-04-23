@@ -1769,7 +1769,175 @@ function restoreSession(data) {
             };
         });
     }
+// =========================================
+// === MÜZİK KUTUSU (YAN PANEL) MOTORU ===
+// =========================================
+    let aktifMuzikIndex = -1; // Sadece görsel takip için
+    window.suAnkiKategoriIndex = -1; // Çalan şarkının kategorisi
+    let aktifSarkiIndex = -1; // Çalan şarkının indexi
+    let muzikCaliyor = false;
+    let gorunumModu = 'kategori'; // 'kategori' veya 'sarki'
 
+    function toggleMuzikPanel() {
+        const panel = document.getElementById('muzikPanel');
+        if (!panel) return;
+        panel.classList.toggle('aktif');
+        
+        if(panel.classList.contains('aktif')) {
+            if(document.getElementById('muzikListeContainer').innerHTML === "" || gorunumModu === 'kategori') {
+                gorunumModu = 'kategori';
+                muzikListesiniOlustur();
+            }
+        }
+    }
+
+    function muzikListesiniOlustur() {
+        const konteyner = document.getElementById('muzikListeContainer');
+        konteyner.innerHTML = "";
+
+        if (typeof window.MUZIK_VERITABANI === 'undefined' || window.MUZIK_VERITABANI.length === 0) {
+            konteyner.innerHTML = "<div style='text-align:center; padding:20px; opacity:0.6; color:var(--text-color); font-weight:600;'>Henüz müzik yüklenmedi.</div>";
+            return;
+        }
+
+        if (gorunumModu === 'kategori') {
+            window.MUZIK_VERITABANI.forEach((kat, index) => {
+                const div = document.createElement('div');
+                div.className = `muzik-liste-item`;
+                div.style.cursor = 'pointer';
+                div.onclick = () => kategoriSecMuzik(index);
+                
+                div.innerHTML = `
+                    <div class="mat-icon" style="color: var(--accent-color); background: rgba(201,168,76,0.1); width:40px; height:40px; margin-right:12px; border-radius:8px; display:flex; align-items:center; justify-content:center;">
+                        <i class="fa-solid ${kat.kategoriIkon || 'fa-folder'}"></i>
+                    </div>
+                    <div class="m-detay" style="flex:1; display:flex; flex-direction:column; text-align:left;">
+                        <span class="m-isim" style="font-size: 15px;">${kat.kategoriAdi}</span>
+                        <span class="m-sanatci" style="opacity:0.7;">${kat.sarkilar.length} Parça</span>
+                    </div>
+                    <i class="fa-solid fa-chevron-right" style="color:var(--text-color); opacity:0.5;"></i>
+                `;
+                konteyner.appendChild(div);
+            });
+        } else if (gorunumModu === 'sarki') {
+            const geriDiv = document.createElement('div');
+            geriDiv.style.cursor = 'pointer';
+            geriDiv.style.padding = '10px 15px';
+            geriDiv.style.marginBottom = '10px';
+            geriDiv.style.borderRadius = '8px';
+            geriDiv.style.background = 'rgba(255,255,255,0.05)';
+            geriDiv.style.display = 'flex';
+            geriDiv.style.alignItems = 'center';
+            geriDiv.style.gap = '10px';
+            geriDiv.style.fontWeight = 'bold';
+            geriDiv.onclick = () => { gorunumModu = 'kategori'; muzikListesiniOlustur(); };
+            geriDiv.innerHTML = `<i class="fa-solid fa-arrow-left"></i> ${window.MUZIK_VERITABANI[aktifMuzikIndex].kategoriAdi}`;
+            konteyner.appendChild(geriDiv);
+
+            const seciliKategori = window.MUZIK_VERITABANI[aktifMuzikIndex];
+            seciliKategori.sarkilar.forEach((sarki, index) => {
+                const suAnCalanMi = (window.suAnkiKategoriIndex === aktifMuzikIndex && aktifSarkiIndex === index);
+                const div = document.createElement('div');
+                div.className = `muzik-liste-item ${suAnCalanMi ? 'caliyor' : ''}`;
+                div.onclick = () => sarkiCal(aktifMuzikIndex, index);
+                
+                div.innerHTML = `
+                    <div class="mat-icon" style="color: var(--accent-color); background: rgba(201,168,76,0.1); width:40px; height:40px; margin-right:12px; border-radius:8px; display:flex; align-items:center; justify-content:center;">
+                        <i class="fa-solid ${sarki.kapak || 'fa-music'}"></i>
+                    </div>
+                    <div class="m-detay" style="flex:1; display:flex; flex-direction:column; text-align:left;">
+                        <span class="m-isim">${sarki.baslik}</span>
+                        <span class="m-sanatci">${sarki.sanatci} <span style="opacity:0.5; margin-left:5px;">${sarki.sure || ''}</span></span>
+                    </div>
+                    ${suAnCalanMi ? '<i class="fa-solid fa-chart-simple fa-bounce" style="color:var(--accent-color);"></i>' : ''}
+                `;
+                konteyner.appendChild(div);
+            });
+        }
+    }
+
+    function kategoriSecMuzik(index) {
+        aktifMuzikIndex = index;
+        gorunumModu = 'sarki';
+        muzikListesiniOlustur();
+    }
+
+    function sarkiCal(katIndex, sarkiIndex) {
+        if (!window.MUZIK_VERITABANI || !window.MUZIK_VERITABANI[katIndex] || !window.MUZIK_VERITABANI[katIndex].sarkilar[sarkiIndex]) return;
+        
+        window.suAnkiKategoriIndex = katIndex;
+        aktifMuzikIndex = katIndex; 
+        aktifSarkiIndex = sarkiIndex;
+        
+        const sarki = window.MUZIK_VERITABANI[katIndex].sarkilar[sarkiIndex];
+        const player = document.getElementById('muzikAudio');
+        
+        document.getElementById('calanSarkiBaslik').innerText = sarki.baslik;
+        document.getElementById('calanSarkiSanatci').innerText = sarki.sanatci;
+        
+        player.src = sarki.link;
+        player.play().then(() => {
+            muzikCaliyor = true;
+            document.getElementById('muzikPlayBtn').innerHTML = '<i class="fa-solid fa-pause"></i>';
+            muzikListesiniOlustur(); 
+        }).catch(e => console.log("Otomatik oynatma engellendi", e));
+    }
+
+    function toggleMuzikPlay() {
+        const player = document.getElementById('muzikAudio');
+        const btn = document.getElementById('muzikPlayBtn');
+        
+        if (aktifSarkiIndex === -1 && typeof window.MUZIK_VERITABANI !== 'undefined' && window.MUZIK_VERITABANI.length > 0) {
+            if(window.MUZIK_VERITABANI[0].sarkilar.length > 0) {
+                sarkiCal(0, 0); 
+            }
+            return;
+        }
+
+        if (muzikCaliyor) {
+            player.pause();
+            btn.innerHTML = '<i class="fa-solid fa-play" style="margin-left: 2px;"></i>';
+        } else {
+            player.play();
+            btn.innerHTML = '<i class="fa-solid fa-pause"></i>';
+        }
+        muzikCaliyor = !muzikCaliyor;
+    }
+
+    function sonrakiSarki() {
+        if(window.suAnkiKategoriIndex === -1) return;
+        const sarkilar = window.MUZIK_VERITABANI[window.suAnkiKategoriIndex].sarkilar;
+        let yeniIndex = aktifSarkiIndex + 1;
+        if (yeniIndex >= sarkilar.length) yeniIndex = 0; 
+        sarkiCal(window.suAnkiKategoriIndex, yeniIndex);
+    }
+
+    function oncekiSarki() {
+        if(window.suAnkiKategoriIndex === -1) return;
+        const sarkilar = window.MUZIK_VERITABANI[window.suAnkiKategoriIndex].sarkilar;
+        let yeniIndex = aktifSarkiIndex - 1;
+        if (yeniIndex < 0) yeniIndex = sarkilar.length - 1; 
+        sarkiCal(window.suAnkiKategoriIndex, yeniIndex);
+    }
+
+    function updateMuzikProgress() {
+        const player = document.getElementById('muzikAudio');
+        const fill = document.getElementById('muzikProgressFill');
+        if (player && player.duration) {
+            const percent = (player.currentTime / player.duration) * 100;
+            fill.style.width = percent + '%';
+        }
+    }
+
+    function seekMuzik(event) {
+        const player = document.getElementById('muzikAudio');
+        const bg = document.getElementById('muzikProgressBg');
+        if (player && player.duration) {
+            const rect = bg.getBoundingClientRect();
+            const pos = (event.clientX - rect.left) / rect.width;
+            player.currentTime = pos * player.duration;
+        }
+    }
 window.addEventListener('click', function(event) { 
         if (event.target.classList.contains('modal')) { 
             event.target.style.display = 'none'; 
