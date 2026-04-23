@@ -170,7 +170,7 @@
     
 <div class="settings-panel" style="display: flex; gap: 10px; align-items: center;">
         <a href="sinif9.html" class="settings-btn" title="Ana Sayfaya Dön" style="display: flex; align-items: center; justify-content: center; text-decoration: none;"><i class="fa-solid fa-house"></i></a>
-        
+        <button class="settings-btn uzun-buton" id="btnMuzik" onclick="toggleMuzikPanel()" title="Tarihî Müzik Kutusu"><i class="fa-solid fa-music"></i></button>
         <button class="settings-btn uzun-buton hidden" id="btnSozluk" onclick="sozlukGoster()" title="Sözlük"><i class="fa-solid fa-book-open"></i> Sözlük</button>
         
         <div class="dropdown-menu-container">
@@ -689,7 +689,28 @@
     </div>
 
 </div> 
-
+<div id="muzikPanel" class="muzik-panel">
+        <div class="muzik-panel-header">
+            <h3><i class="fa-solid fa-compact-disc fa-spin" style="margin-right: 8px; color: var(--accent-color);"></i> Portal Player v.ı</h3>
+            <button class="muzik-kapat-btn" onclick="toggleMuzikPanel()"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+        <div class="muzik-liste-container" id="muzikListeContainer"></div>
+        <div class="muzik-kontrol-alani">
+            <div class="calan-bilgi">
+                <span id="calanSarkiBaslik">Seçim Bekleniyor...</span>
+                <span id="calanSarkiSanatci" class="alt-bilgi">Müzik kutusunu başlatın</span>
+            </div>
+            <div class="muzik-butonlar">
+                <button class="m-ctrl-btn" onclick="oncekiSarki()"><i class="fa-solid fa-backward-step"></i></button>
+                <button class="m-ctrl-btn m-play-btn" id="muzikPlayBtn" onclick="toggleMuzikPlay()"><i class="fa-solid fa-play"></i></button>
+                <button class="m-ctrl-btn" onclick="sonrakiSarki()"><i class="fa-solid fa-forward-step"></i></button>
+            </div>
+            <div class="muzik-ilerleme" onclick="seekMuzik(event)" id="muzikProgressBg">
+                <div class="muzik-dolgu" id="muzikProgressFill"></div>
+            </div>
+            <audio id="muzikAudio" ontimeupdate="updateMuzikProgress()" onended="sonrakiSarki()"></audio>
+        </div>
+    </div>
 <div id="audioPlayerContainer" class="bottom-audio-bar">
     <div class="progress-bar-custom" id="progressBarBg" onclick="seekAudio(event)">
         <div class="progress-fill" id="progressBarFill"></div>
@@ -759,7 +780,9 @@
         <div id="mapCanvas" style="width: 100%; height: 60vh; position: relative; border-radius: 8px; border: 1px solid var(--card-border); background: #0D1117;"></div>
         <div id="mapControlsContainer" style="padding: 15px; background: rgba(13,17,23,0.95); border: 1px solid var(--card-border); border-radius: 8px; display: none; color: var(--text-color); margin-top: 15px; text-align: center;"></div>
     </div>
+	
 </div>
+
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
 <script>
@@ -818,7 +841,7 @@ document.addEventListener("DOMContentLoaded", function() {
     }
 });
 </script>
-
+<script src="muzik_verisi.js"></script>
 <script src="sinif9sorular/menu_verisi.js"></script>
 <script src="sinif9sorular/u1_genel.js"></script>
 <script src="sinif9sorular/u1_insa.js"></script>
