@@ -619,7 +619,8 @@
 
     <div class="settings-panel" style="display:flex;gap:10px;align-items:center;">
         <a href="index.html" class="settings-btn" title="Ana Sayfaya Dön" style="display:flex;align-items:center;justify-content:center;text-decoration:none;"><i class="fa-solid fa-house"></i></a>
-        <button class="settings-btn uzun-buton hidden" id="btnSozluk" onclick="sozlukGoster()" title="Sözlük"><i class="fa-solid fa-book-open"></i> Sözlük</button>
+        <button class="settings-btn uzun-buton" id="btnMuzik" onclick="toggleMuzikPanel()" title="Tarihî Müzik Kutusu"><i class="fa-solid fa-music"></i></button>
+		<button class="settings-btn uzun-buton hidden" id="btnSozluk" onclick="sozlukGoster()" title="Sözlük"><i class="fa-solid fa-book-open"></i> Sözlük</button>
         <div class="dropdown-menu-container">
             <button class="settings-btn" id="btnHamburger" onclick="menuToggle(event)" title="Menü" style="position:relative;">
                 <i class="fa-solid fa-bars"></i>
@@ -1115,7 +1116,28 @@
     </div>
 
 </div><!-- /container -->
-
+<div id="muzikPanel" class="muzik-panel">
+        <div class="muzik-panel-header">
+            <h3><i class="fa-solid fa-compact-disc fa-spin" style="margin-right: 8px; color: var(--accent-color);"></i>portal player v.ı</h3>
+            <button class="muzik-kapat-btn" onclick="toggleMuzikPanel()"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+        <div class="muzik-liste-container" id="muzikListeContainer"></div>
+        <div class="muzik-kontrol-alani">
+            <div class="calan-bilgi">
+                <span id="calanSarkiBaslik">Seçim Bekleniyor...</span>
+                <span id="calanSarkiSanatci" class="alt-bilgi">Müzik kutusunu başlatın</span>
+            </div>
+            <div class="muzik-butonlar">
+                <button class="m-ctrl-btn" onclick="oncekiSarki()"><i class="fa-solid fa-backward-step"></i></button>
+                <button class="m-ctrl-btn m-play-btn" id="muzikPlayBtn" onclick="toggleMuzikPlay()"><i class="fa-solid fa-play"></i></button>
+                <button class="m-ctrl-btn" onclick="sonrakiSarki()"><i class="fa-solid fa-forward-step"></i></button>
+            </div>
+            <div class="muzik-ilerleme" onclick="seekMuzik(event)" id="muzikProgressBg">
+                <div class="muzik-dolgu" id="muzikProgressFill"></div>
+            </div>
+            <audio id="muzikAudio" ontimeupdate="updateMuzikProgress()" onended="sonrakiSarki()"></audio>
+        </div>
+    </div>
 <!-- Audio Player -->
 <div id="audioPlayerContainer" class="bottom-audio-bar">
     <div class="progress-bar-custom" id="progressBarBg" onclick="seekAudio(event)">
@@ -1192,6 +1214,7 @@
 
 <!-- Soru veritabanları -->
 <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script>
+<script src="muzik_verisi.js"></script>
 <script src="sinif10sorular/menu_verisi.js"></script>
 <script src="sinif10sorular/u1_askeri.js"></script>
 <script src="sinif10sorular/u1_teskilat.js"></script>
