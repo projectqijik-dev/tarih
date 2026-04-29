@@ -169,7 +169,6 @@
 <div class="container">
     
 <div class="settings-panel" style="display: flex; gap: 10px; align-items: center;">
-        <a href="sinif9.html" class="settings-btn" title="Ana Sayfaya Dön" style="display: flex; align-items: center; justify-content: center; text-decoration: none;"><i class="fa-solid fa-house"></i></a>
         <button class="settings-btn uzun-buton" id="btnMuzik" onclick="toggleMuzikPanel()" title="Tarihî Müzik Kutusu"><i class="fa-solid fa-music"></i></button>
         <button class="settings-btn uzun-buton hidden" id="btnSozluk" onclick="sozlukGoster()" title="Sözlük"><i class="fa-solid fa-book-open"></i> Sözlük</button>
         
@@ -301,7 +300,10 @@
     <div id="menuEkrani" class="hidden">
         
         <h2 style="margin-top: 5px; margin-bottom: 20px; font-weight: 600; color: var(--text-color); font-size: 24px; text-align: left;">
-            Hoşgeldin, <span id="kullaniciAdiSpan" style="font-weight: 800; color: var(--accent-color);"></span> 👋
+            Hoşgeldin, <span id="kullaniciAdiSpan" style="font-weight: 800; color: var(--accent-color);"></span>
+			<button onclick="cikisYap()" title="Oturumu Kapat" style="background: rgba(139,26,26,0.15); border: 1px solid var(--card-border); color: var(--accent-color); padding: 5px 12px; border-radius: 8px; cursor: pointer; margin-left: 15px; font-size: 13px; font-family: 'Josefin Sans', sans-serif; transition: 0.3s; display: inline-flex; align-items: center; gap: 6px;">
+    <i class="fa-solid fa-right-from-bracket"></i> Çıkış
+</button>
         </h2>
 
         <div id="anaKlasorler">
