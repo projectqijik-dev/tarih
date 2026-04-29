@@ -965,6 +965,26 @@ function girisBasariliIslemleri(ogr) {
             const sayfaNo = window.location.pathname.match(/\d+/) ? window.location.pathname.match(/\d+/)[0] : "9";
             localStorage.setItem('aktifOgrenci' + sayfaNo, JSON.stringify(ogr));
         }
+function cikisYap() {
+        // Fonksiyonun tetiklendiğini doğrulamak için bir onay kutusu
+        if(confirm("Oturumu kapatmak istediğinize emin misiniz?")) {
+            
+            // Yerel (Local) ve sunucu yollarında en güvenli sayfa tespiti
+            let sayfaNo = "9";
+            if(window.location.href.includes("sinif10")) {
+                sayfaNo = "10";
+            }
+            
+            // Tüm oturum hafızasını temizle
+            localStorage.removeItem('aktifOgrenci' + sayfaNo);
+            localStorage.removeItem('globalZumreOturumu');
+            localStorage.removeItem('sinavSession' + (sayfaNo === "10" ? "10" : ""));
+            
+            // Sayfayı yenileyerek giriş ekranına döndür
+            location.reload();
+        }
+    }
+    }
 
         document.getElementById("girisEkrani").classList.add("hidden");
         document.getElementById("menuEkrani").classList.remove("hidden");
