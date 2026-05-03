@@ -127,7 +127,7 @@ window.addEventListener('keydown', function(event) {
         
         const videoId = youtubeIdCikar(url);
         if (!videoId) {
-            alert("Geçerli bir link bulunamadı. Lütfen öğretmeninize bildirin.");
+            alert("Geçerli bir YouTube linki bulunamadı. Lütfen öğretmeninize bildirin.");
             return;
         }
 
@@ -1819,19 +1819,30 @@ function restoreSession(data) {
                 `;
                 konteyner.appendChild(div);
             });
-        } else if (gorunumModu === 'sarki') {
+} else if (gorunumModu === 'sarki') {
             const geriDiv = document.createElement('div');
-            geriDiv.style.cursor = 'pointer';
-            geriDiv.style.padding = '10px 15px';
+            geriDiv.style.cursor = 'pointer'; 
+            geriDiv.style.padding = '12px 15px'; 
             geriDiv.style.marginBottom = '10px';
-            geriDiv.style.borderRadius = '8px';
-            geriDiv.style.background = 'rgba(255,255,255,0.05)';
-            geriDiv.style.display = 'flex';
-            geriDiv.style.alignItems = 'center';
-            geriDiv.style.gap = '10px';
+            geriDiv.style.borderRadius = '8px'; 
+            
+            // --- YAPIŞKAN (STICKY) VE BUZLU CAM EFEKTİ ---
+            geriDiv.style.position = 'sticky';
+            geriDiv.style.top = '0';
+            geriDiv.style.zIndex = '10';
+            // Sitenin ana CSS değişkenlerinden (var) renkleri otomatik çeker
+            geriDiv.style.background = 'var(--container-bg)'; 
+            geriDiv.style.backdropFilter = 'blur(12px)'; 
+            geriDiv.style.borderBottom = '1px solid var(--card-border)'; 
+            geriDiv.style.color = 'var(--text-color)';
+            // ---------------------------------------------
+
+            geriDiv.style.display = 'flex'; 
+            geriDiv.style.alignItems = 'center'; 
+            geriDiv.style.gap = '10px'; 
             geriDiv.style.fontWeight = 'bold';
             geriDiv.onclick = () => { gorunumModu = 'kategori'; muzikListesiniOlustur(); };
-            geriDiv.innerHTML = `<i class="fa-solid fa-arrow-left"></i> ${window.MUZIK_VERITABANI[aktifMuzikIndex].kategoriAdi}`;
+            geriDiv.innerHTML = `<i class="fa-solid fa-arrow-left"></i> Klasörlere Dön (${window.MUZIK_VERITABANI[aktifMuzikIndex].kategoriAdi})`;
             konteyner.appendChild(geriDiv);
 
             const seciliKategori = window.MUZIK_VERITABANI[aktifMuzikIndex];
@@ -1881,6 +1892,22 @@ function restoreSession(data) {
             document.getElementById('muzikPlayBtn').innerHTML = '<i class="fa-solid fa-pause"></i>';
             muzikListesiniOlustur(); 
         }).catch(e => console.log("Otomatik oynatma engellendi", e));
+		// --- MEDIA SESSION API (TELEFON BİLDİRİM PANELİ KONTROLLERİ) ---
+        if ('mediaSession' in navigator) {
+            // Şarkı bilgilerini ve logoyu telefonun paneline gönderir
+            navigator.mediaSession.metadata = new MediaMetadata({
+                title: sarki.baslik,
+                artist: sarki.sanatci,
+                album: 'Boğaziçi Tarih Portalı',
+                artwork: [
+                    { src: 'https://depo.kirkyama.uk/favicon.png', sizes: '512x512', type: 'image/png' }
+                ]
+            });
+
+            // Paneldeki İleri ve Geri butonlarını bizim JS fonksiyonlarımıza bağlar
+            navigator.mediaSession.setActionHandler('previoustrack', function() { oncekiSarki(); });
+            navigator.mediaSession.setActionHandler('nexttrack', function() { sonrakiSarki(); });
+        }
     }
 
     function toggleMuzikPlay() {
