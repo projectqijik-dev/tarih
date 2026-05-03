@@ -1813,7 +1813,7 @@ function restoreSession(data) {
                     </div>
                     <div class="m-detay" style="flex:1; display:flex; flex-direction:column; text-align:left;">
                         <span class="m-isim" style="font-size: 15px;">${kat.kategoriAdi}</span>
-                        <span class="m-sanatci" style="opacity:0.7;">${kat.sarkilar.length} Parça</span>
+                        <span class="m-sanatci" style="opacity:0.7;">${kat.sarkilar.length} Şarkı</span>
                     </div>
                     <i class="fa-solid fa-chevron-right" style="color:var(--text-color); opacity:0.5;"></i>
                 `;
