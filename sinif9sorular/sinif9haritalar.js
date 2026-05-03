@@ -5214,4 +5214,183 @@ window.HARITA_MOTORU["veba_salgini"] = function() {
         document.getElementById('analizPanel').style.display = 'flex';
         patlayanBalon++;
     };
+	
+};
+// 34. ARAÇ: TAKVİM ÇEVİRME MOTORU
+// ID: klasik_u1_takvim_1
+window.HARITA_MOTORU["klasik_u1_takvim_1"] = function() {
+    const controlsContainer = document.getElementById('mapControlsContainer');
+    const mapCanvas = document.getElementById('mapCanvas');
+
+    controlsContainer.style.display = 'block';
+    controlsContainer.style.padding = '10px';
+    controlsContainer.innerHTML = `
+        <div style="text-align: center; position: relative;">
+            <h4 style="margin: 0 0 5px 0; color: #2c3e50; font-size: 18px; font-weight: 800;"><i class="fa-solid fa-calendar-days"></i> Tarih Çevirme Kılavuzu</h4>
+            <div id="takvimDurum" style="font-size: 11px; font-weight: bold; color: #fff; background: #e67e22; padding: 4px; border-radius: 4px;">Miladi, Hicri ve Rumi takvimler arası matematiksel çeviri.</div>
+            <div style="position: absolute; right: 0; top: 0; font-size: 10px; font-style: italic; color: #2c3e50; opacity: 0.7; font-weight: bold;">
+                <i class="fa-solid fa-feather-pointed"></i> Çeviri Motoru: Murat Mutlu
+            </div>
+        </div>
+    `;
+
+    window.currentMapInstance = { remove: function() { mapCanvas.innerHTML = ''; mapCanvas.style.display = 'block'; } };
+
+    mapCanvas.innerHTML = `
+        <div style="width: 100%; height: 100%; display: flex; flex-direction: column; background: #fdf5e6; font-family: 'Segoe UI', sans-serif; position: relative; overflow-y: auto;">
+            
+            <div style="background: #2c3e50; padding: 25px 20px; text-align: center; box-shadow: 0 4px 10px rgba(0,0,0,0.2);">
+                <h3 style="color: #f1c40f; margin: 0 0 15px 0; font-size: 16px; text-transform: uppercase;"><i class="fa-solid fa-calculator"></i> Çevrilecek Tarihi Girin</h3>
+                
+                <div style="display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; max-width: 500px; margin: 0 auto;">
+                    <div style="flex: 1; min-width: 120px;">
+                        <label style="color: #bdc3c7; font-size: 12px; font-weight: bold; display: block; margin-bottom: 5px;">Hangi Takvimden?</label>
+                        <select id="kaynakTakvim" style="width: 100%; padding: 12px; border-radius: 6px; border: none; background: #fff; font-weight: bold; color: #2c3e50; font-size: 14px; cursor: pointer;">
+                            <option value="miladi">Miladi Takvim</option>
+                            <option value="hicri">Hicri Takvim</option>
+                            <option value="rumi">Rumi Takvim</option>
+                        </select>
+                    </div>
+
+                    <div style="flex: 1; min-width: 120px;">
+                        <label style="color: #bdc3c7; font-size: 12px; font-weight: bold; display: block; margin-bottom: 5px;">Yıl Giriniz</label>
+                        <input type="number" id="girilenYil" placeholder="Örn: 1453" style="width: 100%; padding: 12px; border-radius: 6px; border: none; background: #fff; font-weight: bold; color: #2c3e50; font-size: 14px; text-align: center; box-sizing: border-box;">
+                    </div>
+                </div>
+
+                <button onclick="window.TAKVIM_CEVIR()" style="margin-top: 20px; background: #e67e22; color: #fff; border: none; padding: 12px 40px; border-radius: 25px; font-weight: bold; font-size: 15px; cursor: pointer; transition: 0.3s; box-shadow: 0 5px 15px rgba(230, 126, 34, 0.4);"><i class="fa-solid fa-arrows-rotate"></i> Çeviriyi Başlat</button>
+            </div>
+
+            <div id="sonucAlani" style="display: none; padding: 20px; max-width: 600px; margin: 0 auto; width: 100%; box-sizing: border-box;">
+                <h3 style="color: #2c3e50; text-align: center; margin-top: 0; border-bottom: 2px solid #e67e22; padding-bottom: 10px;">Çeviri Sonuçları ve Sınav Formülleri</h3>
+                
+                <div id="hedef1Kutu" style="background: #fff; border-radius: 10px; padding: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); margin-bottom: 15px; border-left: 5px solid #27ae60;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                        <span id="hedef1Baslik" style="font-weight: 900; color: #27ae60; font-size: 16px;"></span>
+                        <span id="hedef1Sonuc" style="background: #27ae60; color: #fff; padding: 5px 15px; border-radius: 20px; font-weight: bold; font-size: 18px;"></span>
+                    </div>
+                    <div id="hedef1Formul" style="background: #f9f9f9; padding: 15px; border-radius: 6px; font-family: monospace; font-size: 13px; color: #333; line-height: 1.6;"></div>
+                </div>
+
+                <div id="hedef2Kutu" style="background: #fff; border-radius: 10px; padding: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); border-left: 5px solid #2980b9;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                        <span id="hedef2Baslik" style="font-weight: 900; color: #2980b9; font-size: 16px;"></span>
+                        <span id="hedef2Sonuc" style="background: #2980b9; color: #fff; padding: 5px 15px; border-radius: 20px; font-weight: bold; font-size: 18px;"></span>
+                    </div>
+                    <div id="hedef2Formul" style="background: #f9f9f9; padding: 15px; border-radius: 6px; font-family: monospace; font-size: 13px; color: #333; line-height: 1.6;"></div>
+                </div>
+                
+                <div style="margin-top: 20px; font-size: 12px; color: #7f8c8d; text-align: center; padding: 10px; background: rgba(0,0,0,0.05); border-radius: 5px;">
+                    <i class="fa-solid fa-circle-info" style="color: #e67e22;"></i> <b>Not:</b> Hicri takvim Ay yılını (354 gün), Miladi ve Rumi takvimler Güneş yılını (365 gün) esas aldığı için aralarında her 33 yılda 1 yıllık fark oluşur (Hicri takvim daha hızlı ilerler). Yukarıdaki işlemler TTK hesaplama yaklaşımına göre (+/- 1 yıl hata payıyla) tam yıl hesaplamasıdır.
+                </div>
+            </div>
+
+        </div>
+    `;
+
+    window.TAKVIM_CEVIR = function() {
+        const kaynak = document.getElementById('kaynakTakvim').value;
+        const yilInput = document.getElementById('girilenYil').value;
+
+        if (!yilInput || isNaN(yilInput)) {
+            alert("Lütfen geçerli bir yıl giriniz!");
+            return;
+        }
+
+        const yil = parseInt(yilInput);
+
+        if (yil <= 0) {
+            alert("Sıfır veya negatif yıllar için (Milattan Önce) takvimler arası doğrudan formül uygulanamaz.");
+            return;
+        }
+
+        if (kaynak === "miladi" && yil < 622) {
+            alert("Miladi 622 yılından (Hicret) öncesi için Hicri takvim hesaplanamaz!");
+            return;
+        }
+
+        document.getElementById('sonucAlani').style.display = 'block';
+
+        const h1Baslik = document.getElementById('hedef1Baslik');
+        const h1Sonuc = document.getElementById('hedef1Sonuc');
+        const h1Formul = document.getElementById('hedef1Formul');
+
+        const h2Baslik = document.getElementById('hedef2Baslik');
+        const h2Sonuc = document.getElementById('hedef2Sonuc');
+        const h2Formul = document.getElementById('hedef2Formul');
+
+        if (kaynak === "miladi") {
+            let mEksi622 = yil - 622;
+            let pay = Math.floor(mEksi622 / 33);
+            let hicriYil = mEksi622 + pay;
+
+            h1Baslik.innerHTML = "<i class='fa-solid fa-moon'></i> Hicri Karşılığı";
+            h1Sonuc.innerText = hicriYil;
+            h1Formul.innerHTML = `
+                <b>MEB Çözüm Adımları (Miladi -> Hicri):</b><br>
+                1. Miladi yıldan Hicret yılı çıkarılır: ${yil} - 622 = <span style="color:#c0392b; font-weight:bold;">${mEksi622}</span><br>
+                2. Kalan sayı 33'e bölünerek aradaki fark bulunur: ${mEksi622} / 33 ≅ <span style="color:#2980b9; font-weight:bold;">${pay}</span><br>
+                3. İlk sayı ile fark toplanır: ${mEksi622} + ${pay} = <span style="color:#27ae60; font-weight:bold;">${hicriYil}</span>
+            `;
+
+            let rumiYil = yil - 584;
+            h2Baslik.innerHTML = "<i class='fa-solid fa-sun'></i> Rumi Karşılığı";
+            h2Sonuc.innerText = rumiYil;
+            h2Formul.innerHTML = `
+                <b>Çözüm Adımları (Miladi -> Rumi):</b><br>
+                1. Rumi takvim, Hicret'i başlangıç alır ama Güneş yılını kullanır. Bu yüzden Miladi takvim ile arasında daima <b>584 yıl</b> fark vardır.<br>
+                2. İşlem: ${yil} - 584 = <span style="color:#2980b9; font-weight:bold;">${rumiYil}</span>
+            `;
+        } 
+        else if (kaynak === "hicri") {
+            let pay = Math.floor(yil / 33);
+            let hEksiPay = yil - pay;
+            let miladiYil = hEksiPay + 622;
+
+            h1Baslik.innerHTML = "<i class='fa-solid fa-calendar'></i> Miladi Karşılığı";
+            h1Sonuc.innerText = miladiYil;
+            h1Formul.innerHTML = `
+                <b>Çözüm Adımları (Hicri -> Miladi):</b><br>
+                1. Hicri yıl 33'e bölünerek zaman farkı bulunur: ${yil} / 33 ≅ <span style="color:#2980b9; font-weight:bold;">${pay}</span><br>
+                2. Bulunan fark Hicri yıldan çıkarılır: ${yil} - ${pay} = <span style="color:#c0392b; font-weight:bold;">${hEksiPay}</span><br>
+                3. Çıkan sonuca Hicret yılı eklenir: ${hEksiPay} + 622 = <span style="color:#27ae60; font-weight:bold;">${miladiYil}</span>
+            `;
+
+            let rumiYil = miladiYil - 584;
+            h2Baslik.innerHTML = "<i class='fa-solid fa-sun'></i> Rumi Karşılığı";
+            h2Sonuc.innerText = rumiYil;
+            h2Formul.innerHTML = `
+                <b>Çözüm Adımları (Hicri -> Rumi):</b><br>
+                1. Hicri yılı önce Miladi'ye çeviririz: Bulunan değer <span style="color:#27ae60; font-weight:bold;">${miladiYil}</span>.<br>
+                2. Miladi yıldan Rumi farkı çıkarılır: ${miladiYil} - 584 = <span style="color:#2980b9; font-weight:bold;">${rumiYil}</span>
+            `;
+        }
+        else if (kaynak === "rumi") {
+            let miladiYil = yil + 584;
+
+            h1Baslik.innerHTML = "<i class='fa-solid fa-calendar'></i> Miladi Karşılığı";
+            h1Sonuc.innerText = miladiYil;
+            h1Formul.innerHTML = `
+                <b>Çözüm Adımları (Rumi -> Miladi):</b><br>
+                1. Rumi takvim ile Miladi takvim arasındaki sabit Güneş yılı farkı (584) eklenir.<br>
+                2. İşlem: ${yil} + 584 = <span style="color:#27ae60; font-weight:bold;">${miladiYil}</span>
+            `;
+
+            let mEksi622 = miladiYil - 622;
+            let pay = Math.floor(mEksi622 / 33);
+            let hicriYil = mEksi622 + pay;
+
+            h2Baslik.innerHTML = "<i class='fa-solid fa-moon'></i> Hicri Karşılığı";
+            h2Sonuc.innerText = hicriYil;
+            h2Formul.innerHTML = `
+                <b>Çözüm Adımları (Rumi -> Hicri):</b><br>
+                1. Rumi yıl önce Miladi'ye çevrilir: <span style="color:#27ae60; font-weight:bold;">${miladiYil}</span>.<br>
+                2. Miladi yıldan Hicret çıkarılır: ${miladiYil} - 622 = <span style="color:#c0392b; font-weight:bold;">${mEksi622}</span><br>
+                3. 33'e bölünerek Ay-Güneş farkı bulunur: ${mEksi622} / 33 ≅ <span style="color:#2980b9; font-weight:bold;">${pay}</span><br>
+                4. Fark eklenir: ${mEksi622} + ${pay} = <span style="color:#27ae60; font-weight:bold;">${hicriYil}</span>
+            `;
+        }
+        
+        document.getElementById('sonucAlani').scrollIntoView({ behavior: 'smooth' });
+    };
 };
