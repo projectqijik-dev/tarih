@@ -697,19 +697,36 @@
             <button class="muzik-kapat-btn" onclick="toggleMuzikPanel()"><i class="fa-solid fa-xmark"></i></button>
         </div>
         <div class="muzik-liste-container" id="muzikListeContainer"></div>
-        <div class="muzik-kontrol-alani">
-            <div class="calan-bilgi">
-                <span id="calanSarkiBaslik">Seçim Bekleniyor...</span>
-                <span id="calanSarkiSanatci" class="alt-bilgi">Müzik kutusunu başlatın</span>
+<!-- ZARİF VE YAPIŞKAN (STICKY) ŞERİT PLAYER -->
+        <div style="position: sticky; bottom: 0; left: 0; width: 100%; background: var(--container-bg); backdrop-filter: blur(12px); border-top: 1px solid var(--card-border); padding: 10px 15px; display: flex; flex-direction: column; gap: 8px; z-index: 999; box-shadow: 0 -5px 20px rgba(0,0,0,0.3); border-radius: 0 0 12px 12px;">
+            
+            <!-- Üst Kısım: Şarkı Bilgisi (Sol) ve Butonlar (Sağ) Yan Yana -->
+            <div style="display: flex; align-items: center; justify-content: space-between;">
+                
+                <!-- Şarkı Bilgisi -->
+                <div style="display: flex; flex-direction: column; overflow: hidden; white-space: nowrap; max-width: 55%;">
+                    <span id="calanSarkiBaslik" style="font-weight: 700; font-size: 14px; color: var(--accent-color); text-overflow: ellipsis; overflow: hidden;">Şarkı Seçilmedi</span>
+                    <span id="calanSarkiSanatci" style="font-size: 11.5px; color: var(--text-color); opacity: 0.6; text-overflow: ellipsis; overflow: hidden; margin-top: 2px;">Bekleniyor...</span>
+                </div>
+
+                <!-- Oynatma Kontrolleri -->
+                <div style="display: flex; align-items: center; gap: 15px;">
+                    <button onclick="oncekiSarki()" style="background: transparent; border: none; color: var(--text-color); opacity: 0.8; font-size: 16px; cursor: pointer; padding: 0; outline: none;"><i class="fa-solid fa-backward-step"></i></button>
+                    
+                    <button id="muzikPlayBtn" onclick="toggleMuzikPlay()" style="background: var(--accent-color); border: none; color: #0D1117; width: 38px; height: 38px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 16px; box-shadow: 0 2px 8px rgba(201,168,76,0.3); outline: none;">
+                        <i class="fa-solid fa-play" style="margin-left: 2px;"></i>
+                    </button>
+                    
+                    <button onclick="sonrakiSarki()" style="background: transparent; border: none; color: var(--text-color); opacity: 0.8; font-size: 16px; cursor: pointer; padding: 0; outline: none;"><i class="fa-solid fa-forward-step"></i></button>
+                </div>
             </div>
-            <div class="muzik-butonlar">
-                <button class="m-ctrl-btn" onclick="oncekiSarki()"><i class="fa-solid fa-backward-step"></i></button>
-                <button class="m-ctrl-btn m-play-btn" id="muzikPlayBtn" onclick="toggleMuzikPlay()"><i class="fa-solid fa-play"></i></button>
-                <button class="m-ctrl-btn" onclick="sonrakiSarki()"><i class="fa-solid fa-forward-step"></i></button>
+
+            <!-- Alt Kısım: İnce İlerleme Çubuğu -->
+            <div id="muzikProgressBg" onclick="seekMuzik(event)" style="width: 100%; height: 4px; background: rgba(255,255,255,0.1); border-radius: 4px; cursor: pointer; position: relative;">
+                <div id="muzikProgressFill" style="width: 0%; height: 100%; background: var(--accent-color); border-radius: 4px; transition: width 0.15s linear;"></div>
             </div>
-            <div class="muzik-ilerleme" onclick="seekMuzik(event)" id="muzikProgressBg">
-                <div class="muzik-dolgu" id="muzikProgressFill"></div>
-            </div>
+
+            <!-- Gizli Ses Motoru -->
             <audio id="muzikAudio" ontimeupdate="updateMuzikProgress()" onended="sonrakiSarki()"></audio>
         </div>
     </div>
