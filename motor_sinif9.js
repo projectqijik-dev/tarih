@@ -1084,7 +1084,37 @@ function girisBasariliIslemleri(ogr) {
 
     function sozlukGoster() { document.getElementById('sozlukModal').style.display = 'block'; kavramAra(); document.getElementById('sozlukArama').focus(); }
     function sozlukKapat() { document.getElementById('sozlukModal').style.display = 'none'; document.getElementById('sozlukArama').value = ""; }
-    
+    // --- BİBLİYOGRAFYA (KAYNAKLAR) FONKSİYONLARI ---
+    function kaynaklarGoster() {
+        document.getElementById('kaynaklarModal').style.display = 'block';
+        const listeAlani = document.getElementById('kaynakListesiAlani');
+        listeAlani.innerHTML = ""; // İçini temizle
+        
+        // Hamburger menüyü kapat
+        const dropdown = document.getElementById('hamburgerDropdown');
+        if(dropdown) dropdown.classList.remove('active');
+
+        if (typeof KAYNAKLAR !== 'undefined' && KAYNAKLAR.length > 0) {
+            // Kaynakları yazar adına göre alfabetik sırala
+            const siraliKaynaklar = [...KAYNAKLAR].sort((a, b) => a.yazar.localeCompare(b.yazar, 'tr-TR'));
+            
+            siraliKaynaklar.forEach(k => {
+                listeAlani.innerHTML += `
+                <div style="padding: 12px 15px; border-bottom: 1px solid var(--card-border); font-size: 14px; line-height: 1.5;">
+                    <span style="color: var(--accent-color); font-weight: 700;">${k.yazar}</span>, 
+                    <span style="font-style: italic;">${k.eser}</span>, 
+                    <span style="opacity: 0.8;">${k.detay}</span>
+                </div>`;
+            });
+            if(listeAlani.lastElementChild) listeAlani.lastElementChild.style.borderBottom = "none";
+        } else {
+            listeAlani.innerHTML = `<div style="padding:20px; text-align:center; opacity:0.6; font-weight:bold;">Henüz kaynak eklenmemiştir.</div>`;
+        }
+    }
+
+    function kaynaklarKapat() {
+        document.getElementById('kaynaklarModal').style.display = 'none';
+    }
     function kavramAra() {
         const query = document.getElementById('sozlukArama').value.toLowerCase();
         const listeDiv = document.getElementById('kavramListesi');
