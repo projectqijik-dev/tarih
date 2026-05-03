@@ -362,6 +362,7 @@ function materyalleriYukle(uniteId) {
                 { baslik: "Kavram Haritası", tur: "PDF Not", icon: "fa-file-pdf", renk: "#e67e22", link: "#" },
                 { baslik: "Tarih Çalışma Kağıdı", tur: "PDF Not", icon: "fa-file-pdf", renk: "#e67e22", link: "#" },
                 { baslik: "Tarihsel Empati Simülatörü", tur: "İnteraktif Harita", icon: "fa-chess-knight", renk: "#8e44ad", link: "tarihi_empati" },
+				{ baslik: "Takvim Çevirme Motoru (TTK Standartları)", tur: "İnteraktif Harita", icon: "fa-calculator", renk: "#e67e22", link: "klasik_u1_takvim_1" },
 				{ baslik: "Tarih Dedektifi: Kaynak Eleştirisi", tur: "İnteraktif Harita", icon: "fa-user-secret", renk: "#e74c3c", link: "tarih_dedektifi" },
 				{ baslik: "Kronoloji Bulmacası: Çaylak'tan Üstat'a", tur: "İnteraktif Harita", icon: "fa-sort-numeric-down", renk: "#f1c40f", link: "kronoloji_bulmacasi" },
 				{ baslik: "Yüzyıl Hesaplama Simülatörü", tur: "İnteraktif Harita", icon: "fa-calculator", renk: "#9b59b6", link: "yuzyil_hesaplama" },
