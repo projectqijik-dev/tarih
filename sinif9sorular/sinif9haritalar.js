@@ -5327,7 +5327,7 @@ window.HARITA_MOTORU["klasik_u1_takvim_1"] = function() {
             h1Baslik.innerHTML = "<i class='fa-solid fa-moon'></i> Hicri Karşılığı";
             h1Sonuc.innerText = hicriYil;
             h1Formul.innerHTML = `
-                <b>MEB Çözüm Adımları (Miladi -> Hicri):</b><br>
+                <b>Çözüm Adımları (Miladi -> Hicri):</b><br>
                 1. Miladi yıldan Hicret yılı çıkarılır: ${yil} - 622 = <span style="color:#c0392b; font-weight:bold;">${mEksi622}</span><br>
                 2. Kalan sayı 33'e bölünerek aradaki fark bulunur: ${mEksi622} / 33 ≅ <span style="color:#2980b9; font-weight:bold;">${pay}</span><br>
                 3. İlk sayı ile fark toplanır: ${mEksi622} + ${pay} = <span style="color:#27ae60; font-weight:bold;">${hicriYil}</span>
@@ -5394,3 +5394,4 @@ window.HARITA_MOTORU["klasik_u1_takvim_1"] = function() {
         document.getElementById('sonucAlani').scrollIntoView({ behavior: 'smooth' });
     };
 };
+
