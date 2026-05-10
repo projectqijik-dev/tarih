@@ -94,10 +94,15 @@
     function fcGeri() { if(fcCurrentIndex > 0) { fcCurrentIndex--; gosterFlashcard(); } }
     function fcKapat() { document.getElementById('flashcardModal').style.display = 'none'; }
 
-    window.addEventListener('keydown', function(event) {
+window.addEventListener('keydown', function(event) {
         if (event.key === 'Escape') { 
             const modals = document.querySelectorAll('.modal'); 
-            modals.forEach(modal => { if (modal.style.display === 'block') { modal.style.display = 'none'; } }); 
+            modals.forEach(modal => { 
+                if (modal.style.display === 'block') { 
+                    modal.style.display = 'none'; 
+                    if(modal.id === 'haritaModal') haritaKapat(); // HARİTA BELLEĞİNİ TEMİZLER
+                } 
+            }); 
             const fcModal = document.getElementById('flashcardModal');
             if (fcModal && fcModal.style.display === 'block') { fcModal.style.display = 'none'; }
             videoKapat(); 
@@ -288,9 +293,23 @@
 				{ baslik: "Türk-İslam Alimleri", tur: "Sunu", icon: "fa-chalkboard-user", renk: "#e84393", link: "https://depo.kirkyama.uk/PDF/10.SinifSunular/10.1.Unite/10.1.4.%20T%C3%BCrk-%C4%B0slam%20Alimleri.pdf" },
 				{ baslik: "Malazgirt, Miryakefalon, Haçlı Seferleri", tur: "Sunu", icon: "fa-chalkboard-user", renk: "#e84393", link: "https://depo.kirkyama.uk/PDF/10.SinifSunular/10.1.Unite/Malazgirt%2C%20Miryakefalon%2C%20Ha%C3%A7l%C4%B1%201.pdf" },
 				{ baslik: "Anadolu'nun Yurt Edinilmesi", tur: "Sunu", icon: "fa-chalkboard-user", renk: "#e84393", link: "https://depo.kirkyama.uk/PDF/10.SinifSunular/10.1.Unite/Anadolu'nun%20Yurt%20Edinilmesi.pdf" },
-				{ baslik: "Kösedağ Savaşı", tur: "Sunu", icon: "fa-chalkboard-user", renk: "#e84393", link: "https://depo.kirkyama.uk/PDF/10.SinifSunular/10.1.Unite/K%C3%B6seda%C4%9F%20Sava%C5%9F%C4%B1.pdf" },
-                { baslik: "Anadolu Selçuklu Haritası", tur: "İnteraktif Harita", icon: "fa-map-location-dot", renk: "#2ecc71", link: "#" },
-                { baslik: "Haçlı Seferleri Haritası", tur: "İnteraktif Harita", icon: "fa-map-location-dot", renk: "#2ecc71", link: "#" }
+				{ baslik: "Kösedağ Savaşı", tur: "Sunu", icon: "fa-chalkboard-user", renk: "#e84393", link: "https://depo.kirkyama.uk/PDF/10.SinifSunular/10.1.Unite/K%C3%B6seda%C4%9F%20Sava%C5%9F%C4%B1.pdf" },                
+                { baslik: "Büyük Selçuklu Askeri Stratejisi (1040-1071)", tur: "İnteraktif Harita", icon: "fa-map-location-dot", renk: "#8B1A1A", link: "harita_u1_selcuklu_1" },
+                { baslik: "İbn Battuta: Selçuklu Sosyoekonomik Ağı", tur: "İnteraktif Harita", icon: "fa-map-location-dot", renk: "#8B1A1A", link: "harita_u1_battuta_2" },
+                { baslik: "Türk-İslam Bilim ve Kültür Merkezleri", tur: "İnteraktif Harita", icon: "fa-map-location-dot", renk: "#C9A84C", link: "harita_u1_bilim_3" },
+				{ baslik: "Oğuz Göçleri ve Anadolu'nun Türkleşmesi", tur: "İnteraktif Harita", icon: "fa-map-location-dot", renk: "#27ae60", link: "harita_u1_oguz_4" },
+				{ baslik: "Kut Anlayışı ve Selçuklu Devlet Teşkilatı", tur: "İnteraktif Harita", icon: "fa-map-location-dot", renk: "#8B1A1A", link: "harita_u1_idari_5" },
+				{ baslik: "Haçlı Seferleri ve Anadolu'nun Savunulması", tur: "İnteraktif Harita", icon: "fa-map-location-dot", renk: "#2980b9", link: "harita_u1_hacli_6" },
+				{ baslik: "İlk Türk-İslam Beylikleri ve Mimari Eserler", tur: "İnteraktif Harita", icon: "fa-map-location-dot", renk: "#27ae60", link: "harita_u1_beylikler_7" },
+				{ baslik: "Miryokefalon Savaşı ve Yurt Tutan Stratejisi (1176)", tur: "İnteraktif Harita", icon: "fa-map-location-dot", renk: "#8B1A1A", link: "harita_u1_miryokefalon_8" },
+				{ baslik: "I. Alaeddin Keykubat: Zirve Dönemi ve Deniz Aşırı Seferler", tur: "İnteraktif Harita", icon: "fa-map-location-dot", renk: "#2980b9", link: "harita_u1_keykubat_9" },
+				{ baslik: "Kösedağ Savaşı ve Siyasi Birliğin Parçalanması (1243)", tur: "İnteraktif Harita", icon: "fa-map-location-dot", renk: "#8B1A1A", link: "harita_u1_kosedag_10" },
+				{ baslik: "İkta Sistemi: Kılıç ve Saban (Simülatör)", tur: "İnteraktif Harita", icon: "fa-wheat-awn", renk: "#C9A84C", link: "harita_u1_arac_ikta" },
+				{ baslik: "Divan-ı Saltanat: Karar Odası (Eşleştirme)", tur: "İnteraktif Harita", icon: "fa-scale-balanced", renk: "#2c3e50", link: "harita_u1_arac_divan" },
+				{ baslik: "Ahi Evran'ın Tezgahı: Çıraklıktan Ustalığa", tur: "İnteraktif Harita", icon: "fa-hammer", renk: "#8B1A1A", link: "harita_u1_arac_ahi" },
+				{ baslik: "Külliye Mimarı: Vakıf Sistemi (Simülatör)", tur: "İnteraktif Harita", icon: "fa-building-columns", renk: "#d35400", link: "harita_u1_arac_kulliye" },
+				{ baslik: "Haçlı Seferleri: Motivasyon Radarı (Analiz)", tur: "İnteraktif Harita", icon: "fa-radar", renk: "#8B1A1A", link: "harita_u1_arac_hacli_radar" },
+		
             ];
         } else if (uniteId === 'u2') {
             aktifMateryaller = [
@@ -613,6 +632,16 @@ function oynatPodcast(link, baslik) {
                             </div>
                         </div>
                     `;
+					} else if (m.tur === 'İnteraktif Harita') {
+    matAlani.innerHTML += `
+        <div class="mat-card" style="cursor:pointer;" onclick="acHarita('${m.link.replace(/'/g, "\\'")}', '${m.baslik.replace(/'/g, "\\'")}', this)">
+            <div class="mat-icon" style="color: ${m.renk};"><i class="fa-solid ${m.icon}"></i></div>
+            <div class="mat-info">
+                <span class="mat-title">${m.baslik}</span>
+                <span class="mat-type">${m.tur}</span>
+            </div>
+        </div>
+    `;
                 } else {
                     matAlani.innerHTML += `
                         <a href="${m.link}" target="_blank" class="mat-card">
@@ -1856,9 +1885,10 @@ function girisBasariliIslemleri(ogr) {
             player.currentTime = ((event.clientX - rect.left) / rect.width) * player.duration;
         }
     }
-    window.addEventListener('click', function(event) { 
+window.addEventListener('click', function(event) { 
         if (event.target.classList.contains('modal')) { 
             event.target.style.display = 'none'; 
+            if(event.target.id === 'haritaModal') haritaKapat(); // HARİTA BELLEĞİNİ TEMİZLER
         } 
         
         /* --- YENİ EKLENEN: MENÜ DIŞINA TIKLANINCA MENÜYÜ KAPATMA MOTORU --- */
@@ -1867,3 +1897,117 @@ function girisBasariliIslemleri(ogr) {
             dropdown.classList.remove('active');
         }
     });
+	// --- DİNAMİK HARİTA YÖNETİM MOTORU (MODAL SİSTEMİ) ---
+window.currentMapInstance = null;
+
+function acHarita(haritaId, baslik, element) {
+    if(haritaId === "#") { alert("Öğretmeniniz bu haritayı henüz yüklemedi."); return; }
+
+    const modal = document.getElementById('haritaModal');
+    const controlsContainer = document.getElementById('mapControlsContainer');
+    
+    document.getElementById('haritaModalBaslik').innerHTML = '<i class="fa-solid fa-map-location-dot"></i> ' + baslik;
+    
+    if (window.currentMapInstance) {
+        window.currentMapInstance.remove();
+        window.currentMapInstance = null;
+    }
+    
+    controlsContainer.innerHTML = '';
+    controlsContainer.style.display = 'none';
+    modal.style.display = 'block';
+
+    setTimeout(() => {
+        if (window.HARITA_MOTORU && typeof window.HARITA_MOTORU[haritaId] === 'function') {
+            window.HARITA_MOTORU[haritaId]();
+            
+            if(window.currentMapInstance) {
+                window.currentMapInstance.invalidateSize();
+            }
+            
+        } else {
+            alert("Bu harita (" + haritaId + ") sisteme yüklenmemiş veya yapım aşamasındadır.");
+            haritaKapat();
+        }
+    }, 150); 
+}
+
+function haritaKapat() {
+    const modal = document.getElementById('haritaModal');
+    if (modal) {
+        modal.style.display = 'none';
+        if (window.currentMapInstance) {
+            window.currentMapInstance.remove();
+            window.currentMapInstance = null;
+        }
+    }
+}
+/* --- HARİTA VE MATERYAL DÜZELTME MOTORU (TÜM HATALI KOPYALARI EZER) --- */
+function kategoriSec(hedefTur) {
+    if(hedefTur === 'Flashcard') { baslatFlashcard(aktifOda); return; }
+
+    document.getElementById('materyalKategorileri').classList.add('hidden');
+    document.getElementById('materyalListesiAlani').classList.remove('hidden');
+    const matAlani = document.getElementById('odaMateryalleri');
+    matAlani.innerHTML = '';
+    
+    let filtrelenmis = aktifMateryaller.filter(m => {
+        if (hedefTur === 'Video') return m.tur === 'Video Ders' || m.tur === 'Belgesel';
+        return m.tur === hedefTur;
+    });
+
+    if(filtrelenmis.length === 0) {
+        matAlani.innerHTML = '<div style="grid-column: 1 / -1; text-align:center; padding:20px; opacity:0.6; font-weight: bold;">Bu kategoride henüz materyal bulunmamaktadır.</div>';
+        return;
+    }
+
+    filtrelenmis.forEach(m => {
+        if (m.tur === 'Podcast') {
+            matAlani.innerHTML += `<div class="mat-card" style="cursor:pointer;" onclick="oynatPodcast('${m.link.replace(/'/g, "\\'")}', '${m.baslik.replace(/'/g, "\\'")}')"><div class="mat-icon" style="color: ${m.renk};"><i class="fa-solid ${m.icon}"></i></div><div class="mat-info"><span class="mat-title">${m.baslik}</span><span class="mat-type">${m.tur}</span></div></div>`;
+        } else if (m.tur === 'Video Ders' || m.tur === 'Belgesel') {
+            matAlani.innerHTML += `<div class="mat-card" style="cursor:pointer;" onclick="oynatVideo('${m.link.replace(/'/g, "\\'")}', '${m.baslik.replace(/'/g, "\\'")}', this)"><div class="mat-icon" style="color: ${m.renk};"><i class="fa-solid ${m.icon}"></i></div><div class="mat-info"><span class="mat-title">${m.baslik}</span><span class="mat-type">${m.tur}</span></div></div>`;
+        } else if (m.tur === 'PDF Not' || m.tur === 'Sunu') {
+            matAlani.innerHTML += `<div class="mat-card" style="cursor:pointer;" onclick="oynatPdf('${m.link.replace(/'/g, "\\'")}', '${m.baslik.replace(/'/g, "\\'")}', this)"><div class="mat-icon" style="color: ${m.renk};"><i class="fa-solid ${m.icon}"></i></div><div class="mat-info"><span class="mat-title">${m.baslik}</span><span class="mat-type">${m.tur}</span></div></div>`;
+        } else if (m.tur === 'İnteraktif Harita') {
+            matAlani.innerHTML += `<div class="mat-card" style="cursor:pointer;" onclick="acHarita('${m.link.replace(/'/g, "\\'")}', '${m.baslik.replace(/'/g, "\\'")}', this)"><div class="mat-icon" style="color: ${m.renk};"><i class="fa-solid ${m.icon}"></i></div><div class="mat-info"><span class="mat-title">${m.baslik}</span><span class="mat-type">${m.tur}</span></div></div>`;
+        } else {
+            matAlani.innerHTML += `<a href="${m.link}" target="_blank" class="mat-card"><div class="mat-icon" style="color: ${m.renk};"><i class="fa-solid ${m.icon}"></i></div><div class="mat-info"><span class="mat-title">${m.baslik}</span><span class="mat-type">${m.tur}</span></div></a>`;
+        }
+    });
+    window.scrollTo({top: 0, behavior: 'smooth'});
+}
+
+function materyalAra() {
+    const input = document.getElementById('materyalArama');
+    const clearBtn = document.getElementById('matAramaTemizle');
+    const filter = input.value.toLocaleLowerCase('tr-TR').trim();
+    const matAlani = document.getElementById('odaMateryalleri');
+    
+    if (filter.length > 0) { 
+        clearBtn.style.display = 'flex'; 
+        document.getElementById('materyalKategorileri').classList.add('hidden');
+        document.getElementById('materyalListesiAlani').classList.remove('hidden');
+        let filtrelenmis = aktifMateryaller.filter(m => m.baslik.toLocaleLowerCase('tr-TR').includes(filter));
+        matAlani.innerHTML = '';
+        if(filtrelenmis.length === 0) {
+            matAlani.innerHTML = '<div style="grid-column: 1 / -1; text-align:center; padding:20px; opacity:0.6; font-weight: bold;">Aradığınız kritere uygun materyal bulunamadı.</div>';
+            return;
+        }
+        filtrelenmis.forEach(m => {
+            if (m.tur === 'Podcast') {
+                matAlani.innerHTML += `<div class="mat-card" style="cursor:pointer;" onclick="oynatPodcast('${m.link.replace(/'/g, "\\'")}', '${m.baslik.replace(/'/g, "\\'")}')"><div class="mat-icon" style="color: ${m.renk};"><i class="fa-solid ${m.icon}"></i></div><div class="mat-info"><span class="mat-title">${m.baslik}</span><span class="mat-type">${m.tur}</span></div></div>`;
+            } else if (m.tur === 'Video Ders' || m.tur === 'Belgesel') {
+                matAlani.innerHTML += `<div class="mat-card" style="cursor:pointer;" onclick="oynatVideo('${m.link.replace(/'/g, "\\'")}', '${m.baslik.replace(/'/g, "\\'")}', this)"><div class="mat-icon" style="color: ${m.renk};"><i class="fa-solid ${m.icon}"></i></div><div class="mat-info"><span class="mat-title">${m.baslik}</span><span class="mat-type">${m.tur}</span></div></div>`;
+            } else if (m.tur === 'PDF Not' || m.tur === 'Sunu') {
+                matAlani.innerHTML += `<div class="mat-card" style="cursor:pointer;" onclick="oynatPdf('${m.link.replace(/'/g, "\\'")}', '${m.baslik.replace(/'/g, "\\'")}', this)"><div class="mat-icon" style="color: ${m.renk};"><i class="fa-solid ${m.icon}"></i></div><div class="mat-info"><span class="mat-title">${m.baslik}</span><span class="mat-type">${m.tur}</span></div></div>`;
+            } else if (m.tur === 'İnteraktif Harita') {
+                matAlani.innerHTML += `<div class="mat-card" style="cursor:pointer;" onclick="acHarita('${m.link.replace(/'/g, "\\'")}', '${m.baslik.replace(/'/g, "\\'")}', this)"><div class="mat-icon" style="color: ${m.renk};"><i class="fa-solid ${m.icon}"></i></div><div class="mat-info"><span class="mat-title">${m.baslik}</span><span class="mat-type">${m.tur}</span></div></div>`;
+            } else {
+                matAlani.innerHTML += `<a href="${m.link}" target="_blank" class="mat-card"><div class="mat-icon" style="color: ${m.renk};"><i class="fa-solid ${m.icon}"></i></div><div class="mat-info"><span class="mat-title">${m.baslik}</span><span class="mat-type">${m.tur}</span></div></a>`;
+            }
+        });
+    } else { 
+        clearBtn.style.display = 'none'; 
+        kategorilereDon();
+    }
+}
