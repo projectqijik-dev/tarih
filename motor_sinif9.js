@@ -915,7 +915,7 @@ function oynatPodcast(link, baslik) {
             }
         }
         // --- AKILLI LİNK (DEEP LINK) TETİKLEYİCİSİ ---
-        setTimeout(akilliLinkKontrol, 800);
+        setTimeout(deepLinkTetikleyici, 800);
         window.onbeforeunload = function() {
             if (!document.getElementById("testEkrani").classList.contains("hidden")) {
                 return "Sınavınız bitmedi. Çıkarsanız verileriniz kaybolabilir.";
@@ -980,6 +980,8 @@ function girisBasariliIslemleri(ogr) {
             btnDuyuru.classList.remove("hidden"); 
             if(typeof duyuruRozetKontrol === 'function') duyuruRozetKontrol(); 
         }
+		// Giriş başarılı olunca bekleyen link komutu varsa çalıştır
+        setTimeout(deepLinkTetikleyici, 800);
     }
 
     function girisTuruDegistir(tur) {
@@ -2014,31 +2016,46 @@ window.addEventListener('click', function(event) {
 // =========================================
 function akilliLinkKontrol() {
     const urlParams = new URLSearchParams(window.location.search);
-    const hedefUnite = urlParams.get('unite'); // Örn: u2
-    const hedefTur = urlParams.get('tur');     // Örn: Video, Sunu, PDF Not vs.
-    const hedefAra = urlParams.get('ara');     // Örn: Anadolu
+    const hedefUnite = urlParams.get('unite');
+    const hedefTur = urlParams.get('tur');
+    const hedefAra = urlParams.get('ara');
 
-    if (hedefUnite) {
-        // 1. Önce ilgili üniteye gir
-        odayaGir(hedefUnite);
-        
-        if (hedefTur) {
-            // 2. İlgili kategoriyi seç (Video, PDF vb.)
-            setTimeout(() => {
-                sekmeDegistir('materyaller');
-                kategoriSec(hedefTur);
-                
-                // 3. Eğer spesifik bir kelime aranıyorsa listeyi filtrele
-                if (hedefAra) {
-                    setTimeout(() => {
-                        const aramaInput = document.getElementById('materyalArama');
-                        if (aramaInput) {
-                            aramaInput.value = hedefAra;
-                            materyalAra();
-                        }
-                    }, 300);
-                }
-            }, 500);
-        }
+    if (!hedefUnite) return;
+
+    odayaGir(hedefUnite);
+    
+    if (hedefTur) {
+        setTimeout(() => {
+            sekmeDegistir('materyaller');
+            kategoriSec(hedefTur);
+            
+            if (hedefAra) {
+                setTimeout(() => {
+                    const aramaInput = document.getElementById('materyalArama');
+                    if (aramaInput) {
+                        aramaInput.value = hedefAra;
+                        materyalAra();
+                        
+                        // OTOMATİK TIKLAMA: Öğrenci tıklamadan video/harita doğrudan açılır
+                        setTimeout(() => {
+                            const ilkKart = document.querySelector('#odaMateryalleri .mat-card');
+                            if (ilkKart) {
+                                ilkKart.click();
+                            }
+                        }, 400);
+                    }
+                }, 400);
+            }
+        }, 500);
+    }
+}
+
+function deepLinkTetikleyici() {
+    if (!window.location.search.includes('unite=')) return;
+    
+    const menu = document.getElementById('menuEkrani');
+    // Sadece öğrenci GİRİŞ YAPMIŞSA ve menü açıksa çalıştır (Hata önleyici)
+    if (menu && !menu.classList.contains('hidden')) {
+        akilliLinkKontrol();
     }
 }
