@@ -2431,3 +2431,1695 @@ window.HARITA_MOTORU["harita_u1_arac_hacli_radar"] = function() {
 
     window.RADAR_MOTORU.baslat();
 };
+window.HARITA_MOTORU = window.HARITA_MOTORU || {};
+
+// ==========================================
+// 1. HARİTA: KURULUŞUN COĞRAFİ ŞİFRESİ (1281-1299)
+// ==========================================
+window.HARITA_MOTORU["harita_u2_kurulus_1"] = function() {
+    const controlsContainer = document.getElementById('mapControlsContainer');
+    controlsContainer.innerHTML = `
+        <div style="text-align: center; color: #F4E4B0; display: flex; flex-direction: column; align-items: center; gap: 8px;">
+            <input type="range" id="yearSlider" min="1281" max="1299" value="1281" step="1" style="width: 60%; cursor: pointer; accent-color: #E8A020; margin: 0 auto;">
+            <label for="yearSlider" style="font-size: 1.1em; margin-bottom: 5px;">
+                <b>Tarih: <span id="yearDisplay" style="color: #E8A020;">1281</span></b>
+            </label>
+            <p style="font-size: 0.85em; opacity: 0.8;">Söğüt ve Domaniç eksenindeki uç stratejisini izleyin.</p>
+        </div>
+    `;
+    controlsContainer.style.display = 'block';
+
+    window.currentMapInstance = L.map('mapCanvas').setView([40.0, 30.0], 8);
+    L.tileLayer('http://mt0.google.com/vt/lyrs=p&hl=tr&x={x}&y={y}&z={z}', { maxZoom: 10, attribution: '© Google Haritalar (Fiziki)' }).addTo(window.currentMapInstance);
+
+    const veri = [
+        { id: "sogut", isim: "Söğüt ve Domaniç", kisaAd: "Yaylak/Kışlak", renk: "#27ae60", startYear: 1281, endYear: 1285, odak: [40.01, 30.18], bilgi: "<b>Uç Beyliği:</b> Osman Gazi'nin babasından devraldığı Söğüt (kışlak) ve Domaniç (yaylak) hattı. Gaza ve cihat politikasının merkez üssü.", rota: [[39.8, 29.6], [40.01, 30.18]] },
+        { id: "karacahisar", isim: "Karacahisar'ın Fethi", kisaAd: "Karacahisar (1288)", renk: "#8B1A1A", startYear: 1286, endYear: 1288, odak: [39.75, 30.48], bilgi: "<b>İlk Merkez:</b> Fethin ardından buraya kadı atandı, hutbe okutuldu ve pazar kuruldu. Devletleşme yolunda ilk ciddi adımdır.", rota: [[40.01, 30.18], [39.75, 30.48]] },
+        { id: "bilecik", isim: "Bilecik ve Yarhisar", kisaAd: "Bilecik'in Alınması", renk: "#2980b9", startYear: 1289, endYear: 1299, odak: [40.14, 29.97], bilgi: "<b>Ekonomik Güç:</b> Bölgenin önemli demir madenlerine sahip Bilecik alındı. Dursun Fakih tarafından Osman Bey adına ilk bağımsızlık hutbesi okundu (1299).", rota: [[39.75, 30.48], [40.14, 29.97]] }
+    ];
+
+    let cizgiler = {}, markerlar = {};
+    const highContrast = "#2c3e50 !important";
+
+    veri.forEach(v => {
+        cizgiler[v.id] = L.polyline([], {color: v.renk, weight: 6, opacity: 0.8, dashArray: '8, 8'})
+            .bindPopup(`<div style="color: ${highContrast}; max-width:220px;"><h4 style="margin:0 0 5px 0; color:${v.renk};">${v.isim}</h4><p style="margin:0; font-size:13px;">${v.bilgi}</p></div>`);
+        markerlar[v.id] = L.circleMarker(v.odak, {radius: 7, color: '#fff', fillColor: v.renk, weight: 2, fillOpacity: 1})
+            .bindPopup(`<div style="color: ${highContrast}; max-width:220px;"><h4 style="margin:0 0 5px 0; color:${v.renk};">${v.kisaAd}</h4><p style="margin:0; font-size:13px;">${v.bilgi}</p></div>`);
+    });
+
+    function guncelle(yil) {
+        veri.forEach(v => {
+            let rota = [], aktif = false;
+            if (yil >= v.endYear) { rota = v.rota; aktif = true; } 
+            else if (yil >= v.startYear) {
+                let oran = (yil - v.startYear) / (v.endYear - v.startYear);
+                if (oran === 0) oran = 0.1;
+                rota = v.rota.slice(0, Math.floor(v.rota.length * oran) + 1);
+            }
+            if (rota.length > 0) { cizgiler[v.id].addTo(window.currentMapInstance).setLatLngs(rota); } 
+            else { window.currentMapInstance.removeLayer(cizgiler[v.id]); }
+            if (aktif) { markerlar[v.id].addTo(window.currentMapInstance); } 
+            else { window.currentMapInstance.removeLayer(markerlar[v.id]); }
+        });
+    }
+
+    document.getElementById('yearSlider').addEventListener('input', e => {
+        const y = parseInt(e.target.value);
+        document.getElementById('yearDisplay').innerText = y;
+        guncelle(y);
+    });
+
+    const signature = L.control({position: 'bottomleft'});
+    signature.onAdd = () => {
+        const div = L.DomUtil.create('div', 'map-signature');
+        div.style.cssText = "background: rgba(13,17,23,0.9); color: #C9A84C; padding: 4px 8px; border: 1px solid #C9A84C; border-radius: 4px; font-size: 10px; font-weight: bold; margin-bottom: 5px; margin-left: 5px;";
+        div.innerHTML = 'Harita: Murat Mutlu'; return div;
+    };
+    signature.addTo(window.currentMapInstance);
+
+    const legend = L.control({position: 'bottomright'});
+    legend.onAdd = () => {
+        const div = L.DomUtil.create('div', 'info legend');
+        div.style.cssText = `background: rgba(255,255,255,0.95); padding: 12px; border-radius: 8px; color: ${highContrast};`;
+        div.innerHTML = '<h4 style="margin: 0 0 8px 0; font-size:14px; border-bottom:1px solid #ccc; padding-bottom:3px;">Kuruluş Aşamaları</h4>';
+        veri.forEach(v => {
+            const item = L.DomUtil.create('div', 'legend-item', div);
+            item.style.cssText = "display:flex; align-items:center; margin-bottom:6px; font-size:11px; cursor:pointer;";
+            item.innerHTML = `<i style="background: ${v.renk}; width: 12px; height: 12px; border-radius:50%; display: inline-block; margin-right: 8px;"></i> <b>${v.kisaAd}</b>`;
+            item.onclick = () => {
+                window.currentMapInstance.flyTo(v.odak, 9, { duration: 1.5 });
+                document.getElementById('yearSlider').value = v.endYear;
+                document.getElementById('yearDisplay').innerText = v.endYear;
+                guncelle(v.endYear);
+                setTimeout(() => markerlar[v.id].openPopup(), 1200);
+            };
+        });
+        return div;
+    };
+    legend.addTo(window.currentMapInstance);
+    guncelle(1281);
+};
+
+// ==========================================
+// 2. HARİTA: KOYUNHİSAR SAVAŞI (1302)
+// ==========================================
+window.HARITA_MOTORU["harita_u2_koyunhisar_2"] = function() {
+    const controlsContainer = document.getElementById('mapControlsContainer');
+    controlsContainer.innerHTML = `
+        <div style="text-align: center; color: #F4E4B0; display: flex; flex-direction: column; align-items: center; gap: 8px;">
+            <input type="range" id="phaseSlider" min="1" max="3" value="1" step="1" style="width: 60%; cursor: pointer; accent-color: #E8A020; margin: 0 auto;">
+            <label for="phaseSlider" style="font-size: 1.1em; margin-bottom: 5px;">
+                <b>Aşama: <span id="phaseDisplay" style="color: #E8A020;">1. İznik Kuşatması</span></b>
+            </label>
+            <p style="font-size: 0.85em; opacity: 0.8;">Osman Bey'in Bizans merkez ordusuyla ilk karşılaşması.</p>
+        </div>
+    `;
+    controlsContainer.style.display = 'block';
+
+    window.currentMapInstance = L.map('mapCanvas').setView([40.6, 29.5], 9);
+    L.tileLayer('http://mt0.google.com/vt/lyrs=p&hl=tr&x={x}&y={y}&z={z}', { maxZoom: 10, attribution: '© Google Haritalar' }).addTo(window.currentMapInstance);
+
+    const veri = [
+        { id: "iznik", isim: "İznik'in Kuşatılması", etiket: "1. İznik Kuşatması", renk: "#2980b9", startPhase: 1, endPhase: 1, odak: [40.42, 29.71], bilgi: "<b>Taktiksel Hedef:</b> Osman Bey, Bizans'ın Anadolu'daki en önemli merkezi İznik'i kuşatarak yardım hatlarını kesti.", rota: [[40.14, 29.97], [40.42, 29.71]] },
+        { id: "bizans", isim: "Bizans Yardım Ordusu", etiket: "2. Bizans Karşı Harekatı", renk: "#8e44ad", startPhase: 1, endPhase: 2, odak: [40.68, 29.43], bilgi: "<b>Merkezin Müdahalesi:</b> İznik'i kurtarmak için İstanbul'dan yola çıkan donanma destekli Bizans imparatorluk ordusu Yalakova'ya (Yalova) çıktı.", rota: [[41.0, 28.9], [40.68, 29.43]] },
+        { id: "koyunhisar", isim: "Bafeus (Koyunhisar) Zaferi", etiket: "3. Bafeus Zaferi", renk: "#8B1A1A", startPhase: 2, endPhase: 3, odak: [40.70, 29.48], bilgi: "<b>Kuruluşun Tescili:</b> Halil İnalcık'a göre; Osman Bey'in Bizans merkez ordusunu yendiği 1302 yılı, Osmanlı'nın gerçek kuruluş yılıdır. Hanedan rüştünü ispatladı.", rota: [[40.42, 29.71], [40.70, 29.48]] }
+    ];
+
+    let cizgiler = {}, markerlar = {};
+    const highContrast = "#2c3e50 !important";
+
+    veri.forEach(v => {
+        let stil = v.id === "bizans" ? "1, 0" : "8, 8";
+        cizgiler[v.id] = L.polyline([], {color: v.renk, weight: 6, opacity: 0.8, dashArray: stil})
+            .bindPopup(`<div style="color: ${highContrast}; max-width:220px;"><h4 style="margin:0 0 5px 0; color:${v.renk};">${v.isim}</h4><p style="margin:0; font-size:13px;">${v.bilgi}</p></div>`);
+        markerlar[v.id] = L.circleMarker(v.odak, {radius: 7, color: '#fff', fillColor: v.renk, weight: 2, fillOpacity: 1})
+            .bindPopup(`<div style="color: ${highContrast}; max-width:220px;"><h4 style="margin:0 0 5px 0; color:${v.renk};">${v.etiket}</h4><p style="margin:0; font-size:13px;">${v.bilgi}</p></div>`);
+    });
+
+    function guncelle(asama) {
+        veri.forEach(v => {
+            let rota = [], aktif = false;
+            if (asama >= v.endPhase) { rota = v.rota; aktif = true; } 
+            else if (asama >= v.startPhase) {
+                let oran = (asama - v.startPhase) / (v.endPhase - v.startPhase);
+                rota = v.rota.slice(0, Math.floor(v.rota.length * (oran || 0.1)) + 1);
+            }
+            if (rota.length > 0) { cizgiler[v.id].addTo(window.currentMapInstance).setLatLngs(rota); } 
+            else { window.currentMapInstance.removeLayer(cizgiler[v.id]); }
+            if (aktif) { markerlar[v.id].addTo(window.currentMapInstance); } 
+            else { window.currentMapInstance.removeLayer(markerlar[v.id]); }
+        });
+    }
+
+    document.getElementById('phaseSlider').addEventListener('input', e => {
+        const a = parseInt(e.target.value);
+        const v = veri.find(x => x.startPhase === a || (a===3 && x.id==="koyunhisar"));
+        document.getElementById('phaseDisplay').innerText = v ? v.etiket : a + ". Aşama";
+        guncelle(a);
+    });
+
+    const signature = L.control({position: 'bottomleft'});
+    signature.onAdd = () => {
+        const div = L.DomUtil.create('div', 'map-signature');
+        div.style.cssText = "background: rgba(13,17,23,0.9); color: #C9A84C; padding: 4px 8px; border: 1px solid #C9A84C; border-radius: 4px; font-size: 10px; font-weight: bold; margin-bottom: 5px; margin-left: 5px;";
+        div.innerHTML = 'Harita: Murat Mutlu'; return div;
+    };
+    signature.addTo(window.currentMapInstance);
+
+    const legend = L.control({position: 'bottomright'});
+    legend.onAdd = () => {
+        const div = L.DomUtil.create('div', 'info legend');
+        div.style.cssText = `background: rgba(255,255,255,0.95); padding: 12px; border-radius: 8px; color: ${highContrast};`;
+        div.innerHTML = '<h4 style="margin: 0 0 8px 0; font-size:14px; border-bottom:1px solid #ccc; padding-bottom:3px;">Bafeus Muharebesi</h4>';
+        veri.forEach(v => {
+            const item = L.DomUtil.create('div', 'legend-item', div);
+            item.style.cssText = "display:flex; align-items:center; margin-bottom:6px; font-size:11px; cursor:pointer;";
+            item.innerHTML = `<i style="background: ${v.renk}; width: 12px; height: 12px; border-radius:50%; display: inline-block; margin-right: 8px;"></i> <b>${v.etiket}</b>`;
+            item.onclick = () => {
+                window.currentMapInstance.flyTo(v.odak, 9, { duration: 1.5 });
+                document.getElementById('phaseSlider').value = v.endPhase;
+                document.getElementById('phaseDisplay').innerText = v.etiket;
+                guncelle(v.endPhase);
+                setTimeout(() => markerlar[v.id].openPopup(), 1200);
+            };
+        });
+        return div;
+    };
+    legend.addTo(window.currentMapInstance);
+    guncelle(1);
+};
+
+// ==========================================
+// 3. HARİTA: İPEK YOLUNUN YENİ KAPISI: BURSA VE İZNİK (1326-1331)
+// ==========================================
+window.HARITA_MOTORU["harita_u2_ipekyolu_3"] = function() {
+    const controlsContainer = document.getElementById('mapControlsContainer');
+    controlsContainer.innerHTML = `
+        <div style="text-align: center; color: #F4E4B0; display: flex; flex-direction: column; align-items: center; gap: 8px;">
+            <input type="range" id="yearSlider" min="1302" max="1331" value="1302" step="1" style="width: 60%; cursor: pointer; accent-color: #E8A020; margin: 0 auto;">
+            <label for="yearSlider" style="font-size: 1.1em; margin-bottom: 5px;">
+                <b>Tarih: <span id="yearDisplay" style="color: #E8A020;">1302</span></b>
+            </label>
+            <p style="font-size: 0.85em; opacity: 0.8;">Orhan Bey döneminde Bizans'ın Anadolu bağlantısının kesilmesi.</p>
+        </div>
+    `;
+    controlsContainer.style.display = 'block';
+
+    window.currentMapInstance = L.map('mapCanvas').setView([40.3, 29.3], 8);
+    L.tileLayer('http://mt0.google.com/vt/lyrs=p&hl=tr&x={x}&y={y}&z={z}', { maxZoom: 10, attribution: '© Google Haritalar' }).addTo(window.currentMapInstance);
+
+    const veri = [
+        { id: "mudanya", isim: "Mudanya'nın Fethi", kisaAd: "Mudanya (1321)", renk: "#2980b9", startYear: 1302, endYear: 1321, odak: [40.37, 28.88], bilgi: "<b>Deniz Bağlantısı Kesildi:</b> Bursa'nın Marmara denizi ve Bizans ile olan irtibatını tamamen koparmak için fethedildi.", rota: [[40.14, 29.97], [40.37, 28.88]] },
+        { id: "bursa", isim: "Bursa'nın Fethi", kisaAd: "Bursa (1326)", renk: "#27ae60", startYear: 1322, endYear: 1326, odak: [40.18, 29.06], bilgi: "<b>Yeni Başkent:</b> 10 yıl süren kuşatmanın ardından kan dökülmeden alındı. İpek ticaretinin merkezi Osmanlı'ya geçti ve başkent oldu.", rota: [[40.37, 28.88], [40.18, 29.06]] },
+        { id: "pelekanon", isim: "Pelekanon Savaşı", kisaAd: "Maltepe (1329)", renk: "#8B1A1A", startYear: 1327, endYear: 1329, odak: [40.92, 29.13], bilgi: "<b>Bizans Umudunu Kesti:</b> İznik'i kurtarmaya gelen Bizans İmparatoru III. Andronikos mağlup edildi. Anadolu'yu geri alma ümidi bitti.", rota: [[40.18, 29.06], [40.92, 29.13]] },
+        { id: "iznik", isim: "İznik'in Fethi", kisaAd: "İznik (1331)", renk: "#C9A84C", startYear: 1330, endYear: 1331, odak: [40.42, 29.71], bilgi: "<b>Kültür Merkezi:</b> İlk Osmanlı medresesi burada açıldı. Geçici süreliğine başkentlik yaptı, bölgenin Türkleşmesi hızlandı.", rota: [[40.92, 29.13], [40.42, 29.71]] }
+    ];
+
+    let cizgiler = {}, markerlar = {};
+    const highContrast = "#2c3e50 !important";
+
+    veri.forEach(v => {
+        cizgiler[v.id] = L.polyline([], {color: v.renk, weight: 6, opacity: 0.8, dashArray: '8, 8'})
+            .bindPopup(`<div style="color: ${highContrast}; max-width:220px;"><h4 style="margin:0 0 5px 0; color:${v.renk};">${v.isim}</h4><p style="margin:0; font-size:13px;">${v.bilgi}</p></div>`);
+        markerlar[v.id] = L.circleMarker(v.odak, {radius: 7, color: '#fff', fillColor: v.renk, weight: 2, fillOpacity: 1})
+            .bindPopup(`<div style="color: ${highContrast}; max-width:220px;"><h4 style="margin:0 0 5px 0; color:${v.renk};">${v.kisaAd}</h4><p style="margin:0; font-size:13px;">${v.bilgi}</p></div>`);
+    });
+
+    function guncelle(yil) {
+        veri.forEach(v => {
+            let rota = [], aktif = false;
+            if (yil >= v.endYear) { rota = v.rota; aktif = true; } 
+            else if (yil >= v.startYear) {
+                let oran = (yil - v.startYear) / (v.endYear - v.startYear);
+                rota = v.rota.slice(0, Math.floor(v.rota.length * (oran || 0.1)) + 1);
+            }
+            if (rota.length > 0) { cizgiler[v.id].addTo(window.currentMapInstance).setLatLngs(rota); } 
+            else { window.currentMapInstance.removeLayer(cizgiler[v.id]); }
+            if (aktif) { markerlar[v.id].addTo(window.currentMapInstance); } 
+            else { window.currentMapInstance.removeLayer(markerlar[v.id]); }
+        });
+    }
+
+    document.getElementById('yearSlider').addEventListener('input', e => {
+        const y = parseInt(e.target.value);
+        document.getElementById('yearDisplay').innerText = y;
+        guncelle(y);
+    });
+
+    const signature = L.control({position: 'bottomleft'});
+    signature.onAdd = () => {
+        const div = L.DomUtil.create('div', 'map-signature');
+        div.style.cssText = "background: rgba(13,17,23,0.9); color: #C9A84C; padding: 4px 8px; border: 1px solid #C9A84C; border-radius: 4px; font-size: 10px; font-weight: bold; margin-bottom: 5px; margin-left: 5px;";
+        div.innerHTML = 'Harita: Murat Mutlu'; return div;
+    };
+    signature.addTo(window.currentMapInstance);
+
+    const legend = L.control({position: 'bottomright'});
+    legend.onAdd = () => {
+        const div = L.DomUtil.create('div', 'info legend');
+        div.style.cssText = `background: rgba(255,255,255,0.95); padding: 12px; border-radius: 8px; color: ${highContrast};`;
+        div.innerHTML = '<h4 style="margin: 0 0 8px 0; font-size:14px; border-bottom:1px solid #ccc; padding-bottom:3px;">İpek Yolu Stratejisi</h4>';
+        veri.forEach(v => {
+            const item = L.DomUtil.create('div', 'legend-item', div);
+            item.style.cssText = "display:flex; align-items:center; margin-bottom:6px; font-size:11px; cursor:pointer;";
+            item.innerHTML = `<i style="background: ${v.renk}; width: 12px; height: 12px; border-radius:50%; display: inline-block; margin-right: 8px;"></i> <b>${v.kisaAd}</b>`;
+            item.onclick = () => {
+                window.currentMapInstance.flyTo(v.odak, 9, { duration: 1.5 });
+                document.getElementById('yearSlider').value = v.endYear;
+                document.getElementById('yearDisplay').innerText = v.endYear;
+                guncelle(v.endYear);
+                setTimeout(() => markerlar[v.id].openPopup(), 1200);
+            };
+        });
+        return div;
+    };
+    legend.addTo(window.currentMapInstance);
+    guncelle(1302);
+};
+window.HARITA_MOTORU = window.HARITA_MOTORU || {};
+
+// ==========================================
+// 4. HARİTA: RUMELİ'YE İLK KÖPRÜ: ÇİMPE VE GELİBOLU (1353)
+// ==========================================
+window.HARITA_MOTORU["harita_u2_cimpe_4"] = function() {
+    // GÜVENLİK KONTROLÜ: Önceki harita örneğini temizle
+    if (window.currentMapInstance) {
+        window.currentMapInstance.remove();
+        window.currentMapInstance = null;
+    }
+
+    const controlsContainer = document.getElementById('mapControlsContainer');
+    controlsContainer.innerHTML = `
+        <div style="text-align: center; color: #F4E4B0; display: flex; flex-direction: column; align-items: center; gap: 8px;">
+            <input type="range" id="yearSlider" min="1345" max="1354" value="1345" step="1" style="width: 60%; cursor: pointer; accent-color: #E8A020; margin: 0 auto;">
+            <label for="yearSlider" style="font-size: 1.1em; margin-bottom: 5px;">
+                <b>Tarih: <span id="yearDisplay" style="color: #E8A020;">1345</span></b>
+            </label>
+            <p style="font-size: 0.85em; opacity: 0.8;">Avrupa topraklarına ilk adım ve Çimpe Kalesi'nin stratejik önemi.</p>
+        </div>
+    `;
+    controlsContainer.style.display = 'block';
+
+    window.currentMapInstance = L.map('mapCanvas').setView([40.5, 27.0], 8);
+    L.tileLayer('http://mt0.google.com/vt/lyrs=p&hl=tr&x={x}&y={y}&z={z}', { maxZoom: 10, attribution: '© Google Haritalar' }).addTo(window.currentMapInstance);
+
+    const veri = [
+        { id: "yardim", isim: "Bizans'a Yardım Seferleri", kisaAd: "Diplomatik Yardım", renk: "#2980b9", startYear: 1345, endYear: 1352, odak: [41.00, 28.97], bilgi: "<b>Stratejik Ortaklık:</b> Orhan Bey, Bizans taht kavgasına karışan Kantakuzen'e yardım göndererek Rumeli coğrafyasını yakından tanıma fırsatı buldu.", rota: [[40.18, 29.06], [41.00, 28.97]] },
+        { id: "cimpe", isim: "Çimpe Kalesi'nin Alınması", kisaAd: "Çimpe (1353)", renk: "#8B1A1A", startYear: 1353, endYear: 1353, odak: [40.51, 26.83], bilgi: "<b>Rumeli'de İlk Üs:</b> Yapılan yardımlar karşılığı hediye edilen Çimpe Kalesi, Osmanlı'nın Avrupa'daki ilk toprağı ve ileri harekat merkezidir.", rota: [[40.18, 29.06], [40.51, 26.83]] },
+        { id: "gelibolu", isim: "Gelibolu'nun Fethi", kisaAd: "Gelibolu (1354)", renk: "#27ae60", startYear: 1354, endYear: 1354, odak: [40.41, 26.67], bilgi: "<b>Avrupa Kapısı:</b> Süleyman Paşa komutasındaki güçler, büyük bir deprem sonrası tahliye edilen Gelibolu'yu fethederek bölgeyi hızla iskan ettiler.", rota: [[40.51, 26.83], [40.41, 26.67]] }
+    ];
+
+    let cizgiler = {}, markerlar = {};
+    const highContrast = "#2c3e50 !important";
+
+    veri.forEach(v => {
+        cizgiler[v.id] = L.polyline([], {color: v.renk, weight: 6, opacity: 0.8, dashArray: '8, 8'}).bindPopup(`<div style="color: ${highContrast}; max-width:220px;"><h4 style="margin:0 0 5px 0; color:${v.renk};">${v.isim}</h4><p style="margin:0; font-size:13px;">${v.bilgi}</p></div>`);
+        markerlar[v.id] = L.circleMarker(v.odak, {radius: 7, color: '#fff', fillColor: v.renk, weight: 2, fillOpacity: 1}).bindPopup(`<div style="color: ${highContrast}; max-width:220px;"><h4 style="margin:0 0 5px 0; color:${v.renk};">${v.kisaAd}</h4><p style="margin:0; font-size:13px;">${v.bilgi}</p></div>`);
+    });
+
+    function guncelle(yil) {
+        veri.forEach(v => {
+            let rota = [], aktif = false;
+            if (yil >= v.endYear) { rota = v.rota; aktif = true; } 
+            else if (yil >= v.startYear) {
+                let oran = (yil - v.startYear) / (v.endYear - v.startYear);
+                rota = v.rota.slice(0, Math.floor(v.rota.length * (oran || 0.1)) + 1);
+            }
+            if (rota.length > 0) { cizgiler[v.id].addTo(window.currentMapInstance).setLatLngs(rota); } 
+            else { window.currentMapInstance.removeLayer(cizgiler[v.id]); }
+            if (aktif) { markerlar[v.id].addTo(window.currentMapInstance); } 
+            else { window.currentMapInstance.removeLayer(markerlar[v.id]); }
+        });
+    }
+
+    document.getElementById('yearSlider').addEventListener('input', e => {
+        const y = parseInt(e.target.value);
+        document.getElementById('yearDisplay').innerText = y;
+        guncelle(y);
+    });
+
+    const signature = L.control({position: 'bottomleft'});
+    signature.onAdd = () => {
+        const div = L.DomUtil.create('div', 'map-signature');
+        div.style.cssText = "background: rgba(13,17,23,0.9); color: #C9A84C; padding: 4px 8px; border: 1px solid #C9A84C; border-radius: 4px; font-size: 10px; font-weight: bold; margin-bottom: 5px; margin-left: 5px;";
+        div.innerHTML = 'Harita: Murat Mutlu'; return div;
+    };
+    signature.addTo(window.currentMapInstance);
+
+    const legend = L.control({position: 'bottomright'});
+    legend.onAdd = () => {
+        const div = L.DomUtil.create('div', 'info legend');
+        div.style.cssText = `background: rgba(255,255,255,0.95); padding: 12px; border-radius: 8px; color: ${highContrast};`;
+        div.innerHTML = '<h4 style="margin: 0 0 8px 0; font-size:14px; border-bottom:1px solid #ccc; padding-bottom:3px;">Rumeli\'ye Geçiş</h4>';
+        veri.forEach(v => {
+            const item = L.DomUtil.create('div', 'legend-item', div);
+            item.style.cssText = "display:flex; align-items:center; margin-bottom:6px; font-size:11px; cursor:pointer;";
+            item.innerHTML = `<i style="background: ${v.renk}; width: 12px; height: 12px; border-radius:50%; display: inline-block; margin-right: 8px;"></i> <b>${v.kisaAd}</b>`;
+            item.onclick = () => {
+                window.currentMapInstance.flyTo(v.odak, 9, { duration: 1.5 });
+                document.getElementById('yearSlider').value = v.endYear;
+                document.getElementById('yearDisplay').innerText = v.endYear;
+                guncelle(v.endYear);
+                setTimeout(() => markerlar[v.id].openPopup(), 1200);
+            };
+        });
+        return div;
+    };
+    legend.addTo(window.currentMapInstance);
+    guncelle(1345);
+};
+
+// ==========================================
+// 5. HARİTA: BALKANLARIN KAPISI: EDİRNE VE FETİH (1363)
+// ==========================================
+window.HARITA_MOTORU["harita_u2_edirne_5"] = function() {
+    if (window.currentMapInstance) {
+        window.currentMapInstance.remove();
+        window.currentMapInstance = null;
+    }
+
+    const controlsContainer = document.getElementById('mapControlsContainer');
+    controlsContainer.innerHTML = `
+        <div style="text-align: center; color: #F4E4B0; display: flex; flex-direction: column; align-items: center; gap: 8px;">
+            <input type="range" id="yearSlider" min="1359" max="1365" value="1359" step="1" style="width: 60%; cursor: pointer; accent-color: #E8A020; margin: 0 auto;">
+            <label for="yearSlider" style="font-size: 1.1em; margin-bottom: 5px;">
+                <b>Tarih: <span id="yearDisplay" style="color: #E8A020;">1359</span></b>
+            </label>
+            <p style="font-size: 0.85em; opacity: 0.8;">I. Murat döneminde Edirne'nin fethi ve başkent oluşu.</p>
+        </div>
+    `;
+    controlsContainer.style.display = 'block';
+
+    window.currentMapInstance = L.map('mapCanvas').setView([41.6, 26.5], 8);
+    L.tileLayer('http://mt0.google.com/vt/lyrs=p&hl=tr&x={x}&y={y}&z={z}', { maxZoom: 10, attribution: '© Google Haritalar' }).addTo(window.currentMapInstance);
+
+    const veri = [
+        { id: "sazlidere", isim: "Sazlıdere Savaşı", kisaAd: "Sazlıdere (1363)", renk: "#8B1A1A", startYear: 1359, endYear: 1363, odak: [41.59, 26.59], bilgi: "<b>Balkan Yolu Açıldı:</b> Bizans-Bulgar ittifakı mağlup edildi. Edirne'nin savunma hatları kırıldı ve şehrin fethine zemin hazırlandı.", rota: [[40.41, 26.67], [41.2, 26.5], [41.59, 26.59]] },
+        { id: "edirne", isim: "Edirne'nin Başkent Oluşu", kisaAd: "Edirne (1365)", renk: "#27ae60", startYear: 1364, endYear: 1365, odak: [41.67, 26.56], bilgi: "<b>Yeni Merkez:</b> Fethin ardından başkent Edirne'ye taşındı. Bu hamleyle Bizans arkadan kuşatıldı ve Balkan fetihleri için kalıcı bir üs kuruldu.", rota: [[41.59, 26.59], [41.67, 26.56]] }
+    ];
+
+    let cizgiler = {}, markerlar = {};
+    const highContrast = "#2c3e50 !important";
+
+    veri.forEach(v => {
+        cizgiler[v.id] = L.polyline([], {color: v.renk, weight: 6, opacity: 0.8}).bindPopup(`<div style="color: ${highContrast}; max-width:220px;"><h4 style="margin:0 0 5px 0; color:${v.renk};">${v.isim}</h4><p style="margin:0; font-size:13px;">${v.bilgi}</p></div>`);
+        markerlar[v.id] = L.circleMarker(v.odak, {radius: 7, color: '#fff', fillColor: v.renk, weight: 2, fillOpacity: 1}).bindPopup(`<div style="color: ${highContrast}; max-width:220px;"><h4 style="margin:0 0 5px 0; color:${v.renk};">${v.kisaAd}</h4><p style="margin:0; font-size:13px;">${v.bilgi}</p></div>`);
+    });
+
+    function guncelle(yil) {
+        veri.forEach(v => {
+            let rota = [], aktif = false;
+            if (yil >= v.endYear) { rota = v.rota; aktif = true; } 
+            else if (yil >= v.startYear) {
+                let oran = (yil - v.startYear) / (v.endYear - v.startYear);
+                rota = v.rota.slice(0, Math.floor(v.rota.length * (oran || 0.1)) + 1);
+            }
+            if (rota.length > 0) { cizgiler[v.id].addTo(window.currentMapInstance).setLatLngs(rota); } 
+            else { window.currentMapInstance.removeLayer(cizgiler[v.id]); }
+            if (aktif) { markerlar[v.id].addTo(window.currentMapInstance); } 
+            else { window.currentMapInstance.removeLayer(markerlar[v.id]); }
+        });
+    }
+
+    document.getElementById('yearSlider').addEventListener('input', e => {
+        const y = parseInt(e.target.value);
+        document.getElementById('yearDisplay').innerText = y;
+        guncelle(y);
+    });
+
+    const signature = L.control({position: 'bottomleft'});
+    signature.onAdd = () => {
+        const div = L.DomUtil.create('div', 'map-signature');
+        div.style.cssText = "background: rgba(13,17,23,0.9); color: #C9A84C; padding: 4px 8px; border: 1px solid #C9A84C; border-radius: 4px; font-size: 10px; font-weight: bold; margin-bottom: 5px; margin-left: 5px;";
+        div.innerHTML = 'Harita: Murat Mutlu'; return div;
+    };
+    signature.addTo(window.currentMapInstance);
+
+    const legend = L.control({position: 'bottomright'});
+    legend.onAdd = () => {
+        const div = L.DomUtil.create('div', 'info legend');
+        div.style.cssText = `background: rgba(255,255,255,0.95); padding: 12px; border-radius: 8px; color: ${highContrast};`;
+        div.innerHTML = '<h4 style="margin: 0 0 8px 0; font-size:14px; border-bottom:1px solid #ccc; padding-bottom:3px;">Balkanların Kapısı</h4>';
+        veri.forEach(v => {
+            const item = L.DomUtil.create('div', 'legend-item', div);
+            item.style.cssText = "display:flex; align-items:center; margin-bottom:6px; font-size:11px; cursor:pointer;";
+            item.innerHTML = `<i style="background: ${v.renk}; width: 12px; height: 12px; border-radius:50%; display: inline-block; margin-right: 8px;"></i> <b>${v.kisaAd}</b>`;
+            item.onclick = () => {
+                window.currentMapInstance.flyTo(v.odak, 9, { duration: 1.5 });
+                document.getElementById('yearSlider').value = v.endYear;
+                document.getElementById('yearDisplay').innerText = v.endYear;
+                guncelle(v.endYear);
+                setTimeout(() => markerlar[v.id].openPopup(), 1200);
+            };
+        });
+        return div;
+    };
+    legend.addTo(window.currentMapInstance);
+    guncelle(1359);
+};
+
+// ==========================================
+// 6. HARİTA: ANADOLU TÜRK BİRLİĞİ VE BARIŞÇIL DİPLOMASİ
+// ==========================================
+window.HARITA_MOTORU["harita_u2_atb_6"] = function() {
+    if (window.currentMapInstance) {
+        window.currentMapInstance.remove();
+        window.currentMapInstance = null;
+    }
+
+    const controlsContainer = document.getElementById('mapControlsContainer');
+    controlsContainer.innerHTML = `
+        <div style="text-align: center; color: #F4E4B0; display: flex; flex-direction: column; align-items: center; gap: 8px;">
+            <input type="range" id="yearSlider" min="1380" max="1390" value="1380" step="1" style="width: 60%; cursor: pointer; accent-color: #E8A020; margin: 0 auto;">
+            <label for="yearSlider" style="font-size: 1.1em; margin-bottom: 5px;">
+                <b>Tarih: <span id="yearDisplay" style="color: #E8A020;">1380</span></b>
+            </label>
+            <p style="font-size: 0.85em; opacity: 0.8;">Çeyiz ve satın alma yoluyla Anadolu'da büyüme stratejisi.</p>
+        </div>
+    `;
+    controlsContainer.style.display = 'block';
+
+    window.currentMapInstance = L.map('mapCanvas').setView([38.0, 31.0], 7);
+    L.tileLayer('http://mt0.google.com/vt/lyrs=p&hl=tr&x={x}&y={y}&z={z}', { maxZoom: 10, attribution: '© Google Haritalar' }).addTo(window.currentMapInstance);
+
+    const veri = [
+        { id: "germiyan", isim: "Çeyiz Yoluyla Gelen Topraklar", kisaAd: "Germiyan Çeyizi (1381)", renk: "#C9A84C", startYear: 1380, endYear: 1381, odak: [39.42, 29.98], bilgi: "<b>Akrabalık Yolu:</b> I. Murat, oğlu Yıldırım Bayezid'i Germiyanoğlu Süleyman Şah'ın kızıyla evlendirdi. Kütahya, Emet, Simav ve Tavşanlı çeyiz olarak Osmanlı'ya geçti.", rota: [[40.18, 29.06], [39.42, 29.98]] },
+        { id: "hamit", isim: "Satın Alınan Topraklar", kisaAd: "Hamit Toprakları (1382)", renk: "#2980b9", startYear: 1382, endYear: 1382, odak: [37.76, 30.55], bilgi: "<b>Altın Yolu:</b> Hamitoğulları Beyliği'nden 80 bin altın karşılığında Isparta, Yalvaç, Akşehir ve çevresi satın alındı. Savaşsız büyüme örneğidir.", rota: [[39.42, 29.98], [37.76, 30.55]] }
+    ];
+
+    let cizgiler = {}, markerlar = {};
+    const highContrast = "#2c3e50 !important";
+
+    veri.forEach(v => {
+        cizgiler[v.id] = L.polyline([], {color: v.renk, weight: 6, opacity: 0.8, dashArray: '5, 5'}).bindPopup(`<div style="color: ${highContrast}; max-width:220px;"><h4 style="margin:0 0 5px 0; color:${v.renk};">${v.isim}</h4><p style="margin:0; font-size:13px;">${v.bilgi}</p></div>`);
+        markerlar[v.id] = L.circleMarker(v.odak, {radius: 7, color: '#fff', fillColor: v.renk, weight: 2, fillOpacity: 1}).bindPopup(`<div style="color: ${highContrast}; max-width:220px;"><h4 style="margin:0 0 5px 0; color:${v.renk};">${v.kisaAd}</h4><p style="margin:0; font-size:13px;">${v.bilgi}</p></div>`);
+    });
+
+    function guncelle(yil) {
+        veri.forEach(v => {
+            let rota = [], aktif = false;
+            if (yil >= v.endYear) { rota = v.rota; aktif = true; } 
+            else if (yil >= v.startYear) {
+                let oran = (yil - v.startYear) / (v.endYear - v.startYear);
+                rota = v.rota.slice(0, Math.floor(v.rota.length * (oran || 0.1)) + 1);
+            }
+            if (rota.length > 0) { cizgiler[v.id].addTo(window.currentMapInstance).setLatLngs(rota); } 
+            else { window.currentMapInstance.removeLayer(cizgiler[v.id]); }
+            if (aktif) { markerlar[v.id].addTo(window.currentMapInstance); } 
+            else { window.currentMapInstance.removeLayer(markerlar[v.id]); }
+        });
+    }
+
+    document.getElementById('yearSlider').addEventListener('input', e => {
+        const y = parseInt(e.target.value);
+        document.getElementById('yearDisplay').innerText = y;
+        guncelle(y);
+    });
+
+    const signature = L.control({position: 'bottomleft'});
+    signature.onAdd = () => {
+        const div = L.DomUtil.create('div', 'map-signature');
+        div.style.cssText = "background: rgba(13,17,23,0.9); color: #C9A84C; padding: 4px 8px; border: 1px solid #C9A84C; border-radius: 4px; font-size: 10px; font-weight: bold; margin-bottom: 5px; margin-left: 5px;";
+        div.innerHTML = 'Harita: Murat Mutlu'; return div;
+    };
+    signature.addTo(window.currentMapInstance);
+
+    const legend = L.control({position: 'bottomright'});
+    legend.onAdd = () => {
+        const div = L.DomUtil.create('div', 'info legend');
+        div.style.cssText = `background: rgba(255,255,255,0.95); padding: 12px; border-radius: 8px; color: ${highContrast};`;
+        div.innerHTML = '<h4 style="margin: 0 0 8px 0; font-size:14px; border-bottom:1px solid #ccc; padding-bottom:3px;">Diplomatik Büyüme</h4>';
+        veri.forEach(v => {
+            const item = L.DomUtil.create('div', 'legend-item', div);
+            item.style.cssText = "display:flex; align-items:center; margin-bottom:6px; font-size:11px; cursor:pointer;";
+            item.innerHTML = `<i style="background: ${v.renk}; width: 12px; height: 12px; border-radius:50%; display: inline-block; margin-right: 8px;"></i> <b>${v.kisaAd}</b>`;
+            item.onclick = () => {
+                window.currentMapInstance.flyTo(v.odak, 9, { duration: 1.5 });
+                document.getElementById('yearSlider').value = v.endYear;
+                document.getElementById('yearDisplay').innerText = v.endYear;
+                guncelle(v.endYear);
+                setTimeout(() => markerlar[v.id].openPopup(), 1200);
+            };
+        });
+        return div;
+    };
+    legend.addTo(window.currentMapInstance);
+    guncelle(1380);
+};
+window.HARITA_MOTORU = window.HARITA_MOTORU || {};
+
+// ==========================================
+// 7. HARİTA: NİĞBOLU: SULTAN-I İKLİM-İ RUM (1396)
+// ==========================================
+window.HARITA_MOTORU["harita_u2_nigbolu_7"] = function() {
+    if (window.currentMapInstance) {
+        window.currentMapInstance.remove();
+        window.currentMapInstance = null;
+    }
+
+    const controlsContainer = document.getElementById('mapControlsContainer');
+    controlsContainer.innerHTML = `
+        <div style="text-align: center; color: #F4E4B0; display: flex; flex-direction: column; align-items: center; gap: 8px;">
+            <input type="range" id="yearSlider" min="1394" max="1396" value="1394" step="1" style="width: 60%; cursor: pointer; accent-color: #E8A020; margin: 0 auto;">
+            <label for="yearSlider" style="font-size: 1.1em; margin-bottom: 5px;">
+                <b>Tarih: <span id="yearDisplay" style="color: #E8A020;">1394</span></b>
+            </label>
+            <p style="font-size: 0.85em; opacity: 0.8;">Haçlı ordusunun ilerleyişi ve Yıldırım Bayezid'in yıldırım harekatı.</p>
+        </div>
+    `;
+    controlsContainer.style.display = 'block';
+
+    window.currentMapInstance = L.map('mapCanvas').setView([42.5, 25.0], 6);
+    L.tileLayer('http://mt0.google.com/vt/lyrs=p&hl=tr&x={x}&y={y}&z={z}', { maxZoom: 10 }).addTo(window.currentMapInstance);
+
+    const veri = [
+        { id: "hacli", isim: "Haçlı Ordusunun İlerleyişi", kisaAd: "Haçlı Seferi (1396)", renk: "#2980b9", startYear: 1394, endYear: 1396, odak: [43.70, 24.89], bilgi: "<b>Büyük İttifak:</b> Osmanlı'yı Balkanlardan atmak için Macar, Fransız, Alman ve Venedik güçlerinden oluşan devasa Haçlı ordusu Tuna kıyısındaki Niğbolu'yu kuşattı.", rota: [[47.49, 19.04], [44.81, 20.45], [43.70, 24.89]] },
+        { id: "bayezid", isim: "Yıldırım'ın Müdahalesi", kisaAd: "Niğbolu Zaferi", renk: "#8B1A1A", startYear: 1395, endYear: 1396, odak: [43.65, 24.90], bilgi: "<b>Sultan-ı İklim-i Rum:</b> İstanbul kuşatmasını kaldıran Bayezid, hızla Niğbolu'ya ulaşıp Haçlıları imha etti. Halife tarafından kendisine bu unvan verildi.", rota: [[41.00, 28.97], [41.67, 26.56], [43.65, 24.90]] }
+    ];
+
+    let cizgiler = {}, markerlar = {};
+    const highContrast = "#2c3e50 !important";
+
+    veri.forEach(v => {
+        cizgiler[v.id] = L.polyline([], {color: v.renk, weight: 6, opacity: 0.8, dashArray: v.id==='hacli'?'8, 8':''}).bindPopup(`<div style="color: ${highContrast}; max-width:220px;"><h4 style="margin:0 0 5px 0; color:${v.renk};">${v.isim}</h4><p style="margin:0; font-size:13px;">${v.bilgi}</p></div>`);
+        markerlar[v.id] = L.circleMarker(v.odak, {radius: 7, color: '#fff', fillColor: v.renk, weight: 2, fillOpacity: 1}).bindPopup(`<div style="color: ${highContrast}; max-width:220px;"><h4 style="margin:0 0 5px 0; color:${v.renk};">${v.kisaAd}</h4><p style="margin:0; font-size:13px;">${v.bilgi}</p></div>`);
+    });
+
+    function guncelle(yil) {
+        veri.forEach(v => {
+            let rota = [], aktif = false;
+            if (yil >= v.endYear) { rota = v.rota; aktif = true; } 
+            else if (yil >= v.startYear) {
+                let oran = (yil - v.startYear) / (v.endYear - v.startYear);
+                rota = v.rota.slice(0, Math.floor(v.rota.length * (oran || 0.1)) + 1);
+            }
+            if (rota.length > 0) { cizgiler[v.id].addTo(window.currentMapInstance).setLatLngs(rota); } 
+            else { window.currentMapInstance.removeLayer(cizgiler[v.id]); }
+            if (aktif) { markerlar[v.id].addTo(window.currentMapInstance); } 
+            else { window.currentMapInstance.removeLayer(markerlar[v.id]); }
+        });
+    }
+
+    document.getElementById('yearSlider').addEventListener('input', e => {
+        const y = parseInt(e.target.value);
+        document.getElementById('yearDisplay').innerText = y;
+        guncelle(y);
+    });
+
+    const signature = L.control({position: 'bottomleft'});
+    signature.onAdd = () => {
+        const div = L.DomUtil.create('div', 'map-signature');
+        div.style.cssText = "background: rgba(13,17,23,0.9); color: #C9A84C; padding: 4px 8px; border: 1px solid #C9A84C; border-radius: 4px; font-size: 10px; font-weight: bold; margin-bottom: 5px; margin-left: 5px;";
+        div.innerHTML = 'Harita: Murat Mutlu'; return div;
+    };
+    signature.addTo(window.currentMapInstance);
+
+    const legend = L.control({position: 'bottomright'});
+    legend.onAdd = () => {
+        const div = L.DomUtil.create('div', 'info legend');
+        div.style.cssText = `background: rgba(255,255,255,0.95); padding: 12px; border-radius: 8px; color: ${highContrast};`;
+        div.innerHTML = '<h4 style="margin: 0 0 8px 0; font-size:14px; border-bottom:1px solid #ccc; padding-bottom:3px;">Niğbolu Muharebesi</h4>';
+        veri.forEach(v => {
+            const item = L.DomUtil.create('div', 'legend-item', div);
+            item.style.cssText = "display:flex; align-items:center; margin-bottom:6px; font-size:11px; cursor:pointer;";
+            item.innerHTML = `<i style="background: ${v.renk}; width: 12px; height: 12px; border-radius:50%; display: inline-block; margin-right: 8px;"></i> <b>${v.kisaAd}</b>`;
+            item.onclick = () => {
+                window.currentMapInstance.flyTo(v.odak, 7, { duration: 1.5 });
+                document.getElementById('yearSlider').value = v.endYear;
+                document.getElementById('yearDisplay').innerText = v.endYear;
+                guncelle(v.endYear);
+                setTimeout(() => markerlar[v.id].openPopup(), 1200);
+            };
+        });
+        return div;
+    };
+    legend.addTo(window.currentMapInstance);
+    guncelle(1394);
+};
+
+// ==========================================
+// 8. HARİTA: ANKARA SAVAŞI: DAĞILMA VE KIRILMA (1402)
+// ==========================================
+window.HARITA_MOTORU["harita_u2_ankara_8"] = function() {
+    if (window.currentMapInstance) {
+        window.currentMapInstance.remove();
+        window.currentMapInstance = null;
+    }
+
+    const controlsContainer = document.getElementById('mapControlsContainer');
+    controlsContainer.innerHTML = `
+        <div style="text-align: center; color: #F4E4B0; display: flex; flex-direction: column; align-items: center; gap: 8px;">
+            <input type="range" id="yearSlider" min="1400" max="1403" value="1400" step="1" style="width: 60%; cursor: pointer; accent-color: #E8A020; margin: 0 auto;">
+            <label for="yearSlider" style="font-size: 1.1em; margin-bottom: 5px;">
+                <b>Tarih: <span id="yearDisplay" style="color: #E8A020;">1400</span></b>
+            </label>
+            <p style="font-size: 0.85em; opacity: 0.8;">Timur tehlikesi ve Anadolu Türk Siyasi Birliği'nin bozulması.</p>
+        </div>
+    `;
+    controlsContainer.style.display = 'block';
+
+    window.currentMapInstance = L.map('mapCanvas').setView([39.9, 32.8], 6);
+    L.tileLayer('http://mt0.google.com/vt/lyrs=p&hl=tr&x={x}&y={y}&z={z}', { maxZoom: 10 }).addTo(window.currentMapInstance);
+
+    const veri = [
+        { id: "timur", isim: "Timur'un Anadolu'ya Girişi", kisaAd: "Timur İlerleyişi", renk: "#2980b9", startYear: 1400, endYear: 1402, odak: [40.0, 33.0], bilgi: "<b>Doğudan Gelen Tehlike:</b> Sivas'ı yağmalayan Timur, Ankara (Çubuk Ovası) yönüne ilerleyerek su kaynaklarını tuttu.", rota: [[39.75, 37.01], [38.72, 35.48], [40.0, 33.0]] },
+        { id: "bayezid", isim: "Yıldırım'ın Karşılaması", kisaAd: "Osmanlı Ordusu", renk: "#8B1A1A", startYear: 1401, endYear: 1402, odak: [39.9, 32.8], bilgi: "<b>Büyük Karşılaşma:</b> İstanbul kuşatmasını kaldıran Bayezid, yorgun ordusuyla Çubuk Ovası'na ulaştı ancak su kaynakları Timur'un elindeydi.", rota: [[41.00, 28.97], [40.18, 29.06], [39.9, 32.8]] },
+        { id: "fetret", isim: "Fetret Devri Başladı", kisaAd: "Fetret Devri (1402+)", renk: "#8e44ad", startYear: 1403, endYear: 1403, odak: [39.5, 30.0], bilgi: "<b>Siyasi Birlik Bozuldu:</b> Savaşın kaybedilmesiyle Yıldırım esir düştü. Beylikler yeniden kuruldu. Şehzadeler arası 11 yıllık taht kavgası (Fetret) başladı.", rota: [] }
+    ];
+
+    let cizgiler = {}, markerlar = {};
+    const highContrast = "#2c3e50 !important";
+
+    veri.forEach(v => {
+        if(v.rota.length > 0) {
+            cizgiler[v.id] = L.polyline([], {color: v.renk, weight: 6, opacity: 0.8, dashArray: v.id==='timur'?'8, 8':''}).bindPopup(`<div style="color: ${highContrast}; max-width:220px;"><h4 style="margin:0 0 5px 0; color:${v.renk};">${v.isim}</h4><p style="margin:0; font-size:13px;">${v.bilgi}</p></div>`);
+        }
+        markerlar[v.id] = L.circleMarker(v.odak, {radius: 7, color: '#fff', fillColor: v.renk, weight: 2, fillOpacity: 1}).bindPopup(`<div style="color: ${highContrast}; max-width:220px;"><h4 style="margin:0 0 5px 0; color:${v.renk};">${v.kisaAd}</h4><p style="margin:0; font-size:13px;">${v.bilgi}</p></div>`);
+    });
+
+    function guncelle(yil) {
+        veri.forEach(v => {
+            let rota = [], aktif = false;
+            if (yil >= v.endYear) { rota = v.rota; aktif = true; } 
+            else if (yil >= v.startYear) {
+                let oran = (yil - v.startYear) / (v.endYear - v.startYear);
+                if(v.rota.length > 0) rota = v.rota.slice(0, Math.floor(v.rota.length * (oran || 0.1)) + 1);
+                aktif = true;
+            }
+            if(cizgiler[v.id]) {
+                if (rota.length > 0) { cizgiler[v.id].addTo(window.currentMapInstance).setLatLngs(rota); } 
+                else { window.currentMapInstance.removeLayer(cizgiler[v.id]); }
+            }
+            if (aktif) { markerlar[v.id].addTo(window.currentMapInstance); } 
+            else { window.currentMapInstance.removeLayer(markerlar[v.id]); }
+        });
+    }
+
+    document.getElementById('yearSlider').addEventListener('input', e => {
+        const y = parseInt(e.target.value);
+        document.getElementById('yearDisplay').innerText = y===1403 ? "1402 Sonrası (Fetret)" : y;
+        guncelle(y);
+    });
+
+    const signature = L.control({position: 'bottomleft'});
+    signature.onAdd = () => {
+        const div = L.DomUtil.create('div', 'map-signature');
+        div.style.cssText = "background: rgba(13,17,23,0.9); color: #C9A84C; padding: 4px 8px; border: 1px solid #C9A84C; border-radius: 4px; font-size: 10px; font-weight: bold; margin-bottom: 5px; margin-left: 5px;";
+        div.innerHTML = 'Harita: Murat Mutlu'; return div;
+    };
+    signature.addTo(window.currentMapInstance);
+
+    const legend = L.control({position: 'bottomright'});
+    legend.onAdd = () => {
+        const div = L.DomUtil.create('div', 'info legend');
+        div.style.cssText = `background: rgba(255,255,255,0.95); padding: 12px; border-radius: 8px; color: ${highContrast};`;
+        div.innerHTML = '<h4 style="margin: 0 0 8px 0; font-size:14px; border-bottom:1px solid #ccc; padding-bottom:3px;">Ankara Savaşı</h4>';
+        veri.forEach(v => {
+            const item = L.DomUtil.create('div', 'legend-item', div);
+            item.style.cssText = "display:flex; align-items:center; margin-bottom:6px; font-size:11px; cursor:pointer;";
+            item.innerHTML = `<i style="background: ${v.renk}; width: 12px; height: 12px; border-radius:50%; display: inline-block; margin-right: 8px;"></i> <b>${v.kisaAd}</b>`;
+            item.onclick = () => {
+                window.currentMapInstance.flyTo(v.odak, 7, { duration: 1.5 });
+                document.getElementById('yearSlider').value = v.endYear;
+                document.getElementById('yearDisplay').innerText = v.endYear===1403 ? "1402 Sonrası (Fetret)" : v.endYear;
+                guncelle(v.endYear);
+                setTimeout(() => markerlar[v.id].openPopup(), 1200);
+            };
+        });
+        return div;
+    };
+    legend.addTo(window.currentMapInstance);
+    guncelle(1400);
+};
+
+// ==========================================
+// 9. HARİTA: VARNA VE II. KOSOVA: BALKANLARIN TAPUSU (1444-1448)
+// ==========================================
+window.HARITA_MOTORU["harita_u2_kosova_9"] = function() {
+    if (window.currentMapInstance) {
+        window.currentMapInstance.remove();
+        window.currentMapInstance = null;
+    }
+
+    const controlsContainer = document.getElementById('mapControlsContainer');
+    controlsContainer.innerHTML = `
+        <div style="text-align: center; color: #F4E4B0; display: flex; flex-direction: column; align-items: center; gap: 8px;">
+            <input type="range" id="yearSlider" min="1443" max="1448" value="1443" step="1" style="width: 60%; cursor: pointer; accent-color: #E8A020; margin: 0 auto;">
+            <label for="yearSlider" style="font-size: 1.1em; margin-bottom: 5px;">
+                <b>Tarih: <span id="yearDisplay" style="color: #E8A020;">1443</span></b>
+            </label>
+            <p style="font-size: 0.85em; opacity: 0.8;">II. Murat döneminde Haçlıların son taarruzları ve kesin savunma.</p>
+        </div>
+    `;
+    controlsContainer.style.display = 'block';
+
+    window.currentMapInstance = L.map('mapCanvas').setView([43.0, 23.0], 6);
+    L.tileLayer('http://mt0.google.com/vt/lyrs=p&hl=tr&x={x}&y={y}&z={z}', { maxZoom: 10 }).addTo(window.currentMapInstance);
+
+    const veri = [
+        { id: "varna", isim: "Varna Muharebesi", kisaAd: "Varna (1444)", renk: "#2980b9", startYear: 1443, endYear: 1444, odak: [43.21, 27.91], bilgi: "<b>Antlaşma Bozuldu:</b> Segedin Antlaşması'nı bozup taht değişikliğini fırsat bilen Haçlılar Varna'da ağır bir yenilgiye uğratıldı.", rota: [[47.49, 19.04], [43.21, 27.91]] },
+        { id: "kosova", isim: "II. Kosova Meydan Muharebesi", kisaAd: "II. Kosova (1448)", renk: "#8B1A1A", startYear: 1446, endYear: 1448, odak: [42.66, 21.16], bilgi: "<b>Balkanların Tapusu:</b> Haçlıların Türkleri Balkanlardan atma ümidi tamamen sona erdi. Avrupalılar savunmaya, Osmanlı taarruza geçti.", rota: [[47.49, 19.04], [44.81, 20.45], [42.66, 21.16]] }
+    ];
+
+    let cizgiler = {}, markerlar = {};
+    const highContrast = "#2c3e50 !important";
+
+    veri.forEach(v => {
+        cizgiler[v.id] = L.polyline([], {color: v.renk, weight: 6, opacity: 0.8, dashArray: '8, 8'}).bindPopup(`<div style="color: ${highContrast}; max-width:220px;"><h4 style="margin:0 0 5px 0; color:${v.renk};">${v.isim}</h4><p style="margin:0; font-size:13px;">${v.bilgi}</p></div>`);
+        markerlar[v.id] = L.circleMarker(v.odak, {radius: 7, color: '#fff', fillColor: v.renk, weight: 2, fillOpacity: 1}).bindPopup(`<div style="color: ${highContrast}; max-width:220px;"><h4 style="margin:0 0 5px 0; color:${v.renk};">${v.kisaAd}</h4><p style="margin:0; font-size:13px;">${v.bilgi}</p></div>`);
+    });
+
+    function guncelle(yil) {
+        veri.forEach(v => {
+            let rota = [], aktif = false;
+            if (yil >= v.endYear) { rota = v.rota; aktif = true; } 
+            else if (yil >= v.startYear) {
+                let oran = (yil - v.startYear) / (v.endYear - v.startYear);
+                rota = v.rota.slice(0, Math.floor(v.rota.length * (oran || 0.1)) + 1);
+            }
+            if (rota.length > 0) { cizgiler[v.id].addTo(window.currentMapInstance).setLatLngs(rota); } 
+            else { window.currentMapInstance.removeLayer(cizgiler[v.id]); }
+            if (aktif) { markerlar[v.id].addTo(window.currentMapInstance); } 
+            else { window.currentMapInstance.removeLayer(markerlar[v.id]); }
+        });
+    }
+
+    document.getElementById('yearSlider').addEventListener('input', e => {
+        const y = parseInt(e.target.value);
+        document.getElementById('yearDisplay').innerText = y;
+        guncelle(y);
+    });
+
+    const signature = L.control({position: 'bottomleft'});
+    signature.onAdd = () => {
+        const div = L.DomUtil.create('div', 'map-signature');
+        div.style.cssText = "background: rgba(13,17,23,0.9); color: #C9A84C; padding: 4px 8px; border: 1px solid #C9A84C; border-radius: 4px; font-size: 10px; font-weight: bold; margin-bottom: 5px; margin-left: 5px;";
+        div.innerHTML = 'Harita: Murat Mutlu'; return div;
+    };
+    signature.addTo(window.currentMapInstance);
+
+    const legend = L.control({position: 'bottomright'});
+    legend.onAdd = () => {
+        const div = L.DomUtil.create('div', 'info legend');
+        div.style.cssText = `background: rgba(255,255,255,0.95); padding: 12px; border-radius: 8px; color: ${highContrast};`;
+        div.innerHTML = '<h4 style="margin: 0 0 8px 0; font-size:14px; border-bottom:1px solid #ccc; padding-bottom:3px;">Kesin Savunma</h4>';
+        veri.forEach(v => {
+            const item = L.DomUtil.create('div', 'legend-item', div);
+            item.style.cssText = "display:flex; align-items:center; margin-bottom:6px; font-size:11px; cursor:pointer;";
+            item.innerHTML = `<i style="background: ${v.renk}; width: 12px; height: 12px; border-radius:50%; display: inline-block; margin-right: 8px;"></i> <b>${v.kisaAd}</b>`;
+            item.onclick = () => {
+                window.currentMapInstance.flyTo(v.odak, 7, { duration: 1.5 });
+                document.getElementById('yearSlider').value = v.endYear;
+                document.getElementById('yearDisplay').innerText = v.endYear;
+                guncelle(v.endYear);
+                setTimeout(() => markerlar[v.id].openPopup(), 1200);
+            };
+        });
+        return div;
+    };
+    legend.addTo(window.currentMapInstance);
+    guncelle(1443);
+};
+
+// ==========================================
+// 10. HARİTA: İSTANBUL KUŞATMASINA HAZIRLIK: RUMELİ HİSARI
+// ==========================================
+window.HARITA_MOTORU["harita_u2_rumeli_10"] = function() {
+    if (window.currentMapInstance) {
+        window.currentMapInstance.remove();
+        window.currentMapInstance = null;
+    }
+
+    const controlsContainer = document.getElementById('mapControlsContainer');
+    controlsContainer.innerHTML = `
+        <div style="text-align: center; color: #F4E4B0; display: flex; flex-direction: column; align-items: center; gap: 8px;">
+            <input type="range" id="yearSlider" min="1451" max="1453" value="1451" step="1" style="width: 60%; cursor: pointer; accent-color: #E8A020; margin: 0 auto;">
+            <label for="yearSlider" style="font-size: 1.1em; margin-bottom: 5px;">
+                <b>Tarih: <span id="yearDisplay" style="color: #E8A020;">1451</span></b>
+            </label>
+            <p style="font-size: 0.85em; opacity: 0.8;">Fatih'in Boğazkesen stratejisi ve Karadeniz lojistiğinin kesilmesi.</p>
+        </div>
+    `;
+    controlsContainer.style.display = 'block';
+
+    window.currentMapInstance = L.map('mapCanvas').setView([41.05, 29.0], 10);
+    L.tileLayer('http://mt0.google.com/vt/lyrs=p&hl=tr&x={x}&y={y}&z={z}', { maxZoom: 14 }).addTo(window.currentMapInstance);
+
+    const veri = [
+        { id: "anadolu", isim: "Anadolu Hisarı (Güzelcehisar)", kisaAd: "Anadolu Hisarı (1395)", renk: "#C9A84C", startYear: 1451, endYear: 1451, odak: [41.082, 29.066], bilgi: "<b>Ön Hazırlık:</b> Yıldırım Bayezid döneminde Karadeniz'den Bizans'a gelecek yardımları engellemek için yapılmıştı. Fatih kuşatma öncesi burayı güçlendirdi.", rota: [] },
+        { id: "rumeli", isim: "Rumeli Hisarı'nın İnşası", kisaAd: "Boğazkesen (1452)", renk: "#8B1A1A", startYear: 1452, endYear: 1452, odak: [41.084, 29.055], bilgi: "<b>Boğazkesen:</b> Fatih tarafından Anadolu Hisarı'nın tam karşısına, 4 ay gibi rekor bir sürede inşa edildi. Bizans'ın Karadeniz ve Cenevizlilerle bağlantısı fiilen kesildi.", rota: [[41.15, 29.1], [41.084, 29.055]] },
+        { id: "kusatma", isim: "Kuşatma Çemberinin Daralması", kisaAd: "Kuşatma Hattı (1453)", renk: "#2980b9", startYear: 1453, endYear: 1453, odak: [41.01, 28.93], bilgi: "<b>Kilit Vuruldu:</b> Boğazın kontrol altına alınmasıyla birlikte Şahi topları surların önüne yerleştirildi ve İstanbul tamamen tecrit edildi.", rota: [[41.084, 29.055], [41.01, 28.93]] }
+    ];
+
+    let cizgiler = {}, markerlar = {};
+    const highContrast = "#2c3e50 !important";
+
+    veri.forEach(v => {
+        if(v.rota.length > 0) {
+            cizgiler[v.id] = L.polyline([], {color: v.renk, weight: 6, opacity: 0.8, dashArray: '8, 8'}).bindPopup(`<div style="color: ${highContrast}; max-width:220px;"><h4 style="margin:0 0 5px 0; color:${v.renk};">${v.isim}</h4><p style="margin:0; font-size:13px;">${v.bilgi}</p></div>`);
+        }
+        markerlar[v.id] = L.circleMarker(v.odak, {radius: 8, color: '#fff', fillColor: v.renk, weight: 2, fillOpacity: 1}).bindPopup(`<div style="color: ${highContrast}; max-width:220px;"><h4 style="margin:0 0 5px 0; color:${v.renk};">${v.kisaAd}</h4><p style="margin:0; font-size:13px;">${v.bilgi}</p></div>`);
+    });
+
+    function guncelle(yil) {
+        veri.forEach(v => {
+            let rota = [], aktif = false;
+            if (yil >= v.endYear) { rota = v.rota; aktif = true; } 
+            else if (yil >= v.startYear) {
+                let oran = (yil - v.startYear) / (v.endYear - v.startYear);
+                if(v.rota.length > 0) rota = v.rota.slice(0, Math.floor(v.rota.length * (oran || 0.1)) + 1);
+                aktif = true;
+            }
+            if(cizgiler[v.id]) {
+                if (rota.length > 0) { cizgiler[v.id].addTo(window.currentMapInstance).setLatLngs(rota); } 
+                else { window.currentMapInstance.removeLayer(cizgiler[v.id]); }
+            }
+            if (aktif) { markerlar[v.id].addTo(window.currentMapInstance); } 
+            else { window.currentMapInstance.removeLayer(markerlar[v.id]); }
+        });
+    }
+
+    document.getElementById('yearSlider').addEventListener('input', e => {
+        const y = parseInt(e.target.value);
+        document.getElementById('yearDisplay').innerText = y;
+        guncelle(y);
+    });
+
+    const signature = L.control({position: 'bottomleft'});
+    signature.onAdd = () => {
+        const div = L.DomUtil.create('div', 'map-signature');
+        div.style.cssText = "background: rgba(13,17,23,0.9); color: #C9A84C; padding: 4px 8px; border: 1px solid #C9A84C; border-radius: 4px; font-size: 10px; font-weight: bold; margin-bottom: 5px; margin-left: 5px;";
+        div.innerHTML = 'Harita: Murat Mutlu'; return div;
+    };
+    signature.addTo(window.currentMapInstance);
+
+    const legend = L.control({position: 'bottomright'});
+    legend.onAdd = () => {
+        const div = L.DomUtil.create('div', 'info legend');
+        div.style.cssText = `background: rgba(255,255,255,0.95); padding: 12px; border-radius: 8px; color: ${highContrast};`;
+        div.innerHTML = '<h4 style="margin: 0 0 8px 0; font-size:14px; border-bottom:1px solid #ccc; padding-bottom:3px;">Boğaz Stratejisi</h4>';
+        veri.forEach(v => {
+            const item = L.DomUtil.create('div', 'legend-item', div);
+            item.style.cssText = "display:flex; align-items:center; margin-bottom:6px; font-size:11px; cursor:pointer;";
+            item.innerHTML = `<i style="background: ${v.renk}; width: 12px; height: 12px; border-radius:50%; display: inline-block; margin-right: 8px;"></i> <b>${v.kisaAd}</b>`;
+            item.onclick = () => {
+                window.currentMapInstance.flyTo(v.odak, 11, { duration: 1.5 });
+                document.getElementById('yearSlider').value = v.endYear;
+                document.getElementById('yearDisplay').innerText = v.endYear;
+                guncelle(v.endYear);
+                setTimeout(() => markerlar[v.id].openPopup(), 1200);
+            };
+        });
+        return div;
+    };
+    legend.addTo(window.currentMapInstance);
+    guncelle(1451);
+};
+window.HARITA_MOTORU = window.HARITA_MOTORU || {};
+
+// =============================================================================
+// 11. ARAÇ: İSKÂN POLİTİKASI YÖNETİCİSİ (MAARİF MODELİ & TYT/AYT ODAKLI)
+// =============================================================================
+window.HARITA_MOTORU["harita_u2_arac_iskan_11"] = function() {
+    // GÜVENLİK KONTROLÜ: Harita çökmesini engeller
+    if (window.currentMapInstance) {
+        window.currentMapInstance.remove();
+        window.currentMapInstance = null;
+    }
+
+    const mapCanvas = document.getElementById('mapCanvas');
+    const controlsContainer = document.getElementById('mapControlsContainer');
+
+    controlsContainer.innerHTML = `
+        <div style="text-align: center; color: #F4E4B0;">
+            <h3 style="margin:0; color: #E8A020;">Balkanlar İskân Simülatörü</h3>
+            <p style="font-size: 0.85em; opacity: 0.8; margin:5px 0 0 0;">Maarif Modeli: "Şenlendirme" ve "Kalıcılık" Stratejisi</p>
+        </div>
+    `;
+    controlsContainer.style.display = 'block';
+
+    mapCanvas.innerHTML = `
+        <div id="iskanSimulator" style="width:100%; height:100%; background:#f1e7d0; color:#2c3e50; font-family:'Inter', sans-serif; display:flex; flex-direction:column; padding:15px; box-sizing:border-box; overflow-y:auto;">
+            
+            <div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap:10px; margin-bottom:15px;">
+                <div style="background:#fff; padding:10px; border-radius:8px; border:2px solid #8B1A1A; text-align:center;">
+                    <i class="fa-solid fa-users" style="color:#8B1A1A;"></i><br><small>Demografi (Türkleşme)</small><br><b id="iskNufus">%20</b>
+                </div>
+                <div style="background:#fff; padding:10px; border-radius:8px; border:2px solid #27ae60; text-align:center;">
+                    <i class="fa-solid fa-wheat-awn" style="color:#27ae60;"></i><br><small>Üretim (Vergi)</small><br><b id="iskUretim">Düşük</b>
+                </div>
+                <div style="background:#fff; padding:10px; border-radius:8px; border:2px solid #2980b9; text-align:center;">
+                    <i class="fa-solid fa-shield-halved" style="color:#2980b9;"></i><br><small>Savunma (Kalıcılık)</small><br><b id="iskKalicilik">Zayıf</b>
+                </div>
+            </div>
+
+            <div style="background:#fff; border-left:5px solid #E8A020; padding:15px; border-radius:8px; margin-bottom:15px; box-shadow:0 4px 6px rgba(0,0,0,0.1);">
+                <small style="color:#E8A020; font-weight:bold;">STRATEJİK KARAR - AŞAMA <span id="iskAsama">1</span>/5</small>
+                <p id="iskSenaryo" style="margin:10px 0 0 0; font-size:1em; font-weight:500; line-height:1.4;">Yükleniyor...</p>
+            </div>
+
+            <div id="iskButonlar" style="display:flex; flex-direction:column; gap:10px;"></div>
+            <div id="iskGeriBildirim" style="margin-top:15px; text-align:center; font-weight:bold; min-height:40px;"></div>
+
+            <div style="margin-top:auto; font-size:10px; font-weight:bold; color:rgba(0,0,0,0.5); padding-top:10px;">Araç: Murat Mutlu (Batman Boğaziçi Koleji)</div>
+        </div>
+    `;
+
+    window.ISKAN_MOTORU = {
+        nufus: 20, uretim: 20, kalicilik: 20, asama: 0,
+        senaryolar: [
+            {
+                t: "Yeni fethedilen bir Balkan şehrine yerleştirilecek Türkmen boyu seçilmeli. Hangisi 'toplumsal barış' için daha uygundur?",
+                o: [
+                    { b: "Anadolu'da aralarında kan davası veya kavga olan boylardan birini seçelim.", d: {n: 15, u: 10, k: 15}, m: "Mükemmel (TYT)! Hem Anadolu'daki huzuru sağladın hem de konar-göçerleri yerleşik hayata geçirerek bölgeyi şenlendirdin." },
+                    { b: "Şehir merkezinde düzeni oturmuş, zengin ve huzurlu bir zanaatkâr boyu getirelim.", d: {n: 5, u: -10, k: -10}, m: "Hatalı Karar! İskân, mevcut düzeni bozmaz; aksine problemli veya topraksız unsurları kalıcı hale getirmeyi hedefler." }
+                ]
+            },
+            {
+                t: "Gelen göçmenlere toprak verildi. Bölgede üretimin aksamaması için ne yapılmalıdır?",
+                o: [
+                    { b: "Hazineden tohum, ziraat aleti verilmeli ve bir süre vergi alınmamalı (Muafname).", d: {n: 10, u: 30, k: 10}, m: "Doğru (AYT)! Bu teşvikle bölge kısa sürede 'Üretim Merkezi'ne dönüştü ve Türk kültürü kalıcı oldu." },
+                    { b: "Hepsine ağır vergiler koyarak hazineyi hemen dolduralım.", d: {n: -10, u: -20, k: -15}, m: "Büyük Hata! İskân edilenlerin geri kaçmasına ve fethin başarısız olmasına neden oldun." }
+                ]
+            },
+            {
+                t: "Bölgedeki yerli Hristiyan halk ile yeni gelenler arasında arazi anlaşmazlığı çıktı. Nasıl çözülmeli?",
+                o: [
+                    { b: "Yeni gelen Müslüman Türkmenleri haklı sayarak yerli halkın arazisini onlara verelim.", d: {n: 5, u: -10, k: -30}, m: "Felaket! İstimalet (Hoşgörü) bozulursa İskân kalıcı olamaz. İsyan riski arttı." },
+                    { b: "İslam hukukuna göre adil bir kadı görevlendirelim ve her iki tarafın hakkını koruyalım.", d: {n: 5, u: 15, k: 25}, m: "Maarif Vizyonu! Osmanlı adaleti (Hak ve Adalet değeri) sayesinde yerli halk devlete bağlandı." }
+                ]
+            }
+        ],
+        baslat: function() { this.guncelle(); },
+        guncelle: function() {
+            if(this.asama >= 3) { this.bitir(); return; }
+            const s = this.senaryolar[this.asama];
+            document.getElementById('iskNufus').innerText = "%" + this.nufus;
+            document.getElementById('iskUretim').innerText = this.uretim > 40 ? "Yüksek" : "Normal";
+            document.getElementById('iskKalicilik').innerText = this.kalicilik > 40 ? "Güçlü" : "Zayıf";
+            document.getElementById('iskAsama').innerText = this.asama + 1;
+            document.getElementById('iskSenaryo').innerText = s.t;
+            document.getElementById('iskGeriBildirim').innerHTML = "";
+
+            const bKutu = document.getElementById('iskButonlar');
+            bKutu.innerHTML = "";
+            s.o.forEach(opt => {
+                const btn = document.createElement('button');
+                btn.style.cssText = "padding:12px; border:none; border-radius:8px; background:#2c3e50; color:#fff; cursor:pointer; text-align:left; line-height:1.4;";
+                btn.innerHTML = `<i class="fa-solid fa-arrow-right" style="color:#E8A020;"></i> ${opt.b}`;
+                btn.onclick = () => this.kararVer(opt.d, opt.m);
+                bKutu.appendChild(btn);
+            });
+        },
+        kararVer: function(degisim, mesaj) {
+            this.nufus += degisim.n; this.uretim += degisim.u; this.kalicilik += degisim.k;
+            const gb = document.getElementById('iskGeriBildirim');
+            gb.style.color = (degisim.k > 0) ? "#27ae60" : "#8B1A1A";
+            gb.innerHTML = mesaj;
+            document.getElementById('iskButonlar').innerHTML = "";
+            this.asama++;
+            setTimeout(() => this.guncelle(), 2500);
+        },
+        bitir: function() {
+            let basari = (this.nufus + this.uretim + this.kalicilik) / 3;
+            document.getElementById('iskanSimulator').innerHTML = `
+                <div style="text-align:center; padding:40px;">
+                    <i class="fa-solid fa-city" style="font-size:4em; color:#E8A020;"></i>
+                    <h2>Balkanlar Şenlendi!</h2>
+                    <p>İskân Başarı Endeksi: %${Math.floor(basari)}</p>
+                    <p style="font-size:0.9em;">Artık Balkanlar'da sadece kılıçla değil, kültürle de kalıcısın.</p>
+                    <button onclick="window.HARITA_MOTORU['harita_u2_arac_iskan_11']()" style="padding:10px 20px; border:none; background:#2c3e50; color:#fff; border-radius:5px; cursor:pointer;">Yeniden Başla</button>
+                </div>
+            `;
+        }
+    };
+    window.ISKAN_MOTORU.baslat();
+};
+
+// =============================================================================
+// 12. ARAÇ: İSTİMALET (GÖNÜL ALMA) RADARI (DEĞERLER EĞİTİMİ ODAKLI)
+// =============================================================================
+window.HARITA_MOTORU["harita_u2_arac_istimalet_12"] = function() {
+    if (window.currentMapInstance) { window.currentMapInstance.remove(); window.currentMapInstance = null; }
+
+    const mapCanvas = document.getElementById('mapCanvas');
+    const controlsContainer = document.getElementById('mapControlsContainer');
+
+    controlsContainer.innerHTML = `
+        <div style="text-align: center; color: #F4E4B0;">
+            <h3 style="margin:0; color: #E8A020;">İstimalet (Gönül Alma) Radarı</h3>
+            <p style="font-size: 0.85em; opacity: 0.8; margin:5px 0 0 0;">Maarif Modeli: "Adalet" ve "İnanç Özgürlüğü" Değerleri</p>
+        </div>
+    `;
+    controlsContainer.style.display = 'block';
+
+    mapCanvas.innerHTML = `
+        <div id="istSimulator" style="width:100%; height:100%; background:#e4e9ed; color:#2c3e50; font-family:'Inter', sans-serif; display:flex; flex-direction:column; padding:15px; box-sizing:border-box; overflow-y:auto;">
+            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; margin-bottom:15px;">
+                <div style="background:#fff; padding:10px; border-radius:8px; border:2px solid #27ae60; text-align:center;">
+                    <i class="fa-solid fa-hand-holding-heart" style="color:#27ae60;"></i><br><small>Halkın Sadakati</small><br><b id="istSadakat">30</b>
+                </div>
+                <div style="background:#fff; padding:10px; border-radius:8px; border:2px solid #8B1A1A; text-align:center;">
+                    <i class="fa-solid fa-fire-burner" style="color:#8B1A1A;"></i><br><small>İsyan Riski</small><br><b id="istIsyan">%40</b>
+                </div>
+            </div>
+            <div style="background:#fff; border-top:4px solid #2980b9; padding:20px; border-radius:8px; margin-bottom:15px; box-shadow:0 4px 10px rgba(0,0,0,0.1); min-height:100px; display:flex; align-items:center; justify-content:center; text-align:center;">
+                <p id="istSenaryo" style="font-weight:600; line-height:1.5; margin:0;">Yükleniyor...</p>
+            </div>
+            <div id="istButonlar" style="display:flex; flex-direction:column; gap:10px;"></div>
+            <div id="istGeriBildirim" style="margin-top:15px; text-align:center; font-weight:bold; height:35px; border-radius:8px; display:flex; align-items:center; justify-content:center;"></div>
+            <div style="margin-top:auto; font-size:10px; font-weight:bold; color:rgba(0,0,0,0.5); padding-top:10px;">Araç: Murat Mutlu</div>
+        </div>
+    `;
+
+    window.ISTIMALET_MOTORU = {
+        sadakat: 30, isyan: 40, sira: 0,
+        vakalar: [
+            { t: "Fethedilen kentin Hristiyan halkı, eski Bizans vergilerinden çok bunalmış durumda. Yeni vergi düzenimiz ne olmalı?", o: [
+                { b: "Adil bir vergi sistemi kurup, ihtiyaç sahiplerinden vergi almayalım.", d: {s: 25, i: -20}, m: "DOĞRU! İstimalet sayesinde halk Osmanlı'yı 'kurtarıcı' olarak gördü." },
+                { b: "Savaş masraflarını karşılamak için vergileri %50 artıralım.", d: {s: -20, i: 30}, m: "HATALI! Halkı Bizans'a geri ittin, isyan ateşi yakıldı." }
+            ]},
+            { t: "Ortodoks rahipler kiliselerinin korunmasını ve ayinlerin serbest olmasını istiyor.", o: [
+                { b: "İnanç özgürlüğü devleti böler, kiliseleri camiye çevirelim.", d: {s: -30, i: 40}, m: "TEHLİKELİ! Osmanlı'nın Balkan kalıcılığını sağlayan en temel hoşgörü kuralını yıktın." },
+                { b: "İnançları güvencemiz altındadır, kiliseleri tamir ettirip serbest bırakalım.", d: {s: 30, i: -25}, m: "MÜKEMMEL! Hoşgörü (Değerler Eğitimi) sayesinde Balkanlar'da kılıçsız fetih yaptın." }
+            ]}
+        ],
+        baslat: function() { this.goster(); },
+        goster: function() {
+            if(this.sira >= this.vakalar.length) { this.bitir(); return; }
+            const v = this.vakalar[this.sira];
+            document.getElementById('istSenaryo').innerText = v.t;
+            document.getElementById('istSadakat').innerText = this.sadakat;
+            document.getElementById('istIsyan').innerText = "%" + this.isyan;
+            document.getElementById('istGeriBildirim').innerHTML = "";
+            document.getElementById('istGeriBildirim').style.background = "transparent";
+
+            const btnKutusu = document.getElementById('istButonlar');
+            btnKutusu.innerHTML = "";
+            v.o.forEach(opt => {
+                const b = document.createElement('button');
+                b.style.cssText = "padding:12px; border:none; border-radius:8px; background:#2980b9; color:#fff; font-weight:bold; cursor:pointer;";
+                b.innerText = opt.b;
+                b.onclick = () => this.cevapla(opt.d, opt.m);
+                btnKutusu.appendChild(b);
+            });
+        },
+        cevapla: function(degisim, mesaj) {
+            this.sadakat += degisim.s; this.isyan += degisim.i;
+            const gb = document.getElementById('istGeriBildirim');
+            gb.style.background = degisim.s > 0 ? "#27ae60" : "#8B1A1A";
+            gb.style.color = "#fff"; gb.innerHTML = mesaj;
+            document.getElementById('istButonlar').innerHTML = "";
+            this.sira++;
+            setTimeout(() => this.goster(), 2500);
+        },
+        bitir: function() {
+            document.getElementById('istSimulator').innerHTML = `
+                <div style="text-align:center; padding:40px;">
+                    <i class="fa-solid fa-dove" style="font-size:4em; color:#27ae60;"></i>
+                    <h2>Yürekler Fetholundu!</h2>
+                    <p>Halkın Sadakati: ${this.sadakat} | İsyan Riski: %${this.isyan}</p>
+                    <button onclick="window.HARITA_MOTORU['harita_u2_arac_istimalet_12']()" style="padding:10px 20px; border:none; background:#2c3e50; color:#fff; border-radius:5px; cursor:pointer;">Tekrar Dene</button>
+                </div>
+            `;
+        }
+    };
+    window.ISTIMALET_MOTORU.baslat();
+};
+
+// =============================================================================
+// 13. ARAÇ: TIMAR SİSTEMİ ÇARKI (EKONOMİ-ORDU ANALİZİ)
+// =============================================================================
+window.HARITA_MOTORU["harita_u2_arac_timar_13"] = function() {
+    if (window.currentMapInstance) { window.currentMapInstance.remove(); window.currentMapInstance = null; }
+
+    const mapCanvas = document.getElementById('mapCanvas');
+    const controlsContainer = document.getElementById('mapControlsContainer');
+
+    controlsContainer.innerHTML = `
+        <div style="text-align: center; color: #F4E4B0;">
+            <h3 style="margin:0; color: #E8A020;">Tımar Sistemi Çarkı</h3>
+            <p style="font-size: 0.85em; opacity: 0.8; margin:5px 0 0 0;">AYT Odağı: Üretim, Ordu ve Toprak Yönetimi</p>
+        </div>
+    `;
+    controlsContainer.style.display = 'block';
+
+    mapCanvas.innerHTML = `
+        <div id="timarSimulator" style="width:100%; height:100%; background:#d4e1ce; color:#2c3e50; font-family:'Inter', sans-serif; display:flex; flex-direction:column; padding:15px; box-sizing:border-box; overflow-y:auto;">
+            
+            <div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap:10px; margin-bottom:15px;">
+                <div style="background:#fff; padding:10px; border-radius:8px; border:2px solid #8B1A1A; text-align:center;">
+                    <i class="fa-solid fa-horse-head" style="color:#8B1A1A;"></i><br><small>Cebelü (Asker)</small><br><b id="tmrAsker">0</b>
+                </div>
+                <div style="background:#fff; padding:10px; border-radius:8px; border:2px solid #27ae60; text-align:center;">
+                    <i class="fa-solid fa-wheat-awn" style="color:#27ae60;"></i><br><small>Üretimde Süreklilik</small><br><b id="tmrUretim">%100</b>
+                </div>
+                <div style="background:#fff; padding:10px; border-radius:8px; border:2px solid #C9A84C; text-align:center;">
+                    <i class="fa-solid fa-gavel" style="color:#C9A84C;"></i><br><small>Devlet Otoritesi</small><br><b id="tmrOtorite">Güçlü</b>
+                </div>
+            </div>
+
+            <div style="background:#fff; border-left:5px solid #2c3e50; padding:15px; border-radius:8px; margin-bottom:15px; box-shadow:0 4px 6px rgba(0,0,0,0.1);">
+                <p id="tmrSenaryo" style="font-weight:500; line-height:1.4; margin:0;">Hasat zamanı! Toplanan vergilerle devlet ne yapmanı emrediyor?</p>
+            </div>
+
+            <div id="tmrButonlar" style="display:flex; flex-direction:column; gap:10px;">
+                <button onclick="window.TIMAR_MOTORU.karar('cebelu')" style="padding:12px; border:none; border-radius:8px; background:#8B1A1A; color:#fff; font-weight:bold; cursor:pointer;">
+                    <i class="fa-solid fa-shield"></i> Cebelü Yetiştir (Orduyu Besle)
+                </button>
+                <button onclick="window.TIMAR_MOTORU.karar('ciftbozan')" style="padding:12px; border:none; border-radius:8px; background:#C9A84C; color:#fff; font-weight:bold; cursor:pointer;">
+                    <i class="fa-solid fa-ban"></i> Çiftbozan Vergisi Kes (Boş Toprağa Ceza)
+                </button>
+                <button onclick="window.TIMAR_MOTORU.karar('angarya')" style="padding:12px; border:none; border-radius:8px; background:#2c3e50; color:#fff; font-weight:bold; cursor:pointer;">
+                    <i class="fa-solid fa-person-digging"></i> Angarya Yaptır (Zulüm Seçeneği)
+                </button>
+            </div>
+            <div id="tmrGeriBildirim" style="margin-top:15px; text-align:center; font-weight:bold; min-height:40px;"></div>
+        </div>
+    `;
+
+    window.TIMAR_MOTORU = {
+        asker: 0, uretim: 100, otorite: 100,
+        karar: function(tip) {
+            const gb = document.getElementById('tmrGeriBildirim');
+            if(tip === 'cebelü') {
+                this.asker += 5; gb.style.color = "#27ae60";
+                gb.innerHTML = "Tebrikler! Hazineden para çıkmadan taşrada ordu yetiştirdin. (TYT/AYT Bilgisi)";
+            } else if(tip === 'ciftbozan') {
+                this.uretim = 100; this.otorite += 10; gb.style.color = "#2980b9";
+                gb.innerHTML = "Üretimde süreklilik sağlandı. Toprağı boş bırakmanın cezası ağırdır! (Tımar Nizamı)";
+            } else {
+                this.uretim -= 30; this.otorite -= 20; gb.style.color = "#8B1A1A";
+                gb.innerHTML = "HATALI! Köylüye angarya yüklemek yasaktır. Halk toprağı terk ediyor!";
+            }
+            document.getElementById('tmrAsker').innerText = this.asker;
+            document.getElementById('tmrUretim').innerText = "%" + this.uretim;
+            document.getElementById('tmrOtorite').innerText = this.otorite < 50 ? "Zayıf" : "Güçlü";
+            
+            if(this.uretim < 10) {
+                document.getElementById('timarSimulator').innerHTML = "<div style='text-align:center; padding:40px;'><h2>Tımarın Geri Alındı!</h2><p>Üretimi durdurdun ve halkı kaçırdın.</p><button onclick='location.reload()'>Sistemi Sıfırla</button></div>";
+            }
+        }
+    };
+};
+window.HARITA_MOTORU = window.HARITA_MOTORU || {};
+
+// =============================================================================
+// 14. ARAÇ: DEVŞİRME VE KAPIKULU MOTORU (KARİYER SERÜVENİ)
+// =============================================================================
+window.HARITA_MOTORU["harita_u2_arac_devsirme_14"] = function() {
+    // GÜVENLİK KONTROLÜ: Harita çökmesini engeller
+    if (window.currentMapInstance) {
+        window.currentMapInstance.remove();
+        window.currentMapInstance = null;
+    }
+
+    const mapCanvas = document.getElementById('mapCanvas');
+    const controlsContainer = document.getElementById('mapControlsContainer');
+
+    controlsContainer.innerHTML = `
+        <div style="text-align: center; color: #F4E4B0;">
+            <h3 style="margin:0; color: #E8A020;">Devşirme Kariyer Simülatörü</h3>
+            <p style="font-size: 0.85em; opacity: 0.8; margin:5px 0 0 0;">Maarif Modeli: "Liyakat" ve "Dikey Hareketlilik"</p>
+        </div>
+    `;
+    controlsContainer.style.display = 'block';
+
+    mapCanvas.innerHTML = `
+        <div id="devSimulator" style="width:100%; height:100%; background:#e9e4d4; color:#2c3e50; font-family:'Inter', sans-serif; display:flex; flex-direction:column; padding:15px; box-sizing:border-box; overflow-y:auto;">
+            <div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap:10px; margin-bottom:15px;">
+                <div style="background:#fff; padding:10px; border-radius:8px; border:2px solid #8B1A1A; text-align:center;">
+                    <i class="fa-solid fa-dumbbell" style="color:#8B1A1A;"></i><br><small>Askeri Yetenek</small><br><b id="devGuc">10</b>
+                </div>
+                <div style="background:#fff; padding:10px; border-radius:8px; border:2px solid #2980b9; text-align:center;">
+                    <i class="fa-solid fa-brain" style="color:#2980b9;"></i><br><small>Zeka / Eğitim</small><br><b id="devZeka">10</b>
+                </div>
+                <div style="background:#fff; padding:10px; border-radius:8px; border:2px solid #27ae60; text-align:center;">
+                    <i class="fa-solid fa-medal" style="color:#27ae60;"></i><br><small>Sadakat (Liyakat)</small><br><b id="devSadakat">10</b>
+                </div>
+            </div>
+            <div style="background:#fff; border-left:5px solid #8B1A1A; padding:15px; border-radius:8px; margin-bottom:15px; box-shadow:0 4px 6px rgba(0,0,0,0.1);">
+                <small style="color:#8B1A1A; font-weight:bold;">AŞAMA: <span id="devAsama">1</span>/5</small>
+                <p id="devSenaryo" style="margin:10px 0 0 0; font-size:1em; font-weight:500; line-height:1.4;">Yükleniyor...</p>
+            </div>
+            <div id="devButonlar" style="display:flex; flex-direction:column; gap:10px;"></div>
+            <div id="devGeriBildirim" style="margin-top:15px; text-align:center; font-weight:bold; min-height:40px;"></div>
+        </div>
+    `;
+
+    window.DEVSIRME_MOTORU = {
+        guc: 10, zeka: 10, sadakat: 10, asama: 0,
+        senaryolar: [
+            {
+                t: "Turnacıbaşı köyüne geldi. Devşirme kanununa göre hangisi seçilmen için engeldir?",
+                o: [
+                    { b: "Ailenin tek erkek çocuğuyum.", d: {g: 0, z: 0, s: -50}, m: "ELENDİN! Osmanlı kanununa göre ailenin tek oğlu devşirilemez (Sosyal denge)." },
+                    { b: "İki erkek kardeşim daha var ve sağlıklıyım.", d: {g: 10, z: 10, s: 10}, m: "SEÇİLDİN! Soya zarar vermeden devlet hizmetine alındın." }
+                ]
+            },
+            {
+                t: "Türk ailenin yanında eğitimi tamamladın. Acemi Ocağı'na (Gelibolu) alındın. Neye odaklanacaksın?",
+                o: [
+                    { b: "Kılıç ve gürz talimlerinde en iyi olmaya.", d: {g: 30, z: 5, s: 10}, m: "GÜÇLÜ ASKER! Komutanların dikkatini çektin." },
+                    { b: "Kitap okumaya ve hesap işlerini öğrenmeye.", d: {g: 5, z: 30, s: 10}, m: "ZEKİ BÜROKRAT! Eğitimin parlıyor." }
+                ]
+            },
+            {
+                t: "Büyük seçim günü (Bedargah/Çıkma). Hangi kariyer yolunu zorlayacaksın?",
+                o: [
+                    { b: "Padişahın dizinin dibinde, Enderun Mektebi'nde eğitim almak.", d: {g: 0, z: 30, s: 20}, m: "SARAY EĞİTİMİ! Devletin zirvesine aday oldun." },
+                    { b: "Yeniçeri Ocağı'na katılıp profesyonel piyade olmak.", d: {g: 30, z: 0, s: 20}, m: "OCAK EVLADI! Padişahın en sadık kılıcı oldun." }
+                ]
+            }
+        ],
+        baslat: function() { this.guncelle(); },
+        guncelle: function() {
+            if(this.sadakat < 0) { this.bitir("Elendin!"); return; }
+            if(this.asama >= 3) { this.bitir("Mezuniyet"); return; }
+            const s = this.senaryolar[this.asama];
+            document.getElementById('devGuc').innerText = this.guc;
+            document.getElementById('devZeka').innerText = this.zeka;
+            document.getElementById('devSadakat').innerText = this.sadakat;
+            document.getElementById('devAsama').innerText = this.asama + 1;
+            document.getElementById('devSenaryo').innerText = s.t;
+            
+            const bKutu = document.getElementById('devButonlar');
+            bKutu.innerHTML = "";
+            s.o.forEach(opt => {
+                const btn = document.createElement('button');
+                btn.style.cssText = "padding:12px; border:none; border-radius:8px; background:#2c3e50; color:#fff; cursor:pointer; text-align:left;";
+                btn.innerHTML = `<i class="fa-solid fa-chevron-right"></i> ${opt.b}`;
+                btn.onclick = () => {
+                    this.guc += opt.d.g; this.zeka += opt.d.z; this.sadakat += opt.d.s;
+                    document.getElementById('devGeriBildirim').innerText = opt.m;
+                    bKutu.innerHTML = "";
+                    this.asama++;
+                    setTimeout(() => this.guncelle(), 2500);
+                };
+                bKutu.appendChild(btn);
+            });
+        },
+        bitir: function(tip) {
+            let sonuc = (this.zeka > this.guc) ? "Vezir-i Azam (Sadrazam) Yolundasın!" : "Yeniçeri Ağası Yolundasın!";
+            if(tip === "Elendin!") sonuc = "Devşirme Sisteminden Elendin.";
+            document.getElementById('devSimulator').innerHTML = `<div style="text-align:center; padding:40px;"><h2>${sonuc}</h2><button onclick="window.HARITA_MOTORU['harita_u2_arac_devsirme_14']()" style="padding:10px; border:none; background:#2c3e50; color:#fff; border-radius:5px;">Tekrar Dene</button></div>`;
+        }
+    };
+    window.DEVSIRME_MOTORU.baslat();
+};
+
+// =============================================================================
+// 15. ARAÇ: DİVAN-I HÜMAYUN: KARAR ODASI (TYT/AYT BÜROKRASİ ANALİZİ)
+// =============================================================================
+window.HARITA_MOTORU["harita_u2_arac_divan_15"] = function() {
+    if (window.currentMapInstance) { window.currentMapInstance.remove(); window.currentMapInstance = null; }
+
+    const mapCanvas = document.getElementById('mapCanvas');
+    const controlsContainer = document.getElementById('mapControlsContainer');
+
+    controlsContainer.innerHTML = `
+        <div style="text-align: center; color: #F4E4B0;">
+            <h3 style="margin:0; color: #E8A020;">Divan-ı Hümayun Karar Odası</h3>
+            <p style="font-size: 0.85em; opacity: 0.8; margin:5px 0 0 0;">AYT Odağı: Görevliler ve Yetki Alanları</p>
+        </div>
+    `;
+    controlsContainer.style.display = 'block';
+
+    mapCanvas.innerHTML = `
+        <div id="dvnSimulator" style="width:100%; height:100%; background:#dce4ec; color:#2c3e50; font-family:'Inter', sans-serif; display:flex; flex-direction:column; padding:15px; box-sizing:border-box; overflow-y:auto;">
+            <div style="background:#fff; border-left:5px solid #8B1A1A; padding:20px; border-radius:8px; margin-bottom:20px; box-shadow:0 4px 10px rgba(0,0,0,0.1); min-height:90px;">
+                <p id="dvnMetin" style="margin:0; font-size:1.1em; font-weight:600; line-height:1.4;">Yükleniyor...</p>
+            </div>
+            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
+                <button onclick="window.DIVANOSM_MOTORU.cevapla('sadrazam')" style="padding:15px 5px; border:none; border-radius:8px; background:#8B1A1A; color:#fff; cursor:pointer;"><b>Sadrazam</b><br><small>Mühür Sahibi</small></button>
+                <button onclick="window.DIVANOSM_MOTORU.cevapla('kazasker')" style="padding:15px 5px; border:none; border-radius:8px; background:#27ae60; color:#fff; cursor:pointer;"><b>Kazasker</b><br><small>Adalet/Eğitim</small></button>
+                <button onclick="window.DIVANOSM_MOTORU.cevapla('defterdar')" style="padding:15px 5px; border:none; border-radius:8px; background:#C9A84C; color:#fff; cursor:pointer;"><b>Defterdar</b><br><small>Maliye</small></button>
+                <button onclick="window.DIVANOSM_MOTORU.cevapla('nisanci')" style="padding:15px 5px; border:none; border-radius:8px; background:#2980b9; color:#fff; cursor:pointer;"><b>Nişancı</b><br><small>Tuğra/Kayıt</small></button>
+            </div>
+            <div id="dvnGeriBildirim" style="margin-top:20px; text-align:center; font-weight:bold; min-height:30px;"></div>
+        </div>
+    `;
+
+    window.DIVANOSM_MOTORU = {
+        sira: 0,
+        vakalar: [
+            { t: "Fetholunan toprakların kayıtlarını 'Tahrir Defterine' kim işlemelidir?", c: "nisanci" },
+            { t: "Orduya yeni atanan kadıların liyakatini kim denetler ve atamasını yapar?", c: "kazasker" },
+            { t: "Padişahın mührünü taşıyarak 'Serdar-ı Ekrem' sıfatıyla orduyu kim yönetir?", c: "sadrazam" },
+            { t: "Devletin bu yılki gelir-gider bütçesini kim hazırlar?", c: "defterdar" }
+        ],
+        goster: function() {
+            if(this.sira >= this.vakalar.length) { this.bitir(); return; }
+            document.getElementById('dvnMetin').innerText = this.vakalar[this.sira].t;
+            document.getElementById('dvnGeriBildirim').innerHTML = "";
+        },
+        cevapla: function(secim) {
+            const gb = document.getElementById('dvnGeriBildirim');
+            if(secim === this.vakalar[this.sira].c) {
+                gb.style.color = "#27ae60"; gb.innerHTML = "DOĞRU! Bürokratik çarklar dönüyor.";
+            } else {
+                gb.style.color = "#8B1A1A"; gb.innerHTML = "HATALI! Devlet işleyişi tıkandı.";
+            }
+            this.sira++;
+            setTimeout(() => this.goster(), 1800);
+        },
+        bitir: function() {
+            document.getElementById('dvnSimulator').innerHTML = `<div style="text-align:center; padding:40px;"><h2>Divan Meclisi Sona Erdi</h2><button onclick="window.HARITA_MOTORU['harita_u2_arac_divan_15']()" style="padding:10px; border:none; background:#2c3e50; color:#fff; border-radius:5px;">Yeniden Görev Al</button></div>`;
+        }
+    };
+    window.DIVANOSM_MOTORU.goster();
+};
+
+// =============================================================================
+// 16. ARAÇ: FETRET DEVRİ: ŞEHZADELER SAVAŞI (STRATEJİK ANALİZ)
+// =============================================================================
+window.HARITA_MOTORU["harita_u2_arac_fetret_16"] = function() {
+    if (window.currentMapInstance) { window.currentMapInstance.remove(); window.currentMapInstance = null; }
+
+    const mapCanvas = document.getElementById('mapCanvas');
+    const controlsContainer = document.getElementById('mapControlsContainer');
+
+    controlsContainer.innerHTML = `
+        <div style="text-align: center; color: #F4E4B0;">
+            <h3 style="margin:0; color: #E8A020;">Fetret Devri: Devleti Birleştir</h3>
+            <p style="font-size: 0.85em; opacity: 0.8; margin:5px 0 0 0;">Maarif Modeli: "Merkezi Otorite" ve "İstikrar" Analizi</p>
+        </div>
+    `;
+    controlsContainer.style.display = 'block';
+
+    mapCanvas.innerHTML = `
+        <div id="ftrSimulator" style="width:100%; height:100%; background:#eedfc8; color:#2c3e50; font-family:'Inter', sans-serif; display:flex; flex-direction:column; padding:15px; box-sizing:border-box; overflow-y:auto;">
+            <div style="background:#fff; border-top:4px solid #8B1A1A; padding:20px; border-radius:8px; margin-bottom:15px; box-shadow:0 4px 10px rgba(0,0,0,0.1); text-align:center;">
+                <p style="font-weight:bold; margin-bottom:10px;">Çelebi Mehmet Rolündesin (1402-1413)</p>
+                <p id="ftrSenaryo" style="font-size:0.95em; line-height:1.4; margin:0;">Yükleniyor...</p>
+            </div>
+            <div id="ftrButonlar" style="display:flex; flex-direction:column; gap:10px;"></div>
+            <div id="ftrGeriBildirim" style="margin-top:15px; text-align:center; font-weight:bold; height:35px; border-radius:8px; display:flex; align-items:center; justify-content:center;"></div>
+        </div>
+    `;
+
+    window.FETRET_MOTORU = {
+        sira: 0,
+        senaryolar: [
+            { t: "Ankara Savaşı sonrası kardeşin Süleyman Edirne'de tahtını kurdu. İlk adımın ne olmalı?", o: [
+                { b: "Amasya'da kalıp gücümü toplayayım ve Anadolu'daki Türkmen beylerinin desteğini alayım.", d: 1, m: "AKILLICA! Parçalanmış bir devlette önce güvenli bir üs ve yerel meşruiyet şarttır." },
+                { b: "Hemen Bizans ile ittifak kurup kardeşlerime savaş açayım.", d: 0, m: "RİSKLİ! Bizans'a bağımlı kalmak otoriteni sarsar ve Türkmenlerin desteğini kaybetmene neden olur." }
+            ]},
+            { t: "Musa Çelebi İstanbul'u kuşattı ama Bizans'la arası bozuldu. Ne yaparsın?", o: [
+                { b: "Musa'ya karşı diğer kardeşlerim ve Bizans'la geçici ittifak yaparak düzeni sağlayayım.", d: 1, m: "STRATEJİK ZAFER! Düşmanını yalnızlaştırdın ve devletin birliği yolunda en büyük engeli aştın." },
+                { b: "Ben de başka bir şehri kuşatıp karmaşayı artırayım.", d: 0, m: "KAOS! Devletin tamamen yok olmasına ve beyliklerin kalıcı olarak ayrılmasına neden oldun." }
+            ]}
+        ],
+        goster: function() {
+            if(this.sira >= this.senaryolar.length) { this.bitir(); return; }
+            const s = this.senaryolar[this.sira];
+            document.getElementById('ftrSenaryo').innerText = s.t;
+            document.getElementById('ftrGeriBildirim').innerHTML = "";
+            document.getElementById('ftrGeriBildirim').style.background = "transparent";
+
+            const btnKutusu = document.getElementById('ftrButonlar');
+            btnKutusu.innerHTML = "";
+            s.o.forEach(opt => {
+                const b = document.createElement('button');
+                b.style.cssText = "padding:12px; border:none; border-radius:8px; background:#8B1A1A; color:#fff; font-weight:bold; cursor:pointer;";
+                b.innerText = opt.b;
+                b.onclick = () => {
+                    const gb = document.getElementById('ftrGeriBildirim');
+                    gb.style.background = opt.d ? "#27ae60" : "#d35400";
+                    gb.style.color = "#fff"; gb.innerHTML = opt.m;
+                    btnKutusu.innerHTML = "";
+                    this.sira++;
+                    setTimeout(() => this.goster(), 2500);
+                };
+                btnKutusu.appendChild(b);
+            });
+        },
+        bitir: function() {
+            document.getElementById('ftrSimulator').innerHTML = `<div style="text-align:center; padding:40px;"><i class="fa-solid fa-crown" style="font-size:4em; color:#27ae60;"></i><h2>Devletin İkinci Kurucusu Oldun!</h2><p>Kaosu bitirdin ve Osmanlı'yı yeniden birleştirdin.</p><button onclick="window.HARITA_MOTORU['harita_u2_arac_fetret_16']()" style="padding:10px; border:none; background:#2c3e50; color:#fff; border-radius:5px;">Tarihi Baştan Yaz</button></div>`;
+        }
+    };
+    window.FETRET_MOTORU.goster();
+};
+window.HARITA_MOTORU = window.HARITA_MOTORU || {};
+
+// =============================================================================
+// 17. ARAÇ: BEYLİK DİPLOMASİ ÇARKı (ANADOLU TÜRK BİRLİĞİ - ATSB)
+// =============================================================================
+window.HARITA_MOTORU["harita_u2_arac_diplomasi_17"] = function() {
+    if (window.currentMapInstance) { window.currentMapInstance.remove(); window.currentMapInstance = null; }
+
+    const mapCanvas = document.getElementById('mapCanvas');
+    const controlsContainer = document.getElementById('mapControlsContainer');
+
+    controlsContainer.innerHTML = `
+        <div style="text-align: center; color: #F4E4B0;">
+            <h3 style="margin:0; color: #E8A020;">Beylik Diplomasi Çarkı</h3>
+            <p style="font-size: 0.85em; opacity: 0.8; margin:5px 0 0 0;">AYT Odağı: ATSB'yi Sağlama Yolları (Çeyiz, Satın Alma, Savaş)</p>
+        </div>
+    `;
+    controlsContainer.style.display = 'block';
+
+    mapCanvas.innerHTML = `
+        <div id="dipSimulator" style="width:100%; height:100%; background:#e4e9ed; color:#2c3e50; font-family:'Inter', sans-serif; display:flex; flex-direction:column; padding:15px; box-sizing:border-box; overflow-y:auto;">
+            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; margin-bottom:15px;">
+                <div style="background:#fff; padding:10px; border-radius:8px; border:2px solid #27ae60; text-align:center;">
+                    <i class="fa-solid fa-earth-asia" style="color:#27ae60;"></i><br><small>Siyasi Birlik</small><br><b id="dipBirlik">%0</b>
+                </div>
+                <div style="background:#fff; padding:10px; border-radius:8px; border:2px solid #C9A84C; text-align:center;">
+                    <i class="fa-solid fa-coins" style="color:#C9A84C;"></i><br><small>Hazine</small><br><b id="dipHazine">100k</b>
+                </div>
+            </div>
+            <div style="background:#fff; border-left:5px solid #2980b9; padding:15px; border-radius:8px; margin-bottom:15px; box-shadow:0 4px 6px rgba(0,0,0,0.1);">
+                <small style="color:#2980b9; font-weight:bold;">STRATEJİK DURUM (Aşama <span id="dipAsama">1</span>/3)</small>
+                <p id="dipSenaryo" style="margin:10px 0 0 0; font-size:1em; font-weight:500; line-height:1.4;">Yükleniyor...</p>
+            </div>
+            <div id="dipButonlar" style="display:flex; flex-direction:column; gap:10px;"></div>
+            <div id="dipGeriBildirim" style="margin-top:15px; text-align:center; font-weight:bold; min-height:40px;"></div>
+        </div>
+    `;
+
+    window.DIPLOMASI_MOTORU = {
+        birlik: 0, hazine: 100, asama: 0,
+        senaryolar: [
+            { t: "Germiyanoğulları Beyliği ile akrabalık kurulmak isteniyor. Ne yaparsın?", o: [
+                { b: "Yıldırım Bayezid'i Germiyan beyinin kızıyla evlendir (Çeyiz yolu).", d: {b: 30, h: 0}, m: "DOĞRU (AYT)! Kütahya, Emet, Tavşanlı savaşsız Osmanlı'ya geçti." },
+                { b: "Doğrudan savaş aç ve topraklarını zorla al.", d: {b: 10, h: -40}, m: "RİSKLİ! Anadolu'da Türkmenlerin tepkisini çektin ve hazineyi harcadın." }
+            ]},
+            { t: "Hamitoğulları Beyliği ekonomik sıkıntıda. Isparta ve çevresini nasıl alırsın?", o: [
+                { b: "Hazineden 80 bin altın vererek toprakları satın al.", d: {b: 30, h: -80}, m: "EKONOMİK DEHA! Savaşmadan sınırları genişlettin (AYT Bilgisi)." },
+                { b: "Zayıf hallerinden faydalanıp kuşatma yapalım.", d: {b: 15, h: -10}, m: "VERİMSİZ! Bölge halkı Osmanlı'ya düşman oldu." }
+            ]}
+        ],
+        baslat: function() { this.guncelle(); },
+        guncelle: function() {
+            if(this.asama >= 2) { this.bitir(); return; }
+            const s = this.senaryolar[this.asama];
+            document.getElementById('dipBirlik').innerText = "%" + this.birlik;
+            document.getElementById('dipHazine').innerText = this.hazine + "k";
+            document.getElementById('dipAsama').innerText = this.asama + 1;
+            document.getElementById('dipSenaryo').innerText = s.t;
+            const bKutu = document.getElementById('dipButonlar');
+            bKutu.innerHTML = "";
+            s.o.forEach(opt => {
+                const btn = document.createElement('button');
+                btn.style.cssText = "padding:12px; border:none; border-radius:8px; background:#2c3e50; color:#fff; cursor:pointer; text-align:left;";
+                btn.innerHTML = `<i class="fa-solid fa-scroll"></i> ${opt.b}`;
+                btn.onclick = () => {
+                    this.birlik += opt.d.b; this.hazine += opt.d.h;
+                    document.getElementById('dipGeriBildirim').innerText = opt.m;
+                    bKutu.innerHTML = "";
+                    this.asama++;
+                    setTimeout(() => this.guncelle(), 2500);
+                };
+                bKutu.appendChild(btn);
+            });
+        },
+        bitir: function() {
+            document.getElementById('dipSimulator').innerHTML = `<div style="text-align:center; padding:40px;"><h2>Diplomasi Tamamlandı</h2><p>Siyasi Birlik: %${this.birlik}</p><button onclick="window.HARITA_MOTORU['harita_u2_arac_diplomasi_17']()" style="padding:10px; border:none; background:#2c3e50; color:#fff; border-radius:5px;">Yeniden Oyna</button></div>`;
+        }
+    };
+    window.DIPLOMASI_MOTORU.baslat();
+};
+
+// =============================================================================
+// 18. ARAÇ: OSMANLI ORDU YAPISI (EYALET VS KAPIKULU SINIFLANDIRMA)
+// =============================================================================
+window.HARITA_MOTORU["harita_u2_arac_ordu_18"] = function() {
+    if (window.currentMapInstance) { window.currentMapInstance.remove(); window.currentMapInstance = null; }
+
+    const mapCanvas = document.getElementById('mapCanvas');
+    const controlsContainer = document.getElementById('mapControlsContainer');
+
+    controlsContainer.innerHTML = `
+        <div style="text-align: center; color: #F4E4B0;">
+            <h3 style="margin:0; color: #E8A020;">Osmanlı Ordu Teşkilatı</h3>
+            <p style="font-size: 0.85em; opacity: 0.8; margin:5px 0 0 0;">TYT Odağı: Maaşlı (Kapıkulu) vs Topraklı (Eyalet) Askerleri</p>
+        </div>
+    `;
+    controlsContainer.style.display = 'block';
+
+    mapCanvas.innerHTML = `
+        <div id="orduSimulator" style="width:100%; height:100%; background:#d4e1ce; color:#2c3e50; font-family:'Inter', sans-serif; display:flex; flex-direction:column; padding:15px; box-sizing:border-box; overflow-y:auto;">
+            <div id="orduGeriBildirim" style="text-align:center; font-weight:bold; min-height:35px; margin-bottom:10px; border-radius:8px;"></div>
+            <div style="background:#fff; border-radius:15px; padding:20px; box-shadow:0 4px 10px rgba(0,0,0,0.1); text-align:center; margin-bottom:20px;">
+                <h2 id="askerAdi" style="margin:0 0 10px 0;">Yükleniyor...</h2>
+                <p id="askerBilgi" style="font-size:0.9em; font-style:italic;">...</p>
+            </div>
+            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
+                <button onclick="window.ORDU_MOTORU.cevapla('kapikulu')" style="padding:20px 10px; border:none; border-radius:8px; background:#8B1A1A; color:#fff; font-weight:bold; cursor:pointer;">KAPIKULU<br><small>(Maaşlı/Merkez)</small></button>
+                <button onclick="window.ORDU_MOTORU.cevapla('eyalet')" style="padding:20px 10px; border:none; border-radius:8px; background:#27ae60; color:#fff; font-weight:bold; cursor:pointer;">EYALET<br><small>(Tımarlı/Taşra)</small></button>
+            </div>
+        </div>
+    `;
+
+    window.ORDU_MOTORU = {
+        sira: 0,
+        birlikler: [
+            { a: "Yeniçeriler", b: "3 ayda bir 'Ulufe' maaşı alan profesyonel piyadeler.", t: "kapikulu" },
+            { a: "Tımarlı Sipahiler", b: "Taşrada tımar geliriyle beslenen, ordunun asıl gücü olan atlılar.", t: "eyalet" },
+            { a: "Akıncılar", b: "Sınır boylarında keşif yapan ve orduya yol açan Türkmen süvarileri.", t: "eyalet" },
+            { a: "Cebeciler", b: "Merkezde silahların yapımı ve tamirinden sorumlu teknik sınıf.", t: "kapikulu" }
+        ],
+        goster: function() {
+            if(this.sira >= this.birlikler.length) { this.bitir(); return; }
+            const b = this.birlikler[this.sira];
+            document.getElementById('askerAdi').innerText = b.a;
+            document.getElementById('askerBilgi').innerText = b.b;
+            document.getElementById('orduGeriBildirim').innerHTML = "";
+            document.getElementById('orduGeriBildirim').style.background = "transparent";
+        },
+        cevapla: function(secim) {
+            const gb = document.getElementById('orduGeriBildirim');
+            if(secim === this.birlikler[this.sira].t) {
+                gb.style.background = "#27ae60"; gb.style.color = "#fff"; gb.innerHTML = "DOĞRU EŞLEŞTİRME!";
+            } else {
+                gb.style.background = "#8B1A1A"; gb.style.color = "#fff"; gb.innerHTML = "HATALI SINIFLANDIRMA!";
+            }
+            this.sira++;
+            setTimeout(() => this.goster(), 1800);
+        },
+        bitir: function() {
+            document.getElementById('orduSimulator').innerHTML = `<div style="text-align:center; padding:40px;"><h2>Teşkilat Analizi Tamam</h2><button onclick="window.HARITA_MOTORU['harita_u2_arac_ordu_18']()" style="padding:10px; border:none; background:#2c3e50; color:#fff; border-radius:5px;">Yeniden Başla</button></div>`;
+        }
+    };
+    window.ORDU_MOTORU.goster();
+};
+
+// =============================================================================
+// 19. ARAÇ: VAKIF ŞEHİR: BURSA MİMARI (BAYINDIRLIK & SOSYAL DEVLET)
+// =============================================================================
+window.HARITA_MOTORU["harita_u2_arac_bursa_19"] = function() {
+    if (window.currentMapInstance) { window.currentMapInstance.remove(); window.currentMapInstance = null; }
+
+    const mapCanvas = document.getElementById('mapCanvas');
+    const controlsContainer = document.getElementById('mapControlsContainer');
+
+    controlsContainer.innerHTML = `
+        <div style="text-align: center; color: #F4E4B0;">
+            <h3 style="margin:0; color: #E8A020;">Vakıf Şehir: Bursa Mimarı</h3>
+            <p style="font-size: 0.85em; opacity: 0.8; margin:5px 0 0 0;">Maarif Modeli: "Sosyal Yardımlaşma" ve "Şehir Kültürü"</p>
+        </div>
+    `;
+    controlsContainer.style.display = 'block';
+
+    mapCanvas.innerHTML = `
+        <div id="brsSimulator" style="width:100%; height:100%; background:#e9e4d4; color:#2c3e50; font-family:'Inter', sans-serif; display:flex; flex-direction:column; padding:15px; box-sizing:border-box; overflow-y:auto;">
+            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; margin-bottom:15px;">
+                <div style="background:#fff; padding:10px; border-radius:8px; border:2px solid #8B1A1A; text-align:center;">
+                    <i class="fa-solid fa-coins"></i><br><small>Akar (Vakıf Geliri)</small><br><b id="brsAkar">100</b>
+                </div>
+                <div style="background:#fff; padding:10px; border-radius:8px; border:2px solid #27ae60; text-align:center;">
+                    <i class="fa-solid fa-city"></i><br><small>Bayındırlık Puanı</small><br><b id="brsBayindir">0</b>
+                </div>
+            </div>
+            <div style="background:#fff; border-left:5px solid #E8A020; padding:15px; border-radius:8px; margin-bottom:15px; text-align:center;">
+                <p id="brsMesaj" style="font-weight:600; margin:0;">Bir Bizans tekfurluğunu İslam başkentine dönüştür!</p>
+            </div>
+            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
+                <button onclick="window.BURSA_MOTORU.insa('bedesten')" style="padding:15px 5px; border:none; border-radius:8px; background:#8B1A1A; color:#fff; cursor:pointer;"><b>Bedesten</b><br><small>Gelir (+40)</small></button>
+                <button onclick="window.BURSA_MOTORU.insa('medrese')" style="padding:15px 5px; border:none; border-radius:8px; background:#2980b9; color:#fff; cursor:pointer;"><b>Medrese</b><br><small>İlim (+30)</small></button>
+                <button onclick="window.BURSA_MOTORU.insa('darussifa')" style="padding:15px 5px; border:none; border-radius:8px; background:#27ae60; color:#fff; cursor:pointer;"><b>Darüşşifa</b><br><small>Sağlık (+30)</small></button>
+                <button onclick="window.BURSA_MOTORU.insa('imarethane')" style="padding:15px 5px; border:none; border-radius:8px; background:#d35400; color:#fff; cursor:pointer;"><b>İmarethane</b><br><small>Yardım (+20)</small></button>
+            </div>
+        </div>
+    `;
+
+    window.BURSA_MOTORU = {
+        akar: 100, bayindir: 0,
+        insa: function(tip) {
+            const msg = document.getElementById('brsMesaj');
+            if(tip === 'bedesten') {
+                this.akar += 40; this.bayindir += 10; msg.innerHTML = "Gelir arttı! Artık halka ücretsiz hizmet sunabilirsin.";
+            } else if(this.akar >= 30) {
+                this.akar -= 30; this.bayindir += 30; msg.innerHTML = "Vakıf sistemi çalışıyor: Halk bu hizmetten ücretsiz yararlanıyor!";
+            } else {
+                msg.innerHTML = "Yetersiz Akar! Önce gelir getiren Bedesten/Han inşa etmelisin.";
+            }
+            document.getElementById('brsAkar').innerText = this.akar;
+            document.getElementById('brsBayindir').innerText = this.bayindir;
+            if(this.bayindir >= 100) msg.innerHTML = "TEBRİKLER! Şehir tam bir Osmanlı Külliyesi haline geldi.";
+        }
+    };
+};
+
+// =============================================================================
+// 20. ARAÇ: TARİHİN KIRILMA NOKTASI: 1402 ANALİZİ (ELEŞTİREL DÜŞÜNME)
+// =============================================================================
+window.HARITA_MOTORU["harita_u2_arac_1402_20"] = function() {
+    if (window.currentMapInstance) { window.currentMapInstance.remove(); window.currentMapInstance = null; }
+
+    const mapCanvas = document.getElementById('mapCanvas');
+    const controlsContainer = document.getElementById('mapControlsContainer');
+
+    controlsContainer.innerHTML = `
+        <div style="text-align: center; color: #F4E4B0;">
+            <h3 style="margin:0; color: #E8A020;">1402 Ankara Savaşı Analizi</h3>
+            <p style="font-size: 0.85em; opacity: 0.8; margin:5px 0 0 0;">Maarif Modeli: "Neden-Sonuç" ve "Kaynak Analizi"</p>
+        </div>
+    `;
+    controlsContainer.style.display = 'block';
+
+    mapCanvas.innerHTML = `
+        <div id="ankSimulator" style="width:100%; height:100%; background:#f2f2f2; color:#2c3e50; font-family:'Inter', sans-serif; display:flex; flex-direction:column; padding:15px; box-sizing:border-box; overflow-y:auto;">
+            <div id="ankGeriBildirim" style="text-align:center; font-weight:bold; min-height:35px; margin-bottom:10px; border-radius:8px;"></div>
+            <div style="background:#fff; border-top:4px solid #E8A020; padding:20px; border-radius:8px; margin-bottom:15px; box-shadow:0 4px 10px rgba(0,0,0,0.1); text-align:center;">
+                <p id="ankMetin" style="font-style:italic; font-weight:500; line-height:1.5; margin:0;">Yükleniyor...</p>
+            </div>
+            <p style="text-align:center; font-size:0.85em; font-weight:bold; margin-bottom:10px; color:#8B1A1A;">BU OLAYIN TEMEL NEDENİ NEDİR?</p>
+            <div style="display:grid; grid-template-columns: 1fr; gap:10px;">
+                <button onclick="window.ANKARA_MOTORU.analiz('siyasi')" style="padding:12px; border:none; border-radius:8px; background:#2980b9; color:#fff; font-weight:bold; cursor:pointer;">SİYASİ NEDEN (Cihan Hakimiyeti)</button>
+                <button onclick="window.ANKARA_MOTORU.analiz('ekonomik')" style="padding:12px; border:none; border-radius:8px; background:#27ae60; color:#fff; font-weight:bold; cursor:pointer;">EKONOMİK NEDEN (İpek Yolu)</button>
+                <button onclick="window.ANKARA_MOTORU.analiz('askeri')" style="padding:12px; border:none; border-radius:8px; background:#8B1A1A; color:#fff; font-weight:bold; cursor:pointer;">ASKERİ NEDEN (İhanet/Savaş Taktiği)</button>
+            </div>
+        </div>
+    `;
+
+    window.ANKARA_MOTORU = {
+        sira: 0,
+        vakalar: [
+            { t: "İki hükümdarın da dünyayı tek bir merkezden yönetme (Kızıl Elma) arzusuna sahip olması.", c: "siyasi" },
+            { t: "Timur'un fillere sahip olması ve Osmanlı ordusundaki Kara Tatarların saf değiştirmesi.", c: "askeri" },
+            { t: "Çin seferine çıkmak isteyen Timur'un, arkasında güçlü bir Osmanlı bırakmak istememesi.", c: "siyasi" }
+        ],
+        goster: function() {
+            if(this.sira >= this.vakalar.length) { this.bitir(); return; }
+            document.getElementById('ankMetni').innerText = this.vakalar[this.sira].t;
+            document.getElementById('ankGeriBildirim').innerHTML = "";
+        },
+        analiz: function(secim) {
+            const gb = document.getElementById('ankGeriBildirim');
+            if(secim === this.vakalar[this.sira].c) {
+                gb.style.background = "#27ae60"; gb.style.color = "#fff"; gb.innerHTML = "KESKİN ANALİZ!";
+            } else {
+                gb.style.background = "#8B1A1A"; gb.style.color = "#fff"; gb.innerHTML = "HATALI KATEGORİ!";
+            }
+            this.sira++;
+            setTimeout(() => this.goster(), 1800);
+        },
+        bitir: function() {
+            document.getElementById('ankSimulator').innerHTML = `<div style="text-align:center; padding:40px;"><h2>Analiz Tamamlandı</h2><button onclick="window.HARITA_MOTORU['harita_u2_arac_1402_20']()" style="padding:10px; border:none; background:#2c3e50; color:#fff; border-radius:5px;">Yeniden Analiz Et</button></div>`;
+        }
+    };
+    window.ANKARA_MOTORU.goster();
+};
