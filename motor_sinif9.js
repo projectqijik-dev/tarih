@@ -914,8 +914,7 @@ function oynatPodcast(link, baslik) {
                 localStorage.removeItem('sinavSession');
             }
         }
-        // --- AKILLI LİNK (DEEP LINK) TETİKLEYİCİSİ ---
-        setTimeout(deepLinkTetikleyici, 800);
+        
         window.onbeforeunload = function() {
             if (!document.getElementById("testEkrani").classList.contains("hidden")) {
                 return "Sınavınız bitmedi. Çıkarsanız verileriniz kaybolabilir.";
@@ -980,8 +979,6 @@ function girisBasariliIslemleri(ogr) {
             btnDuyuru.classList.remove("hidden"); 
             if(typeof duyuruRozetKontrol === 'function') duyuruRozetKontrol(); 
         }
-		// Giriş başarılı olunca bekleyen link komutu varsa çalıştır
-        setTimeout(deepLinkTetikleyici, 800);
     }
 
     function girisTuruDegistir(tur) {
@@ -2011,57 +2008,3 @@ window.addEventListener('click', function(event) {
             dropdown.classList.remove('active');
         }
     });
-// =========================================
-// --- OTONOM AKILLI LİNK (DEEP LINK) MOTORU ---
-// =========================================
-(function baslatAkilliLink() {
-    // Eğer linkte 'unite' komutu yoksa motor hiç çalışmaz, sessizce kapanır.
-    if (!window.location.search.includes('unite=')) return;
-
-    // Sistemi her yarım saniyede bir kontrol eden "Avcı" Döngü
-    const avciDongu = setInterval(() => {
-        const menu = document.getElementById('menuEkrani');
-        
-        // Eğer öğrenci giriş yaptıysa (veya zaten kayıtlıysa) menü görünür olur. Avı yakala!
-        if (menu && !menu.classList.contains('hidden')) {
-            clearInterval(avciDongu); // Giriş yapıldığını gördü, taramayı durdur.
-            
-            const urlParams = new URLSearchParams(window.location.search);
-            const hedefUnite = urlParams.get('unite');
-            const hedefTur = urlParams.get('tur');
-            const hedefAra = urlParams.get('ara');
-
-            if (hedefUnite) {
-                odayaGir(hedefUnite); // 1. Üniteye gir
-                
-                // Animasyonların bitmesi için çok kısa beklemelerle adımları işlet
-                if (hedefTur) {
-                    setTimeout(() => {
-                        sekmeDegistir('materyaller'); // 2. Materyal sekmesine geç
-                        kategoriSec(hedefTur); // 3. Kategoriyi seç (Video, Harita vb.)
-                        
-                        if (hedefAra) {
-                            setTimeout(() => {
-                                const aramaInput = document.getElementById('materyalArama');
-                                if (aramaInput) {
-                                    aramaInput.value = hedefAra; // 4. Arama kutusuna yaz
-                                    materyalAra(); // 5. Listeyi süz
-                                    
-                                    setTimeout(() => {
-                                        // 6. Çıkan sonuca öğrenci yerine OTOMATİK TIKLA
-                                        const ilkKart = document.querySelector('#odaMateryalleri .mat-card');
-                                        if (ilkKart) {
-                                            ilkKart.click();
-                                            // Sayfa yenilendiğinde aynı videonun tekrar açılmaması için linki temizle
-                                            window.history.replaceState({}, document.title, window.location.pathname);
-                                        }
-                                    }, 300); // Tıklama için bekle
-                                }
-                            }, 200); // Arama için bekle
-                        }
-                    }, 200); // Kategori değişimi için bekle
-                }
-            }
-        }
-    }, 500); // Her 500ms'de bir menünün açılıp açılmadığını kontrol et
-})();
