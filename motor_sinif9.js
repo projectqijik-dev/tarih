@@ -2011,51 +2011,57 @@ window.addEventListener('click', function(event) {
             dropdown.classList.remove('active');
         }
     });
-	// =========================================
-// --- AKILLI LİNK (DEEP LINK) SİSTEMİ ---
 // =========================================
-function akilliLinkKontrol() {
-    const urlParams = new URLSearchParams(window.location.search);
-    const hedefUnite = urlParams.get('unite');
-    const hedefTur = urlParams.get('tur');
-    const hedefAra = urlParams.get('ara');
-
-    if (!hedefUnite) return;
-
-    odayaGir(hedefUnite);
-    
-    if (hedefTur) {
-        setTimeout(() => {
-            sekmeDegistir('materyaller');
-            kategoriSec(hedefTur);
-            
-            if (hedefAra) {
-                setTimeout(() => {
-                    const aramaInput = document.getElementById('materyalArama');
-                    if (aramaInput) {
-                        aramaInput.value = hedefAra;
-                        materyalAra();
-                        
-                        // OTOMATİK TIKLAMA: Öğrenci tıklamadan video/harita doğrudan açılır
-                        setTimeout(() => {
-                            const ilkKart = document.querySelector('#odaMateryalleri .mat-card');
-                            if (ilkKart) {
-                                ilkKart.click();
-                            }
-                        }, 400);
-                    }
-                }, 400);
-            }
-        }, 500);
-    }
-}
-
-function deepLinkTetikleyici() {
+// --- OTONOM AKILLI LİNK (DEEP LINK) MOTORU ---
+// =========================================
+(function baslatAkilliLink() {
+    // Eğer linkte 'unite' komutu yoksa motor hiç çalışmaz, sessizce kapanır.
     if (!window.location.search.includes('unite=')) return;
-    
-    const menu = document.getElementById('menuEkrani');
-    // Sadece öğrenci GİRİŞ YAPMIŞSA ve menü açıksa çalıştır (Hata önleyici)
-    if (menu && !menu.classList.contains('hidden')) {
-        akilliLinkKontrol();
-    }
-}
+
+    // Sistemi her yarım saniyede bir kontrol eden "Avcı" Döngü
+    const avciDongu = setInterval(() => {
+        const menu = document.getElementById('menuEkrani');
+        
+        // Eğer öğrenci giriş yaptıysa (veya zaten kayıtlıysa) menü görünür olur. Avı yakala!
+        if (menu && !menu.classList.contains('hidden')) {
+            clearInterval(avciDongu); // Giriş yapıldığını gördü, taramayı durdur.
+            
+            const urlParams = new URLSearchParams(window.location.search);
+            const hedefUnite = urlParams.get('unite');
+            const hedefTur = urlParams.get('tur');
+            const hedefAra = urlParams.get('ara');
+
+            if (hedefUnite) {
+                odayaGir(hedefUnite); // 1. Üniteye gir
+                
+                // Animasyonların bitmesi için çok kısa beklemelerle adımları işlet
+                if (hedefTur) {
+                    setTimeout(() => {
+                        sekmeDegistir('materyaller'); // 2. Materyal sekmesine geç
+                        kategoriSec(hedefTur); // 3. Kategoriyi seç (Video, Harita vb.)
+                        
+                        if (hedefAra) {
+                            setTimeout(() => {
+                                const aramaInput = document.getElementById('materyalArama');
+                                if (aramaInput) {
+                                    aramaInput.value = hedefAra; // 4. Arama kutusuna yaz
+                                    materyalAra(); // 5. Listeyi süz
+                                    
+                                    setTimeout(() => {
+                                        // 6. Çıkan sonuca öğrenci yerine OTOMATİK TIKLA
+                                        const ilkKart = document.querySelector('#odaMateryalleri .mat-card');
+                                        if (ilkKart) {
+                                            ilkKart.click();
+                                            // Sayfa yenilendiğinde aynı videonun tekrar açılmaması için linki temizle
+                                            window.history.replaceState({}, document.title, window.location.pathname);
+                                        }
+                                    }, 300); // Tıklama için bekle
+                                }
+                            }, 200); // Arama için bekle
+                        }
+                    }, 200); // Kategori değişimi için bekle
+                }
+            }
+        }
+    }, 500); // Her 500ms'de bir menünün açılıp açılmadığını kontrol et
+})();
