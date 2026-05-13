@@ -354,27 +354,26 @@ window.addEventListener('keydown', function(event) {
 				{ baslik: "Beylik Döneminde Osmanlı Askeri Gücü", tur: "PDF Not", icon: "fa-file-pdf", renk: "#e67e22", link: "https://depo.kirkyama.uk/PDF/10.SinifOGM/15.%20Beylik%20D%C3%B6neminde%20Osmanl%C4%B1%20Askeri%20G%C3%BCc%C3%BC.pdf" },
 				{ baslik: "Tımar Sistemi", tur: "PDF Not", icon: "fa-file-pdf", renk: "#e67e22", link: "https://depo.kirkyama.uk/PDF/10.SinifOGM/16.%20T%C4%B1mar%20Sistemi.pdf" },
 				{ baslik: "Fetihle Gelen Dönüşüm", tur: "PDF Not", icon: "fa-file-pdf", renk: "#e67e22", link: "https://depo.kirkyama.uk/PDF/10.SinifOGM/17.%20Fetihle%20Gelen%20D%C3%B6n%C3%BC%C5%9F%C3%BCm.pdf" },
-                { baslik: "Balkan Fetihleri Haritası", tur: "İnteraktif Harita", icon: "fa-map-location-dot", renk: "#2ecc71", link: "#" },
-   { baslik: "Kuruluşun Coğrafi Şifresi (1299-1302)", tur: "İnteraktif Harita", icon: "fa-map-location-dot", renk: "#27ae60", link: "harita_u2_kurulus_1" },
-{ baslik: "Koyunhisar (Bafeus): İlk Büyük Hesaplaşma", tur: "İnteraktif Harita", icon: "fa-map-location-dot", renk: "#8B1A1A", link: "harita_u2_koyunhisar_2" },
-{ baslik: "İpek Yolu'nun Yeni Kapısı: Bursa ve İznik", tur: "İnteraktif Harita", icon: "fa-map-location-dot", renk: "#2980b9", link: "harita_u2_ipekyolu_3" },
-{ baslik: "Rumeli'ye İlk Köprü: Çimpe ve Gelibolu (1353)", tur: "İnteraktif Harita", icon: "fa-map-location-dot", renk: "#8B1A1A", link: "harita_u2_cimpe_4" },
-{ baslik: "Balkanların Kapısı: Edirne ve Fetih (1363)", tur: "İnteraktif Harita", icon: "fa-map-location-dot", renk: "#27ae60", link: "harita_u2_edirne_5" },
-{ baslik: "Anadolu Türk Birliği ve Barışçıl Diplomasi", tur: "İnteraktif Harita", icon: "fa-map-location-dot", renk: "#C9A84C", link: "harita_u2_atb_6" },
-{ baslik: "Niğbolu: Sultan-ı İklim-i Rum (1396)", tur: "İnteraktif Harita", icon: "fa-map-location-dot", renk: "#2980b9", link: "harita_u2_nigbolu_7" },
-{ baslik: "Ankara Savaşı: Dağılma ve Kırılma (1402)", tur: "İnteraktif Harita", icon: "fa-map-location-dot", renk: "#8e44ad", link: "harita_u2_ankara_8" },
-{ baslik: "Varna ve II. Kosova: Balkanların Tapusu", tur: "İnteraktif Harita", icon: "fa-map-location-dot", renk: "#8B1A1A", link: "harita_u2_kosova_9" },
-{ baslik: "İstanbul Kuşatmasına Hazırlık: Rumeli Hisarı", tur: "İnteraktif Harita", icon: "fa-map-location-dot", renk: "#27ae60", link: "harita_u2_rumeli_10" },
-{ baslik: "İskân Politikası Yöneticisi (Simülatör)", tur: "İnteraktif Harita", icon: "fa-users", renk: "#2980b9", link: "harita_u2_arac_iskan_11" },
-{ baslik: "İstimalet (Gönül Alma) Radarı", tur: "İnteraktif Harita", icon: "fa-handshake", renk: "#27ae60", link: "harita_u2_arac_istimalet_12" },
-{ baslik: "Tımar Sistemi Çarkı (II. Seviye)", tur: "İnteraktif Harita", icon: "fa-shield-halved", renk: "#8B1A1A", link: "harita_u2_arac_timar_13" },
-{ baslik: "Devşirme - Kapıkulu Motoru (Kariyer Oyunu)", tur: "İnteraktif Harita", icon: "fa-person-military-pointing", renk: "#2980b9", link: "harita_u2_arac_devsirme_14" },
-{ baslik: "Divan-ı Hümayun: Karar Odası", tur: "İnteraktif Harita", icon: "fa-landmark-dome", renk: "#8B1A1A", link: "harita_u2_arac_divan_15" },
-{ baslik: "Fetret Devri: Şehzadeler Savaşı", tur: "İnteraktif Harita", icon: "fa-chess-knight", renk: "#C9A84C", link: "harita_u2_arac_fetret_16" },
-{ baslik: "Beylik Diplomasi Çarkı (ATB)", tur: "İnteraktif Harita", icon: "fa-earth-asia", renk: "#C9A84C", link: "harita_u2_arac_diplomasi_17" },
-{ baslik: "Osmanlı Ordu Yapısı (Sınıflandırma)", tur: "İnteraktif Harita", icon: "fa-person-military-rifle", renk: "#8B1A1A", link: "harita_u2_arac_ordu_18" },
-{ baslik: "Vakıf Şehir: Bursa Mimarı", tur: "İnteraktif Harita", icon: "fa-city", renk: "#27ae60", link: "harita_u2_arac_bursa_19" },
-{ baslik: "Tarihin Kırılma Noktası: 1402 Analizi", tur: "İnteraktif Harita", icon: "fa-magnifying-glass-chart", renk: "#2980b9", link: "harita_u2_arac_1402_20" },
+				{ baslik: "Kuruluşun Coğrafi Şifresi (1299-1302)", tur: "İnteraktif Harita", icon: "fa-map-location-dot", renk: "#27ae60", link: "harita_u2_kurulus_1" },
+                { baslik: "Koyunhisar (Bafeus): İlk Büyük Hesaplaşma", tur: "İnteraktif Harita", icon: "fa-map-location-dot", renk: "#8B1A1A", link: "harita_u2_koyunhisar_2" },
+                { baslik: "İpek Yolu'nun Yeni Kapısı: Bursa ve İznik", tur: "İnteraktif Harita", icon: "fa-map-location-dot", renk: "#2980b9", link: "harita_u2_ipekyolu_3" },
+				{ baslik: "Rumeli'ye İlk Köprü: Çimpe ve Gelibolu (1353)", tur: "İnteraktif Harita", icon: "fa-map-location-dot", renk: "#8B1A1A", link: "harita_u2_cimpe_4" },
+                { baslik: "Balkanların Kapısı: Edirne ve Fetih (1363)", tur: "İnteraktif Harita", icon: "fa-map-location-dot", renk: "#27ae60", link: "harita_u2_edirne_5" },
+                { baslik: "Anadolu Türk Birliği ve Barışçıl Diplomasi", tur: "İnteraktif Harita", icon: "fa-map-location-dot", renk: "#C9A84C", link: "harita_u2_atb_6" },
+				{ baslik: "Niğbolu: Sultan-ı İklim-i Rum (1396)", tur: "İnteraktif Harita", icon: "fa-map-location-dot", renk: "#2980b9", link: "harita_u2_nigbolu_7" },
+                { baslik: "Ankara Savaşı: Dağılma ve Kırılma (1402)", tur: "İnteraktif Harita", icon: "fa-map-location-dot", renk: "#8e44ad", link: "harita_u2_ankara_8" },
+                { baslik: "Varna ve II. Kosova: Balkanların Tapusu", tur: "İnteraktif Harita", icon: "fa-map-location-dot", renk: "#8B1A1A", link: "harita_u2_kosova_9" },
+                { baslik: "İstanbul Kuşatmasına Hazırlık: Rumeli Hisarı", tur: "İnteraktif Harita", icon: "fa-map-location-dot", renk: "#27ae60", link: "harita_u2_rumeli_10" },
+				{ baslik: "Balkanlar İskân Simülatörü", tur: "İnteraktif Harita", icon: "fa-users-gear", renk: "#2980b9", link: "harita_u2_arac_iskan_11" },
+                { baslik: "İstimalet (Gönül Alma) Radarı", tur: "İnteraktif Harita", icon: "fa-heart-circle-check", renk: "#27ae60", link: "harita_u2_arac_istimalet_12" },
+                { baslik: "Tımar Sistemi Çarkı (Seviye 2)", tur: "İnteraktif Harita", icon: "fa-horse-head", renk: "#8B1A1A", link: "harita_u2_arac_timar_13" },
+				{ baslik: "Devşirme - Kapıkulu Serüveni", tur: "İnteraktif Harita", icon: "fa-person-military-to-person", renk: "#8B1A1A", link: "harita_u2_arac_devsirme_14" },
+                { baslik: "Divan-ı Hümayun: Karar Odası", tur: "İnteraktif Harita", icon: "fa-landmark-dome", renk: "#2c3e50", link: "harita_u2_arac_divan_15" },
+                { baslik: "Fetret Devri: Devleti Birleştir", tur: "İnteraktif Harita", icon: "fa-chess-king", renk: "#C9A84C", link: "harita_u2_arac_fetret_16" },
+				{ baslik: "Beylik Diplomasi Çarkı (ATSB)", tur: "İnteraktif Harita", icon: "fa-earth-asia", renk: "#C9A84C", link: "harita_u2_arac_diplomasi_17" },
+                { baslik: "Osmanlı Ordu Yapısı (Eşleştirme)", tur: "İnteraktif Harita", icon: "fa-person-military-rifle", renk: "#8B1A1A", link: "harita_u2_arac_ordu_18" },
+                { baslik: "Vakıf Şehir: Bursa Mimarı", tur: "İnteraktif Harita", icon: "fa-city", renk: "#27ae60", link: "harita_u2_arac_bursa_19" },
+                { baslik: "Tarihin Kırılma Noktası: 1402 Analizi", tur: "İnteraktif Harita", icon: "fa-magnifying-glass-chart", renk: "#2980b9", link: "harita_u2_arac_1402_20" }
             ];
         } else if (uniteId === 'u3') {
             aktifMateryaller = [
@@ -2031,5 +2030,3 @@ function materyalAra() {
         kategorilereDon();
     }
 }
-
-
