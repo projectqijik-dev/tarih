@@ -914,7 +914,8 @@ function oynatPodcast(link, baslik) {
                 localStorage.removeItem('sinavSession');
             }
         }
-        
+        // --- AKILLI LİNK (DEEP LINK) TETİKLEYİCİSİ ---
+        setTimeout(akilliLinkKontrol, 800);
         window.onbeforeunload = function() {
             if (!document.getElementById("testEkrani").classList.contains("hidden")) {
                 return "Sınavınız bitmedi. Çıkarsanız verileriniz kaybolabilir.";
@@ -2008,3 +2009,36 @@ window.addEventListener('click', function(event) {
             dropdown.classList.remove('active');
         }
     });
+	// =========================================
+// --- AKILLI LİNK (DEEP LINK) SİSTEMİ ---
+// =========================================
+function akilliLinkKontrol() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const hedefUnite = urlParams.get('unite'); // Örn: u2
+    const hedefTur = urlParams.get('tur');     // Örn: Video, Sunu, PDF Not vs.
+    const hedefAra = urlParams.get('ara');     // Örn: Anadolu
+
+    if (hedefUnite) {
+        // 1. Önce ilgili üniteye gir
+        odayaGir(hedefUnite);
+        
+        if (hedefTur) {
+            // 2. İlgili kategoriyi seç (Video, PDF vb.)
+            setTimeout(() => {
+                sekmeDegistir('materyaller');
+                kategoriSec(hedefTur);
+                
+                // 3. Eğer spesifik bir kelime aranıyorsa listeyi filtrele
+                if (hedefAra) {
+                    setTimeout(() => {
+                        const aramaInput = document.getElementById('materyalArama');
+                        if (aramaInput) {
+                            aramaInput.value = hedefAra;
+                            materyalAra();
+                        }
+                    }, 300);
+                }
+            }, 500);
+        }
+    }
+}
