@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>11. Sınıf Tarih Yazılı Sınav Antrenmanı</title>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f4f4f9; color: #333; line-height: 1.6; padding: 20px; }
+        .container { max-width: 900px; margin: 0 auto; background: #fff; padding: 30px; box-shadow: 0 0 10px rgba(0,0,0,0.1); border-radius: 8px; }
+        h1 { text-align: center; color: #2c3e50; margin-bottom: 5px; }
+        .subtitle { text-align: center; font-size: 0.9em; color: #666; margin-bottom: 30px; }
+        .section { margin-bottom: 40px; border-bottom: 2px solid #eee; padding-bottom: 20px; }
+        .section:last-child { border-bottom: none; }
+        .section-title { font-size: 1.4em; color: #e67e22; border-left: 5px solid #e67e22; padding-left: 10px; margin-bottom: 15px; }
+        .question-box { background: #f9f9f9; padding: 15px; margin-bottom: 20px; border-radius: 5px; border-left: 3px solid #3498db; }
+        .question-box h3 { margin-top: 0; color: #2c3e50; font-size: 1.1em; }
+        .question-box p { margin: 5px 0; }
+        .premise { font-style: italic; color: #555; background: #eaf2f8; padding: 8px; border-radius: 4px; margin-bottom: 10px; }
+        .q-label { font-weight: bold; display: block; margin: 8px 0 3px; }
+        textarea, input[type="text"] { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 4px; font-family: inherit; font-size: 0.95em; box-sizing: border-box; margin-top: 5px; }
+        textarea { resize: vertical; min-height: 60px; }
+        .options label { display: block; margin: 5px 0; cursor: pointer; }
+        .options input[type="radio"] { margin-right: 8px; }
+        .btn-group { text-align: center; margin: 30px 0; }
+        .btn { background: #3498db; color: white; padding: 12px 25px; border: none; border-radius: 5px; cursor: pointer; font-size: 1.1em; transition: 0.3s; margin: 0 5px; }
+        .btn:hover { opacity: 0.9; }
+        .btn-secondary { background: #e67e22; }
+        .btn-success { background: #27ae60; }
+        #result { margin-top: 20px; padding: 15px; background: #f1f9f1; border-left: 5px solid #27ae60; display: none; }
+        #result.show { display: block; }
+        #answer-key { margin-top: 20px; padding: 15px; background: #fef9e7; border-left: 5px solid #e67e22; display: none; }
+        #answer-key.show { display: block; }
+        .correct { background: #d4edda; border: 1px solid #c3e6cb; }
+        .incorrect { background: #f8d7da; border: 1px solid #f5c6cb; }
+        .key-item { margin-bottom: 8px; }
+        .key-answer { font-weight: bold; color: #e67e22; }
+        .fb { font-weight: bold; }
+        @media (max-width: 600px) { body { padding: 10px; } .container { padding: 15px; } }
+        @media print { .btn-group, .btn { display: none; } #result, #answer-key { display: block !important; } body { background: white; } .container { box-shadow: none; } .question-box { break-inside: avoid; } }
+    </style>
+</head>
+<body>
+
+<div class="container" id="exam-paper">
+    <h1>ÖZEL BATMAN BOĞAZİÇİ MTAL 11. SINIF TARİH</h1>
+    <div class="subtitle">2. Dönem 2. Yazılı Sınav Antrenmanı (Senaryo 4)</div>
+
+    <!-- BÖLÜM A -->
+    <div class="section">
+        <div class="section-title">BÖLÜM A — KLASİK AÇIK UÇLU SORULAR (10 Soru)</div>
+        <div style="margin-bottom:15px; color:#555; font-size:0.9em;">Her soru için ayrılan alana cevabınızı yazınız.</div>
+
+        <!-- Soru 1 -->
+        <div class="question-box">
+            <h3>Soru 1 (TAR.11.3.4)</h3>
+            <div class="premise"><strong>Öncül:</strong> "XIX. yüzyılda demiryolu ve telgrafın Osmanlı topraklarında yayılması, yalnızca teknoloji transferi değil, aynı zamanda merkezi yönetimin taşradaki etkinliğini artıran bir araç olarak kullanıldı."</div>
+            <label class="q-label">Yorum ve Analiz:</label>
+            <textarea placeholder="Demiryolu ve telgrafın merkezi yönetime katkılarını maddeler halinde açıklayınız."></textarea>
+        </div>
+
+        <!-- Soru 2 -->
+        <div class="question-box">
+            <h3>Soru 2 (TAR.11.3.4)</h3>
+            <div class="premise"><strong>Öncül:</strong> "II. Mahmud’dan başlayarak Tanzimat ve sonrasında açılan modern eğitim kurumları (Hendesehane, Mekteb-i Harbiye, Mekteb-i Mülkiye), devletin hem iç ihtiyaçlarına hem de dış rekabete yanıt olarak ortaya çıkmıştır."</div>
+            <label class="q-label">Yorum ve Analiz:</label>
+            <textarea placeholder="Bu okulların amaçlarını ve ulus devletleşmedeki rollerini yorumlayınız."></textarea>
+        </div>
+
+        <!-- Soru 3 -->
+        <div class="question-box">
+            <h3>Soru 3 (TAR.11.4.2)</h3>
+            <div class="premise"><strong>Öncül:</strong> "XIX. yüzyılın başında patlak veren Rum İsyanı (1821) ve 93 Harbi (1877-1878), Osmanlı Devleti'nin hem toprak bütünlüğünü hem de uluslararası statüsünü derinden sarsan iki önemli dönüm noktasıdır."</div>
+            <label class="q-label">Yorum ve Analiz:</label>
+            <textarea placeholder="Edirne ve Berlin Antlaşmaları çerçevesinde toprak kayıpları ve azınlık sorunlarının uluslararası boyut kazanmasını değerlendiriniz."></textarea>
+        </div>
+
+        <!-- Soru 4 -->
+        <div class="question-box">
+            <h3>Soru 4 (TAR.11.4.2)</h3>
+            <div class="premise"><strong>Öncül:</strong> "Kavalalı Mehmet Ali Paşa İsyanı, bir taşra valisinin merkezi otoriteyi tehdit edecek kadar güçlenmesinin ve bu durumun Avrupa müdahalesine zemin hazırlamasının çarpıcı bir örneğidir."</div>
+            <label class="q-label">Yorum ve Analiz:</label>
+            <textarea placeholder="İsyanın nedenleri ve Avrupa müdahalesinin sonuçlarını analiz ediniz."></textarea>
+        </div>
+
+        <!-- Soru 5 -->
+        <div class="question-box">
+            <h3>Soru 5 (TAR.11.4.3)</h3>
+            <div class="premise"><strong>Öncül:</strong> "1839 Tanzimat Fermanı ve 1856 Islahat Fermanı, dış baskılar ve iç çöküşü durdurma isteğiyle ilan edilmiş iki önemli belgedir."</div>
+            <label class="q-label">Yorum ve Analiz:</label>
+            <textarea placeholder="Tanzimat ve Islahat Fermanları'nın gerekçelerini ve içerik farklılıklarını kıyaslayınız."></textarea>
+        </div>
+
+        <!-- Soru 6 -->
+        <div class="question-box">
+            <h3>Soru 6 (TAR.11.4.3)</h3>
+            <div class="premise"><strong>Öncül:</strong> "1808 Sened-i İttifak'tan 1876 Kanun-ı Esasi'ye kadar geçen süreç, Osmanlı Devleti'nde hukuki bir devlet yapısına geçişin adım adım ilerlediğini gösterir."</div>
+            <label class="q-label">Yorum ve Analiz:</label>
+            <textarea placeholder="Sened-i İttifak, Tanzimat, Islahat ve Kanun-ı Esasi'nin padişah yetkilerini sınırlandırma yolundaki önemini yorumlayınız."></textarea>
+        </div>
+
+        <!-- Soru 7 -->
+        <div class="question-box">
+            <h3>Soru 7 (TAR.11.4.3)</h3>
+            <div class="premise"><strong>Öncül:</strong> "Osmanlıcılık, İslamcılık ve Türkçülük akımları, Osmanlı Devleti'nin dağılmasını durdurmak için öne sürülen fikir akımlarıdır."</div>
+            <label class="q-label">Yorum ve Analiz:</label>
+            <textarea placeholder="Üç akımın temel fikirlerini ve neden kalıcı çözüm olamadıklarını yorumlayınız."></textarea>
+        </div>
+
+        <!-- Soru 8 -->
+        <div class="question-box">
+            <h3>Soru 8 (TAR.11.5.1)</h3>
+            <div class="premise"><strong>Öncül:</strong> "1838 Balta Limanı Antlaşması, Osmanlı ekonomisinin bağımsız sanayileşme sürecini fiilen durdurmuş ve ülkeyi hammadde ihraç eden, mamul mal ithal eden bir yapıya büründürmüştür."</div>
+            <label class="q-label">Yorum ve Analiz:</label>
+            <textarea placeholder="Antlaşmanın gümrük vergileri ve yerli üretim üzerindeki etkilerini değerlendiriniz."></textarea>
+        </div>
+
+        <!-- Soru 9 -->
+        <div class="question-box">
+            <h3>Soru 9 (TAR.11.5.1)</h3>
+            <div class="premise"><strong>Öncül:</strong> "Düyun-u Umumiye İdaresi (DUI), Osmanlı Devleti'nin mali egemenliğini büyük ölçüde kısıtlayan ancak aynı zamanda uluslararası kredi itibarını yeniden sağlayan ikili bir yapıdır."</div>
+            <label class="q-label">Yorum ve Analiz:</label>
+            <textarea placeholder="DUI'nin kuruluş sürecini ve maliye üzerindeki ikili etkiyi analiz ediniz."></textarea>
+        </div>
+
+        <!-- Soru 10 -->
+        <div class="question-box">
+            <h3>Soru 10 (TAR.11.5.1)</h3>
+            <div class="premise"><strong>Öncül:</strong> "İttihat ve Terakki Cemiyeti, 'Milli İktisat' politikasıyla yabancı ve gayrimüslim tüccarların hakim olduğu ekonomide Türk-Müslüman girişimci sınıfını oluşturmayı hedeflemiştir."</div>
+            <label class="q-label">Yorum ve Analiz:</label>
+            <textarea placeholder="Bu politikanın araçlarını ve Cumhuriyet ekonomi politikalarına mirasını yorumlayınız."></textarea>
+        </div>
+    </div>
+
+    <!-- BÖLÜM B -->
+    <div class="section">
+        <div class="section-title">BÖLÜM B — BOŞLUK DOLDURMA (10 Soru)</div>
+        <div style="margin-bottom:15px; color:#555; font-size:0.9em;">Uygun kelime veya ifadeyi boşluğa yazınız.</div>
+
+        <div class="question-box">
+            <label>1. Osmanlı Devleti'nde ilköğretimi zorunlu hale getiren ve 1824'te bu adımı atan padişah <input type="text" class="fill-blank" data-answer="II. Mahmud" data-index="0" />'dur.</label>
+        </div>
+        <div class="question-box">
+            <label>2. 1856'da imzalanan <input type="text" class="fill-blank" data-answer="Paris" data-index="1" /> Antlaşması ile Osmanlı Devleti 'Avrupa devletler hukukuna' dahil edilmiştir.</label>
+        </div>
+        <div class="question-box">
+            <label>3. Osmanlı Devleti'nin ilk anayasası olan Kanun-ı Esasi, 1876 yılında <input type="text" class="fill-blank" data-answer="II. Abdülhamid" data-index="2" /> tarafından ilan edilmiştir.</label>
+        </div>
+        <div class="question-box">
+            <label>4. Osmanlı Devleti, ilk dış borcunu 1854 yılında <input type="text" class="fill-blank" data-answer="Kırım" data-index="3" /> Savaşı'nın finansmanı için almıştır.</label>
+        </div>
+        <div class="question-box">
+            <label>5. 1838 Balta Limanı Antlaşması, Osmanlı Devleti ile <input type="text" class="fill-blank" data-answer="İngiltere" data-index="4" /> arasında imzalanmıştır.</label>
+        </div>
+        <div class="question-box">
+            <label>6. Ahmet Cevdet Paşa önderliğinde hazırlanan ve İslam hukukunu (fıkıh) kodifiye eden Osmanlı medeni kanunu <input type="text" class="fill-blank" data-answer="Mecelle" data-index="5" />'dir.</label>
+        </div>
+        <div class="question-box">
+            <label>7. II. Meşrutiyet'in ilan edilmesinde (1908) <input type="text" class="fill-blank" data-answer="İttihat ve Terakki" data-index="6" /> Cemiyeti'nin büyük baskısı olmuştur.</label>
+        </div>
+        <div class="question-box">
+            <label>8. <input type="text" class="fill-blank" data-answer="Osmanlı-Rus" data-index="7" /> Savaşı (93 Harbi) sonrası imzalanan Berlin Kongresi, Doğu Anadolu'da Ermenilere reform yapılması koşuluyla Ermeni Meselesi'nin diplomatik zemine taşınmasına yol açmıştır.</label>
+        </div>
+        <div class="question-box">
+            <label>9. Tanzimat Fermanı, 1839 yılında Padişah <input type="text" class="fill-blank" data-answer="Abdülmecid" data-index="8" /> döneminde Mustafa Reşid Paşa tarafından ilan edilmiştir.</label>
+        </div>
+        <div class="question-box">
+            <label>10. Düyun-u Umumiye İdaresi, 1881 yılında ilan edilen <input type="text" class="fill-blank" data-answer="Muharrem" data-index="9" /> Kararnamesi ile kurulmuştur.</label>
+        </div>
+    </div>
+
+    <!-- BÖLÜM C -->
+    <div class="section">
+        <div class="section-title">BÖLÜM C — ÇOKTAN SEÇMELİ (5 Şıklı - 10 Soru)</div>
+        <div style="margin-bottom:15px; color:#555; font-size:0.9em;">Doğru olduğunu düşündüğünüz şıkkı işaretleyiniz.</div>
+
+        <!-- C1 -->
+        <div class="question-box">
+            <h3>1. 1808'de imzalanan Sened-i İttifak'ın tarihsel önemi aşağıdakilerden hangisidir?</h3>
+            <div class="options">
+                <label><input type="radio" name="mcq1" value="A" data-correct="true"> A) Osmanlı'da ilk kez padişahın yetkilerini sınırlandıran hukuki bir belge olması</label>
+                <label><input type="radio" name="mcq1" value="B"> B) Yeniçeri Ocağı'nın kaldırılmasını resmileştirmesi</label>
+                <label><input type="radio" name="mcq1" value="C"> C) Osmanlı'nın ilk anayasasını ilan etmesi</label>
+                <label><input type="radio" name="mcq1" value="D"> D) Tanzimat döneminin başlangıcı sayılması</label>
+                <label><input type="radio" name="mcq1" value="E"> E) Mısır'ın kesin olarak bağımsızlığını tanıması</label>
+            </div>
+        </div>
+
+        <!-- C2 -->
+        <div class="question-box">
+            <h3>2. 1853-1856 Kırım Savaşı'nın temel çıkış nedeni aşağıdakilerden hangisidir?</h3>
+            <div class="options">
+                <label><input type="radio" name="mcq2" value="A"> A) Rumların bağımsızlık isyanı</label>
+                <label><input type="radio" name="mcq2" value="B" data-correct="true"> B) Rusya'nın Osmanlı topraklarındaki Ortodoks Hristiyanlar üzerinde koruyuculuk iddiası</label>
+                <label><input type="radio" name="mcq2" value="C"> C) Mehmet Ali Paşa'nın Mısır'ı ele geçirmesi</label>
+                <label><input type="radio" name="mcq2" value="D"> D) Osmanlı'nın İngiltere'ye savaş ilan etmesi</label>
+                <label><input type="radio" name="mcq2" value="E"> E) Fransız İhtilali'nin yaydığı milliyetçilik akımının durdurulması</label>
+            </div>
+        </div>
+
+        <!-- C3 -->
+        <div class="question-box">
+            <h3>3. 93 Harbi (1877-1878) sırasında Osmanlı Devleti hangi devletle savaşmıştır?</h3>
+            <div class="options">
+                <label><input type="radio" name="mcq3" value="A"> A) Yunanistan</label>
+                <label><input type="radio" name="mcq3" value="B"> B) İngiltere</label>
+                <label><input type="radio" name="mcq3" value="C" data-correct="true"> C) Rusya</label>
+                <label><input type="radio" name="mcq3" value="D"> D) Sırbistan</label>
+                <label><input type="radio" name="mcq3" value="E"> E) Avusturya</label>
+            </div>
+        </div>
+
+        <!-- C4 -->
+        <div class="question-box">
+            <h3>4. 1856 Islahat Fermanı ile ilgili aşağıdaki ifadelerden hangisi doğrudur?</h3>
+            <div class="options">
+                <label><input type="radio" name="mcq4" value="A" data-correct="true"> A) Gayrimüslimlerin devlet memurluğuna ve askere alınabilmesine olanak tanınmıştır.</label>
+                <label><input type="radio" name="mcq4" value="B"> B) Padişahın yetkileri tamamen kaldırılmıştır.</label>
+                <label><input type="radio" name="mcq4" value="C"> C) Yeniçeri Ocağı kaldırılmıştır.</label>
+                <label><input type="radio" name="mcq4" value="D"> D) Anayasa ilan edilmiştir.</label>
+                <label><input type="radio" name="mcq4" value="E"> E) Sadece Müslümanlara yeni haklar verilmiştir.</label>
+            </div>
+        </div>
+
+        <!-- C5 -->
+        <div class="question-box">
+            <h3>5. Mecelle (1869-1876) hangi alanı düzenlemek için hazırlanmıştır?</h3>
+            <div class="options">
+                <label><input type="radio" name="mcq5" value="A"> A) Ticaret hukuku (Fransız Hukukuna göre)</label>
+                <label><input type="radio" name="mcq5" value="B"> B) Ceza hukuku</label>
+                <label><input type="radio" name="mcq5" value="C" data-correct="true"> C) İslam hukukunun (fıkıh) kodifikasyonu (medeni kanun)</label>
+                <label><input type="radio" name="mcq5" value="D"> D) Askeri yargılama usulleri</label>
+                <label><input type="radio" name="mcq5" value="E"> E) Devletler hukuku</label>
+            </div>
+        </div>
+
+        <!-- C6 -->
+        <div class="question-box">
+            <h3>6. İttihat ve Terakki'nin 'Milli İktisat' politikası çerçevesinde 1914 yılında attığı en önemli adım nedir?</h3>
+            <div class="options">
+                <label><input type="radio" name="mcq6" value="A"> A) Düyun-u Umumiye'yi millileştirmek</label>
+                <label><input type="radio" name="mcq6" value="B" data-correct="true"> B) Kapitülasyonları tek taraflı olarak kaldırmak</label>
+                <label><input type="radio" name="mcq6" value="C"> C) Balta Limanı Antlaşması'nı yenilemek</label>
+                <label><input type="radio" name="mcq6" value="D"> D) Yabancı yatırımları yasaklamak</label>
+                <label><input type="radio" name="mcq6" value="E"> E) Tarım Bankası'nı kapatmak</label>
+            </div>
+        </div>
+
+        <!-- C7 -->
+        <div class="question-box">
+            <h3>7. Ders notlarında 'taşra valisi olarak merkezi idarenin üzerinde güç kazanan' isyancı lider kimdir?</h3>
+            <div class="options">
+                <label><input type="radio" name="mcq7" value="A"> A) Mustafa Reşid Paşa</label>
+                <label><input type="radio" name="mcq7" value="B"> B) Mithat Paşa</label>
+                <label><input type="radio" name="mcq7" value="C" data-correct="true"> C) Kavalalı Mehmet Ali Paşa</label>
+                <label><input type="radio" name="mcq7" value="D"> D) Alemdar Mustafa Paşa</label>
+                <label><input type="radio" name="mcq7" value="E"> E) II. Abdülhamid</label>
+            </div>
+        </div>
+
+        <!-- C8 -->
+        <div class="question-box">
+            <h3>8. Osmanlı'da deniz subayı ve mühendis yetiştirmek amacıyla 1775'te kurulan okul aşağıdakilerden hangisidir?</h3>
+            <div class="options">
+                <label><input type="radio" name="mcq8" value="A"> A) Mühendishane-i Berri Hümayun</label>
+                <label><input type="radio" name="mcq8" value="B" data-correct="true"> B) Hendesehane (Mühendishane-i Bahri Hümayun)</label>
+                <label><input type="radio" name="mcq8" value="C"> C) Mekteb-i Tıbbiye</label>
+                <label><input type="radio" name="mcq8" value="D"> D) Mekteb-i Mülkiye</label>
+                <label><input type="radio" name="mcq8" value="E"> E) Mekteb-i Harbiye</label>
+            </div>
+        </div>
+
+        <!-- C9 -->
+        <div class="question-box">
+            <h3>9. 1878 Berlin Kongresi'nde alınan kararlar arasında aşağıdakilerden hangisi bulunmaktadır?</h3>
+            <div class="options">
+                <label><input type="radio" name="mcq9" value="A"> A) Büyük Bulgaristan'ın kurulması (Ayastefanos maddesi)</label>
+                <label><input type="radio" name="mcq9" value="B" data-correct="true"> B) Doğu Anadolu'da Ermenilere yönelik reform yapılması koşulu</label>
+                <label><input type="radio" name="mcq9" value="C"> C) Mısır'ın bağımsızlığının tanınması</label>
+                <label><input type="radio" name="mcq9" value="D"> D) Yunanistan'ın bağımsızlığının tanınması</label>
+                <label><input type="radio" name="mcq9" value="E"> E) Osmanlı topraklarının paylaşılması</label>
+            </div>
+        </div>
+
+        <!-- C10 -->
+        <div class="question-box">
+            <h3>10. Teşvik-i Sanayi Kanunu (1913) hangi siyasi hareket/grup tarafından çıkarılmıştır?</h3>
+            <div class="options">
+                <label><input type="radio" name="mcq10" value="A"> A) Tanzimatçılar</label>
+                <label><input type="radio" name="mcq10" value="B"> B) Islahatçılar</label>
+                <label><input type="radio" name="mcq10" value="C" data-correct="true"> C) İttihat ve Terakki Cemiyeti</label>
+                <label><input type="radio" name="mcq10" value="D"> D) Sened-i İttifak taraftarları</label>
+                <label><input type="radio" name="mcq10" value="E"> E) Kanun-ı Esasi komisyonu</label>
+            </div>
+        </div>
+    </div>
+
+    <!-- Kontrol ve Cevap Anahtarı Butonları -->
+    <div class="btn-group">
+        <button class="btn btn-success" onclick="checkExam()">Cevapları Kontrol Et</button>
+        <button class="btn btn-secondary" onclick="toggleAnswerKey()">📖 Cevapları Göster / Gizle</button>
+    </div>
+
+    <!-- Sonuç Ekranı -->
+    <div id="result">
+        <h3>📊 Değerlendirme Sonucu</h3>
+        <div id="score-display" style="font-size:1.2em;"></div>
+        <div id="mcq-feedback" style="margin-top:10px;"></div>
+        <div id="fill-feedback" style="margin-top:10px;"></div>
+    </div>
+
+    <!-- Cevap Anahtarı -->
+    <div id="answer-key">
+        <h3>📝 Cevap Anahtarı</h3>
+        <div style="display: flex; flex-wrap: wrap; gap: 20px;">
+            <div style="flex: 1; min-width: 250px;">
+                <h4>Bölüm B (Boşluk Doldurma)</h4>
+                <div class="key-item">1. <span class="key-answer">II. Mahmud</span></div>
+                <div class="key-item">2. <span class="key-answer">Paris</span></div>
+                <div class="key-item">3. <span class="key-answer">II. Abdülhamid</span></div>
+                <div class="key-item">4. <span class="key-answer">Kırım</span></div>
+                <div class="key-item">5. <span class="key-answer">İngiltere</span></div>
+                <div class="key-item">6. <span class="key-answer">Mecelle</span></div>
+                <div class="key-item">7. <span class="key-answer">İttihat ve Terakki</span></div>
+                <div class="key-item">8. <span class="key-answer">Osmanlı-Rus</span></div>
+                <div class="key-item">9. <span class="key-answer">Abdülmecid</span></div>
+                <div class="key-item">10. <span class="key-answer">Muharrem</span></div>
+            </div>
+            <div style="flex: 1; min-width: 250px;">
+                <h4>Bölüm C (Çoktan Seçmeli)</h4>
+                <div class="key-item">1. <span class="key-answer">A</span></div>
+                <div class="key-item">2. <span class="key-answer">B</span></div>
+                <div class="key-item">3. <span class="key-answer">C</span></div>
+                <div class="key-item">4. <span class="key-answer">A</span></div>
+                <div class="key-item">5. <span class="key-answer">C</span></div>
+                <div class="key-item">6. <span class="key-answer">B</span></div>
+                <div class="key-item">7. <span class="key-answer">C</span></div>
+                <div class="key-item">8. <span class="key-answer">B</span></div>
+                <div class="key-item">9. <span class="key-answer">B</span></div>
+                <div class="key-item">10. <span class="key-answer">C</span></div>
+            </div>
+        </div>
+        <div style="margin-top:15px; font-size:0.9em; color:#555;"><em>Not: Bölüm A (Klasik Sorular) için puanlama yapılmamıştır. Kendi cevaplarınızı kontrol ediniz.</em></div>
+    </div>
+</div>
+
+<!-- JavaScript -->
+<script>
+    function checkExam() {
+        let totalMCQ = 0;
+        let correctMCQ = 0;
+        let totalFill = 10;
+        let correctFill = 0;
+        let feedbackMCQ = "";
+        let feedbackFill = "";
+
+        // MCQ Kontrol
+        const mcqInputs = document.querySelectorAll('input[type="radio"]:checked');
+        let mcqCount = 0;
+        mcqInputs.forEach(input => {
+            if (input.hasAttribute('data-correct')) {
+                correctMCQ++;
+                feedbackMCQ += `<span style="color:green;">✓</span> `;
+            } else {
+                feedbackMCQ += `<span style="color:red;">✗</span> `;
+            }
+            mcqCount++;
+        });
+        // Eğer tüm MCQ cevaplanmışsa doğru sayısını göster
+        const totalMCQCount = document.querySelectorAll('input[type="radio"][data-correct]').length;
+        // Aslında tüm soruların doğru cevabı olmalı. Burada kontrol daha basit.
+        // Daha doğru bir kontrol: her soru için seçili cevabın data-correct olup olmadığına bakarız.
+        // Ama yukarıdaki döngü sadece "seçili" olanları kontrol ediyor.
+        // Tüm soruların cevaplanması gerekmez. Sadece seçilenleri kontrol edebiliriz.
+        // Ancak, cevaplanmayan sorular "boş" kabul edilir.
+
+        // Daha sağlıklı MCQ kontrolü:
+        let correctM = 0;
+        let totalM = 10;
+        for(let i=1; i<=10; i++) {
+            const selected = document.querySelector(`input[name="mcq${i}"]:checked`);
+            if(selected) {
+                if(selected.hasAttribute('data-correct')) {
+                    correctM++;
+                }
+            }
+        }
+
+        // Fill Kontrol
+        const fillInputs = document.querySelectorAll('.fill-blank');
+        let correctF = 0;
+        fillInputs.forEach((input, index) => {
+            const userAnswer = input.value.trim().toLowerCase();
+            const correctAnswer = input.getAttribute('data-answer').toLowerCase();
+            if (userAnswer === correctAnswer) {
+                correctF++;
+                input.style.backgroundColor = "#d4edda";
+                input.style.border = "1px solid #c3e6cb";
+            } else {
+                input.style.backgroundColor = "#f8d7da";
+                input.style.border = "1px solid #f5c6cb";
+            }
+        });
+
+        // Radyo butonlarını temizle/renklendir (Doğru/Yanlış göster)
+        for(let i=1; i<=10; i++) {
+            const radios = document.querySelectorAll(`input[name="mcq${i}"]`);
+            const checkedRadio = document.querySelector(`input[name="mcq${i}"]:checked`);
+            radios.forEach(radio => {
+                radio.parentElement.style.backgroundColor = "";
+                // Doğru cevap için yeşil, yanlış seçim için kırmızı
+                if(radio.hasAttribute('data-correct')) {
+                    radio.parentElement.style.backgroundColor = "#d4edda";
+                }
+                if(checkedRadio && radio === checkedRadio && !radio.hasAttribute('data-correct')) {
+                    radio.parentElement.style.backgroundColor = "#f8d7da";
+                }
+            });
+        }
+
+        // Sonucu Göster
+        const resultDiv = document.getElementById('result');
+        resultDiv.classList.add('show');
+        const scoreDisplay = document.getElementById('score-display');
+        // Sadece B ve C puanlanır.
+        const totalScore = correctM + correctF;
+        const maxScore = 20; // 10 MCQ + 10 Fill
+        scoreDisplay.innerHTML = `<strong>Toplam Puan: ${totalScore} / ${maxScore}</strong><br>`;
+        scoreDisplay.innerHTML += `Bölüm B (Boşluk Doldurma): ${correctF} / 10<br>`;
+        scoreDisplay.innerHTML += `Bölüm C (Çoktan Seçmeli): ${correctM} / 10`;
+    }
+
+    function toggleAnswerKey() {
+        const key = document.getElementById('answer-key');
+        key.classList.toggle('show');
+        if(key.classList.contains('show')) {
+            // Cevap anahtarı açıldığında Bölüm A için de bazı örnek cevaplar gösterebiliriz ama bu daha karmaşık.
+        }
+    }
+</script>
+
+</body>
+</html>
