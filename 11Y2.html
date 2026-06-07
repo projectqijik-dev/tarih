@@ -556,6 +556,35 @@ body::before {
   .tri-node { min-width: 0; padding: 10px 4px; font-size: 11px; flex: 1; word-wrap: break-word; hyphens: auto; }
   .tri-node.center { padding: 8px 4px; font-size: 10px; }
 }
+/* EKLENEN KISIM: Mobil Menü Kaydırma İpucu */
+.scroll-hint {
+  display: none;
+}
+
+@media (max-width: 600px) {
+  .scroll-hint {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    background: var(--parchment);
+    color: var(--muted);
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    padding: 8px 16px 0;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+  .scroll-hint span {
+    margin-left: 6px;
+    font-size: 14px;
+    color: var(--blueprint);
+    animation: slideRight 1.5s infinite ease-in-out;
+  }
+  @keyframes slideRight {
+    0%, 100% { transform: translateX(0); }
+    50% { transform: translateX(5px); }
+  }
+}
 </style>
 </head>
 <body>
@@ -573,7 +602,7 @@ body::before {
     </div>
   </div>
 </header>
-
+<div class="scroll-hint">Menüyü Kaydırın <span>→</span></div>
 <nav class="nav-tabs">
   <div class="tabs-inner">
     <button class="tab-btn active" onclick="showTab('ozet', this)">⬡ Genel Bakış</button>
