@@ -1,567 +1,6 @@
-<!DOCTYPE html>
-<html lang="tr">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>11. Sınıf Tarih Portalı | Boğaziçi MTAL</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
-    <link rel="stylesheet" href="https://cdn.plyr.io/3.7.8/plyr.css" />
-
-    <link rel="stylesheet" href="stiller/ortak-stil.css">
-    <link rel="stylesheet" href="stiller/sinif11.css">
-</head>
-<body oncontextmenu="return false;"> 
-
-<div id="progress-container"><div id="progress-bar" style="background: var(--secondary-accent);"></div></div>
-<button class="floating-btn" id="iletisimBtnFloating" onclick="iletisimGoster()" title="Öğretmene Sor / Hata Bildir"><i class="fa-solid fa-comment-dots"></i></button>
-
-<div class="container">
-    
-    <div class="settings-panel" style="display: flex; gap: 10px; align-items: center;">
-        <a href="index.html" class="settings-btn" title="Ana Sayfaya Dön" style="display: flex; align-items: center; justify-content: center; text-decoration: none;"><i class="fa-solid fa-house"></i></a>
-        <button class="settings-btn" id="btnTema" onclick="temaCycle()" title="Tema Değiştir"><i class="fa-solid fa-moon"></i></button>		
-        <button class="settings-btn uzun-buton hidden" id="btnSozluk" onclick="sozlukGoster()" title="Sözlük"><i class="fa-solid fa-book-open"></i> Sözlük</button>
-        
-        <div class="dropdown-menu-container">
-            <button class="settings-btn" id="btnHamburger" onclick="menuToggle(event)" title="Menü" style="position: relative;">
-                <i class="fa-solid fa-bars"></i>
-                <span id="duyuruRozetiGenel" class="notification-badge hidden" style="right: -2px; top: -2px;">!</span>
-            </button>
-            <div class="glass-dropdown" id="hamburgerDropdown">
-                <button class="dropdown-item hidden" id="btnDuyuru" onclick="duyuruGoster()"><i class="fa-solid fa-bell"></i> Duyurular <span id="duyuruRozeti" class="notification-badge hidden" style="position:static; transform:none; display:inline-block; margin-left:5px;">!</span></button>
-                <a href="https://sinema.kirkyama.uk" target="_blank" class="dropdown-item"><i class="fa-solid fa-film"></i> Boğaziçi Sinema</a>
-                <button class="dropdown-item" onclick="rehberGoster()"><i class="fa-solid fa-circle-question"></i> Nasıl Kullanılır?</button>
-                <button class="dropdown-item" id="btnYedek" onclick="yedekleGoster()"><i class="fa-solid fa-gear"></i> Veri Yedeği</button>
-                <button class="dropdown-item" id="sifreDegistirBtn"><i class="fa-solid fa-key"></i> Şifre Değiştir</button>
-            </div>
-        </div>
-    </div>
-
-    <div id="girisEkrani">
-        <div style="text-align: center; margin-bottom: 25px;">
-            <h1 style="margin-bottom: 10px; border-bottom: 3px solid var(--secondary-accent); padding-bottom: 8px; display: inline-block;">11. Sınıf Tarih Portalı</h1>
-            <p style="color: var(--text-color); opacity: 0.8; margin: 0; font-weight: 700; font-size: 15px;">Özel Batman Boğaziçi Koleji MTAL</p>
-        </div>
-        
-        <p style="text-align: center; color: var(--text-color); opacity: 0.8; margin-bottom: 20px; font-size: 15px;">Değişim Çağında Avrupa ve Osmanlı - Lütfen giriş yapınız.</p>
-
-        <div class="login-tabs" style="display: flex; justify-content: center; gap: 10px; margin-bottom: 25px;">
-            <button class="tab-btn active" id="btnOgrenciTab" onclick="girisTuruDegistir('ogrenci')" style="flex: 1; max-width: 200px; margin: 0; font-size: 14px;"><i class="fa-solid fa-user-graduate"></i> Öğrenci Girişi</button>
-            <button class="tab-btn" id="btnOgretmenTab" onclick="girisTuruDegistir('ogretmen')" style="flex: 1; max-width: 200px; margin: 0; font-size: 14px;"><i class="fa-solid fa-chalkboard-user"></i> Zümre Girişi</button>
-        </div>
-
-        <div id="ogrenciGirisFormu">
-            <div class="login-grid">
-                <div class="form-group">
-                    <label>Adınız Soyadınız:</label>
-                    <input type="text" id="adSoyad" placeholder="Örn: Yunus Dursun" onkeypress="if(event.key==='Enter') girisYap()">
-                </div>
-                <div class="form-group">
-                    <label>Sınıfınız:</label>
-                    <select id="sinif" onkeypress="if(event.key==='Enter') girisYap()">
-                        <option value="">Sınıfınızı Seçin</option>
-                        <option value="11-A">11-A</option>
-                        <option value="11-B">11-B</option>
-                        <option value="11-C">11-C</option>
-                        <option value="11-D">11-D</option>
-                        <option value="11-E">11-E</option>
-                        <option value="11-F">11-F</option>
-                        <option value="11-G">11-G</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label>Okul Numaranız:</label>
-                    <input type="number" id="numara" placeholder="Örn: 714" onkeypress="if(event.key==='Enter') girisYap()">
-                </div>
-                <div class="form-group">
-                    <label>Sınav Şifresi:</label>
-                    <input type="password" id="sifre" placeholder="Şifreniz" onkeypress="if(event.key==='Enter') girisYap()">
-                </div>
-            </div>
-            <button class="action-btn btn-center btn-login" onclick="girisYap()">Öğrenci Girişi Yap</button>
-        </div>
-
-        <div id="ogretmenGirisFormu" class="hidden">
-            <div class="login-grid">
-                <div class="form-group" style="grid-column: 1 / -1;">
-                    <label>Adınız Soyadınız:</label>
-                    <input type="text" id="ogretmenAd" placeholder="Örn: Pelda Aksoy Mutlu" onkeypress="if(event.key==='Enter') ogretmenGirisYap()">
-                </div>
-                <div class="form-group">
-                    <label>Öğretmen Kodunuz:</label>
-                    <input type="password" id="vipKodu" placeholder="Öğretmen Kodunuzu Girin" onkeypress="if(event.key==='Enter') ogretmenGirisYap()">
-                </div>
-                <div class="form-group">
-                    <label>Hesap Şifreniz:</label>
-                    <input type="password" id="ogretmenSifre" placeholder="Kendi belirleyeceğiniz şifre" onkeypress="if(event.key==='Enter') ogretmenGirisYap()">
-                </div>
-            </div>
-            <button class="action-btn btn-center btn-login" id="btnOgretmenLogin" onclick="ogretmenGirisYap()" style="background-color: #1B325F; box-shadow: 0 4px 15px rgba(27, 50, 95, 0.3);"><i class="fa-solid fa-key"></i> Sistemi Aç</button>
-        </div>
-<div class="modern-footer">
-            <div class="footer-left">
-                <span><strong>Boğaziçi Koleji Tarih Portalı</strong></span>
-                <span class="version-badge">v1.0</span>
-            </div>
-            <div class="footer-right">
-                <span>Tasarım ve Kodlama: Murat Mutlu, Tarih Öğretmeni</span>
-                <a href="mailto:murat@kirkyama.uk" class="footer-mail-btn" title="Öğretmene E-Posta Gönder"><i class="fa-solid fa-envelope"></i></a>
-            </div>
-        </div>
-    </div>
-
-    <div id="menuEkrani" class="hidden">
-        
-        <h2 style="margin-top: 5px; margin-bottom: 20px; font-weight: 600; color: var(--text-color); font-size: 24px; text-align: left;">
-            Hoşgeldin, <span id="kullaniciAdiSpan" style="font-weight: 800; color: var(--accent-color);"></span> 👋
-        </h2>
-
-        <div id="anaKlasorler">
-            <div class="folder-grid">
-                <button class="folder-btn" onclick="odayaGir('u1')">
-                    <div class="icon-wrapper" style="background: rgba(27, 50, 95, 0.1); color: var(--accent-color);"><i class="fa-solid fa-ship"></i></div> 
-                    <div class="folder-texts">
-                        <span class="folder-title">1. Ünite</span>
-                        <span class="folder-desc">Değişim Çağında Avrupa ve Osmanlı</span>
-                    </div>
-                </button>
-                <button class="folder-btn" onclick="odayaGir('u2')">
-                    <div class="icon-wrapper" style="background: rgba(27, 50, 95, 0.1); color: var(--accent-color);"><i class="fa-solid fa-scale-balanced"></i></div> 
-                    <div class="folder-texts">
-                        <span class="folder-title">2. Ünite</span>
-                        <span class="folder-desc">Uluslararası İlişkilerde Denge Stratejisi</span>
-                    </div>
-                </button>
-                <button class="folder-btn" onclick="odayaGir('u3')">
-                    <div class="icon-wrapper" style="background: rgba(27, 50, 95, 0.1); color: var(--accent-color);"><i class="fa-solid fa-landmark-dome"></i></div> 
-                    <div class="folder-texts">
-                        <span class="folder-title">3. Ünite</span>
-                        <span class="folder-desc">Devrimler Çağında Devlet-Toplum İlişkileri</span>
-                    </div>
-                </button>
-            </div>
-            
-            <button class="robot-btn" onclick="robotGoster()" style="background-color: var(--container-bg); color: #2c3e50; cursor: pointer; padding: 18px 20px; width: 100%; border: 2px solid var(--accent-color); text-align: center; outline: none; font-size: 16px; transition: 0.4s; border-radius: 16px; margin-top: 5px; font-weight: 800; display: flex; justify-content: center; align-items: center; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05); gap: 10px;">
-                <i class="fa-solid fa-robot" style="color:var(--accent-color);"></i> Kendi Sınavını Oluştur (Sınav Robotu)
-            </button>
-            
-            <button class="odev-btn" onclick="odevGoster()" style="background-color: var(--container-bg); color: #2c3e50; cursor: pointer; padding: 18px 20px; width: 100%; border: 2px solid var(--secondary-accent); text-align: center; outline: none; font-size: 16px; transition: 0.4s; border-radius: 16px; margin-top: 15px; font-weight: 800; display: flex; justify-content: center; align-items: center; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05); gap: 10px;">
-                <i class="fa-solid fa-cloud-arrow-up" style="color:var(--secondary-accent);"></i> Ödev / Çalışma Gönder
-            </button>
-            
-        </div>
-
-        <div id="sinavOdasi" class="hidden">
-            <button class="back-to-hall-btn" onclick="salonaDon()">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="4" ry="4"></rect><polyline points="12 16 8 12 12 8"></polyline><line x1="16" y1="12" x2="8" y2="12"></line></svg>
-                Ana Sayfaya Dön
-            </button>
-            
-            <h2 id="odaBasligi" class="room-title">Sınav Odası</h2>
-
-            <div class="tab-container">
-                <button class="tab-btn active" id="btnTabTestler" onclick="sekmeDegistir('testler')"><i class="fa-solid fa-list-check"></i> Sınavlar ve Testler</button>
-                <button class="tab-btn" id="btnTabMateryaller" onclick="sekmeDegistir('materyaller')"><i class="fa-solid fa-photo-film"></i> Ünite Materyalleri</button>
-            </div>
-
-            <div id="tabTestler" class="tab-content active">
-                <div class="search-container">
-                    <span class="search-icon"><i class="fa-solid fa-magnifying-glass"></i></span>
-                    <input type="text" id="testArama" class="search-input" placeholder="Ünite sınavı ara (Örn: Lale Devri)" onkeyup="testAra()">
-                    <button class="search-clear" id="aramaTemizle" onclick="aramaTemizleBtn()" title="Aramayı Temizle"><i class="fa-solid fa-xmark"></i></button>
-                </div>
-                
-                <div class="konu-slider-wrapper">
-                    <button class="scroll-arrow" onclick="scrollKonu(-1)" title="Sola Kaydır">&laquo;</button>
-                    <div id="konuFiltreleri" class="konu-secici"></div>
-                    <button class="scroll-arrow" onclick="scrollKonu(1)" title="Sağa Kaydır">&raquo;</button>
-                </div>
-
-                <div id="odaTestleri" class="test-list-container"></div>
-            </div>
-
-            <div id="tabMateryaller" class="tab-content">
-                
-                <div class="search-container" style="margin-bottom: 20px;">
-                    <span class="search-icon"><i class="fa-solid fa-magnifying-glass"></i></span>
-                    <input type="text" id="materyalArama" class="search-input" placeholder="Materyal ara (Örn: Westphalia...)" onkeyup="materyalAra()">
-                    <button class="search-clear" id="matAramaTemizle" onclick="matAramaTemizleBtn()" title="Aramayı Temizle"><i class="fa-solid fa-xmark"></i></button>
-                </div>
-
-                <div id="materyalKategorileri" class="folder-grid">
-                    <button class="folder-btn" onclick="kategoriSec('Video')">
-                        <div class="icon-wrapper" style="background: rgba(231, 76, 60, 0.1); color: #e74c3c;"><i class="fa-brands fa-youtube"></i></div> 
-                        <div class="folder-texts">
-                            <span class="folder-title">Video ve Belgeseller</span>
-                            <span class="folder-desc">Konu anlatımları ve belgeseller</span>
-                        </div>
-                    </button>
-                    <button class="folder-btn" onclick="kategoriSec('Podcast')">
-                        <div class="icon-wrapper" style="background: rgba(155, 89, 182, 0.1); color: #9b59b6;"><i class="fa-solid fa-podcast"></i></div> 
-                        <div class="folder-texts">
-                            <span class="folder-title">Tarih Podcastleri</span>
-                            <span class="folder-desc">Sesli tarih içerikleri</span>
-                        </div>
-                    </button>
-                    <button class="folder-btn" onclick="kategoriSec('PDF Not')">
-                        <div class="icon-wrapper" style="background: rgba(230, 126, 34, 0.1); color: #e67e22;"><i class="fa-solid fa-file-pdf"></i></div> 
-                        <div class="folder-texts">
-                            <span class="folder-title">Ders Notları (PDF)</span>
-                            <span class="folder-desc">İndirilebilir özetler ve notlar</span>
-                        </div>
-                    </button>
-					<button class="folder-btn" onclick="kategoriSec('Sunu')">
-                        <div class="icon-wrapper" style="background: rgba(232, 67, 147, 0.1); color: #e84393;"><i class="fa-solid fa-chalkboard-user"></i></div> 
-                        <div class="folder-texts">
-                            <span class="folder-title">Ders Sunuları</span>
-                            <span class="folder-desc">PowerPoint Sunuları (PDF)</span>
-                        </div>
-                    </button>
-                    <button class="folder-btn" onclick="kategoriSec('İnteraktif Harita')">
-                        <div class="icon-wrapper" style="background: rgba(46, 204, 113, 0.1); color: #2ecc71;"><i class="fa-solid fa-map-location-dot"></i></div> 
-                        <div class="folder-texts">
-                            <span class="folder-title">İnteraktif Haritalar</span>
-                            <span class="folder-desc">Dijital tarih haritaları</span>
-                        </div>
-                    </button>
-
-                    <button class="folder-btn" onclick="kategoriSec('Flashcard')">
-                        <div class="icon-wrapper" style="background: rgba(52, 152, 219, 0.1); color: #3498db;"><i class="fa-solid fa-layer-group"></i></div> 
-                        <div class="folder-texts">
-                            <span class="folder-title">Kavram Kartları</span>
-                            <span class="folder-desc">Önemli terimleri tekrar et</span>
-                        </div>
-                    </button>
-                </div>
-
-                <div id="materyalListesiAlani" class="hidden">
-                    <button class="back-to-hall-btn" onclick="kategorilereDon()" style="margin-bottom: 20px; background: var(--container-bg); border: 2px solid var(--card-border);">
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
-                        Kategorilere Dön
-                    </button>
-                    <div class="material-grid" id="odaMateryalleri">
-                        </div>
-                </div>
-            </div>
-
-        </div>
-
-        <div class="modern-footer">
-            <div class="footer-left">
-                <span><strong>Boğaziçi Koleji Tarih Portalı</strong></span>
-                <span class="version-badge">v1.0</span>
-            </div>
-            <div class="footer-right">
-                <span>Tasarım ve Kodlama: Murat Mutlu, Tarih Öğretmeni</span>
-                <a href="mailto:murat@kirkyama.uk" class="footer-mail-btn" title="Öğretmene E-Posta Gönder"><i class="fa-solid fa-envelope"></i></a>
-            </div>
-        </div>
-    </div>
-
-    <div id="rehberModal" class="modal">
-        <div class="modal-content" style="border-top: 6px solid var(--accent-color); max-width: 550px;">
-            <h3 style="color:var(--accent-color); margin-top: 0; font-size: 22px;"><i class="fa-solid fa-book-open"></i> Nasıl Kullanılır?</h3>
-            <div style="text-align: left; margin-top: 20px;">
-                <div style="display: flex; gap: 15px; margin-bottom: 15px; align-items: flex-start;">
-                    <div style="width: 35px; height: 35px; border-radius: 50%; background: var(--accent-color); color: white; display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-weight: bold;">1</div>
-                    <div><h4 style="margin:0 0 5px 0; color:var(--text-color);">İçerikleri Keşfet</h4><p style="margin:0; font-size:14px; opacity:0.8; color:var(--text-color);">Ünite klasörlerine girerek konu özetlerini, testleri ve interaktif materyalleri inceleyebilirsin.</p></div>
-                </div>
-                <div style="display: flex; gap: 15px; margin-bottom: 15px; align-items: flex-start;">
-                    <div style="width: 35px; height: 35px; border-radius: 50%; background: #e67e22; color: white; display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-weight: bold;">2</div>
-                    <div><h4 style="margin:0 0 5px 0; color:var(--text-color);">Sınav Robotu</h4><p style="margin:0; font-size:14px; opacity:0.8; color:var(--text-color);">İstediğin konulardan rastgele deneme sınavları oluşturup kendini test edebilirsin.</p></div>
-                </div>
-                <div style="display: flex; gap: 15px; margin-bottom: 15px; align-items: flex-start;">
-                    <div style="width: 35px; height: 35px; border-radius: 50%; background: #2ecc71; color: white; display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-weight: bold;">3</div>
-                    <div><h4 style="margin:0 0 5px 0; color:var(--text-color);">Ödev Gönder</h4><p style="margin:0; font-size:14px; opacity:0.8; color:var(--text-color);">Defterinin veya çözdüğün testlerin fotoğrafını çekip doğrudan öğretmenine gönderebilirsin.</p></div>
-                </div>
-            </div>
-            <div class="modal-btn-group" style="margin-top: 25px;">
-                <button class="action-btn back-btn" onclick="rehberKapat()" style="margin-top:0; width:100%;">Anladım, Kapat</button>
-            </div>
-        </div>
-    </div>
-
-    <div id="flashcardModal" class="flashcard-modal">
-        <div class="fc-close" onclick="fcKapat()"><i class="fa-solid fa-xmark"></i></div>
-        <div class="flashcard-container">
-            <div class="flashcard" id="flashcardElement" onclick="fcCevir()">
-                <div class="flashcard-face flashcard-front">
-                    <i class="fa-solid fa-lightbulb" style="font-size: 30px; margin-bottom: 20px; opacity: 0.8;"></i>
-                    <div class="flashcard-term" id="fcTerm">Kavram Adı</div>
-                    <div class="fc-hint">Çevirmek için dokun</div>
-                </div>
-                <div class="flashcard-face flashcard-back">
-                    <div class="flashcard-def" id="fcDef">Açıklama burada yazacak.</div>
-                </div>
-            </div>
-            <div class="flashcard-controls">
-                <button class="fc-btn" onclick="fcGeri()"><i class="fa-solid fa-chevron-left"></i></button>
-                <div class="fc-counter" id="fcCounter">1 / 10</div>
-                <button class="fc-btn" onclick="fcIleri()"><i class="fa-solid fa-chevron-right"></i></button>
-            </div>
-        </div>
-    </div>
-
-    <div id="testEkrani" class="hidden">
-        <div class="sticky-header">
-            <div style="display: flex; justify-content: space-between; align-items: center;">
-                <div style="display: flex; align-items: center; gap: 10px;">
-                    <button onclick="testtenCik()" class="action-btn back-btn" style="padding: 8px 16px; margin: 0; font-size: 14px; min-width: auto; border-radius: 12px; display: inline-flex; align-items: center; gap: 6px;" title="Testten Çık ve Menüye Dön">
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="4" ry="4"></rect><polyline points="12 16 8 12 12 8"></polyline><line x1="16" y1="12" x2="8" y2="12"></line></svg>
-                        Geri
-                    </button>
-                    <button onclick="window.print()" class="action-btn back-btn" style="padding: 8px 16px; margin: 0; font-size: 14px; min-width: auto; border-radius: 12px; display: inline-flex; align-items: center; gap: 6px;" title="Yazdır">
-                        <i class="fa-solid fa-print"></i>
-                    </button>
-                    <h3 id="testBaslik" style="margin:0; text-align: left; font-size: 18px;">Sınav</h3>
-                </div>
-                <div class="timer-box" id="sayac" style="margin-bottom:0;">00:00</div>
-            </div>
-            <div class="nav-map" id="navMap"></div>
-        </div>
-        <div id="sorularAlani" style="margin-top: 25px;"></div>
-        <button class="action-btn btn-center" onclick="ozetGoster()">Sınavı Bitir ve Gönder</button>
-    </div>
-
-    <div id="sonucEkrani" class="hidden">
-        <h2 style="text-align: center; font-size: 28px;">Sınav Tamamlandı!</h2>
-        
-        <div id="puanKutusu" style="text-align: center; display: none; padding: 20px 0;">
-            <div style="font-size: 60px; color: #27ae60; font-weight: 800; letter-spacing: -2px;" id="puanGostergesi"></div>
-            <div id="ozelMotivasyonKutusu" style="text-align: center; margin-top: 15px; font-weight: 700; font-size: 20px; padding: 15px; border-radius: 12px; background: var(--option-hover);"></div>
-        </div>
-
-        <div id="klasikMesaj" style="text-align: center; display: none; padding: 30px 15px; background: var(--option-hover); border-radius: 16px; margin-bottom: 20px;">
-            <h3 style="color: #27ae60; font-size: 24px; margin-top: 0;"><i class="fa-solid fa-check-double"></i> Cevaplarınız Kaydedildi</h3>
-            <p style="font-size: 16px;">Öğretmeniniz değerlendirdikten sonra notunuzu açıklayacaktır.</p>
-        </div>
-        
-        <div style="background: var(--option-hover); border: 2px solid var(--card-border); padding: 15px; margin: 25px 0; border-radius: 12px; text-align: center; font-size: 15px;">
-            <span id="bitirmeSuresi" style="font-weight: 700;"></span> |
-            <span id="ihlalSayisi" style="color:#e74c3c; font-weight:700;"></span>
-        </div>
-
-        <div id="detayliCozumler"></div>
-        
-        <button class="action-btn back-btn btn-center" style="display: flex; align-items: center; justify-content: center; gap: 8px;" onclick="anasayfayaDon()">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="4" ry="4"></rect><polyline points="12 16 8 12 12 8"></polyline><line x1="16" y1="12" x2="8" y2="12"></line></svg>
-            Ana Sayfaya Dön
-        </button>
-    </div>
-
-    <div id="robotModal" class="modal">
-        <div class="modal-content" style="border-top: 6px solid var(--accent-color); max-width: 500px;">
-            <h3 style="color:var(--text-color); margin-top: 0; font-size: 22px;"><i class="fa-solid fa-robot" style="color:var(--accent-color);"></i> Sınav Robotu</h3>
-            <p style="font-size:15px; color:var(--text-color); opacity:0.8; margin-bottom: 25px;">İstediğiniz ünite ve konudan rastgele seçilecek sorularla kendi deneme sınavınızı oluşturun.</p>
-
-            <div style="text-align: left; margin-bottom: 15px;">
-                <label style="display: block; margin-bottom: 8px; font-weight: 600; color: var(--text-color); font-size: 14px;">Ünite Seçimi:</label>
-                <select id="robotUnite" onchange="robotKonuGuncelle()" style="width: 100%; padding: 14px; border-radius: 12px; border: 2px solid var(--card-border); background: var(--option-hover); color: var(--text-color); font-family: 'Inter', sans-serif; outline: none; transition: border-color 0.3s; font-size:15px;">
-                    <option value="tumu">Tüm Ünitelerden Karma</option>
-                </select>
-            </div>
-            
-            <div style="text-align: left; margin-bottom: 15px;">
-                <label style="display: block; margin-bottom: 8px; font-weight: 600; color: var(--text-color); font-size: 14px;">Konu Seçimi:</label>
-                <select id="robotKonu" style="width: 100%; padding: 14px; border-radius: 12px; border: 2px solid var(--card-border); background: var(--option-hover); color: var(--text-color); font-family: 'Inter', sans-serif; outline: none; transition: border-color 0.3s; font-size:15px;">
-                    <option value="tumu">Tüm Konulardan Karma</option>
-                </select>
-            </div>
-            
-            <div style="text-align: left; margin-bottom: 25px;">
-                <label style="display: block; margin-bottom: 8px; font-weight: 600; color: var(--text-color); font-size: 14px;">Soru Sayısı:</label>
-                <select id="robotSoruSayisi" style="width: 100%; padding: 14px; border-radius: 12px; border: 2px solid var(--card-border); background: var(--option-hover); color: var(--text-color); font-family: 'Inter', sans-serif; outline: none; transition: border-color 0.3s; font-size:15px;">
-                    <option value="10">10 Soru (Hızlı Tekrar)</option>
-                    <option value="15" selected>15 Soru (İdeal Deneme)</option>
-                    <option value="20">20 Soru (Detaylı Tarama)</option>
-                    <option value="25">25 Soru (Büyük Sınav)</option>
-                </select>
-            </div>
-
-            <div class="modal-btn-group">
-                <button class="action-btn back-btn" onclick="robotKapat()" style="margin-top:0;">İptal</button>
-                <button class="action-btn" style="background-color:var(--accent-color); margin-top:0; box-shadow: 0 4px 15px rgba(27, 50, 95, 0.3);" onclick="robotSinavBaslat()"><i class="fa-solid fa-play"></i> Sınavı Başlat</button>
-            </div>
-        </div>
-    </div>
-
-    <div id="yedekModal" class="modal">
-        <div class="modal-content" style="border-top: 6px solid var(--accent-color); max-width: 500px;">
-            <h3 style="color:var(--text-color); margin-top: 0; font-size: 22px;"><i class="fa-solid fa-gear"></i> Veri Yedeği</h3>
-            <p style="font-size:15px; color:var(--text-color); opacity:0.8; margin-bottom: 25px;">Çözdüğünüz sınavları ve profil bilgilerinizi yedekleyebilir veya başka bir cihazdan yükleyebilirsiniz.</p>
-            
-            <div style="display: flex; flex-direction: column; gap: 15px;">
-                <button class="action-btn" style="margin-top:0; display:flex; align-items:center; justify-content:center; gap:10px;" onclick="verileriIndir()"><i class="fa-solid fa-download"></i> Verilerimi İndir (Yedekle)</button>
-                
-                <label class="action-btn back-btn" style="margin-top:0; display:flex; align-items:center; justify-content:center; gap:10px; cursor:pointer;">
-                    <i class="fa-solid fa-upload"></i> Yedek Yükle
-                    <input type="file" id="yedekDosya" style="display:none;" accept=".json" onchange="veriYukle(event)">
-                </label>
-            </div>
-
-            <div class="modal-btn-group" style="margin-top: 25px;">
-                <button class="action-btn back-btn" onclick="yedekleKapat()" style="margin-top:0; width:100%;">Kapat</button>
-            </div>
-        </div>
-    </div>
-
-    <div id="sozlukModal" class="modal">
-        <div class="modal-content" style="border-top: 6px solid var(--accent-color); max-width: 600px;">
-            <h3 style="color:var(--accent-color); margin-top: 0; font-size: 22px;"><i class="fa-solid fa-book-open"></i> Tarihi Kavramlar</h3>
-            <input type="text" id="sozlukArama" placeholder="Kavram ara... (Örn: Makyavelizm, Denge)" onkeyup="kavramAra()" style="margin-bottom: 20px;">
-            <div id="kavramListesi" style="max-height: 40vh; overflow-y: auto; background: var(--option-hover); border-radius: 12px; border: 2px solid var(--card-border);"></div>
-            <div class="modal-btn-group">
-                <button class="action-btn back-btn" onclick="sozlukKapat()" style="margin-top:0;">Kapat</button>
-            </div>
-        </div>
-    </div>
-
-    <div id="ozetModal" class="modal">
-        <div class="modal-content">
-            <h3 style="color:var(--text-color); font-size: 22px; margin-bottom: 20px;">Sınav Özeti</h3>
-            <div id="modalIcerik"></div>
-            <div class="modal-btn-group" style="margin-top: 30px;">
-                <button class="action-btn back-btn" onclick="modalKapat()" style="margin-top:0;">Geri Dön</button>
-                <button class="action-btn" onclick="testiBitir()" style="margin-top:0;">Evet, Bitir</button>
-            </div>
-        </div>
-    </div>
-
-    <div id="iletisimModal" class="modal">
-        <div class="modal-content" style="border-top: 6px solid var(--accent-color);">
-            <h3 style="color:var(--accent-color); margin-top:0; font-size: 22px;"><i class="fa-solid fa-comment-dots"></i> Öğretmene İlet</h3>
-            <p style="font-size:15px; color:var(--text-color); opacity:0.8; margin-bottom: 20px;">Anlamadığın bir soruyu veya sistemde gördüğün bir hatayı buradan yazabilirsin. diğer her şey için murat@kirkyama.uk adresine mail atabilirsin.</p>
-            <textarea id="ogrenciMesaji" placeholder="Mesajınızı buraya yazınız..."></textarea>
-            <div class="modal-btn-group">
-                <button class="action-btn back-btn" onclick="iletisimKapat()" style="margin-top:0;">İptal</button>
-                <button class="action-btn" style="background-color:var(--accent-color); margin-top:0; box-shadow: 0 4px 15px rgba(27, 50, 95, 0.3);" onclick="mesajGonder()">Gönder</button>
-            </div>
-        </div>
-    </div>
-    
-    <div id="duyuruModal" class="modal">
-        <div class="modal-content" style="border-top: 6px solid #f39c12;">
-            <h3 style="color:#f39c12; margin-top:0; font-size: 22px;"><i class="fa-solid fa-thumbtack"></i> Haftanın Ödevi</h3>
-            <p style="font-size:16px; color:var(--text-color); line-height:1.7; text-align:left; padding: 10px 0;">
-                Sevgili öğrenciler, bu haftaki ödevimiz <strong>1. Ünite Klasik Sınavı</strong> çözmektir. Lütfen süreniz bitmeden tamamlayınız. Başarılar dilerim!
-            </p>
-            <div class="modal-btn-group">
-                <button class="action-btn back-btn" onclick="duyuruKapat()" style="margin-top:0;">Kapat</button>
-                <button class="action-btn" style="background-color:#f39c12; margin-top:0; box-shadow: 0 4px 15px rgba(243, 156, 18, 0.3);" onclick="odeveGit()"><i class="fa-solid fa-pen-nib"></i> Ödevi Çöz</button>
-            </div>
-        </div>
-    </div>
-
-    <div id="sifreModal" class="modal">
-        <div class="modal-content" style="border-top: 6px solid #27ae60; max-width: 400px;">
-            <h3 style="color:var(--text-color); margin-top: 0; font-size: 22px;"><i class="fa-solid fa-key" style="color:#27ae60;"></i> Şifre Değiştir</h3>
-            <p style="font-size:14px; color:var(--text-color); opacity:0.8; margin-bottom: 20px;">Mevcut şifrenizle giriş yaparak yeni şifrenizi belirleyebilirsiniz.</p>
-            
-            <div style="text-align: left; margin-bottom: 15px;">
-                <label style="display: block; margin-bottom: 5px; font-weight: 600; color: var(--text-color); font-size: 14px;">Mevcut Şifreniz:</label>
-                <input type="password" id="eskiSifre" placeholder="Şu anki şifreniz" style="width: 100%; padding: 14px; border: 2px solid var(--card-border); background: var(--option-hover); color: var(--text-color); border-radius: 12px; font-size: 15px; outline: none; font-family: 'Inter', sans-serif;">
-            </div>
-            
-            <div style="text-align: left; margin-bottom: 20px;">
-                <label style="display: block; margin-bottom: 5px; font-weight: 600; color: var(--text-color); font-size: 14px;">Yeni Şifreniz:</label>
-                <input type="password" id="yeniSifre" placeholder="Yeni belirlediğiniz şifre" style="width: 100%; padding: 14px; border: 2px solid var(--card-border); background: var(--option-hover); color: var(--text-color); border-radius: 12px; font-size: 15px; outline: none; font-family: 'Inter', sans-serif;">
-            </div>
-            
-            <div id="sifreMesaj" style="margin-bottom: 15px; font-weight: bold; font-size: 14px; text-align: center; min-height: 20px;"></div>
-
-            <div class="modal-btn-group">
-                <button class="action-btn back-btn" onclick="sifreKapat()" style="margin-top:0;">İptal</button>
-                <button class="action-btn" id="sifreKaydetBtn" style="background-color:#27ae60; margin-top:0; box-shadow: 0 4px 15px rgba(39, 174, 96, 0.3);">Şifreyi Güncelle</button>
-            </div>
-        </div>
-    </div>
-
-    <div id="odevModal" class="modal">
-        <div class="modal-content" style="border-top: 6px solid #27ae60; max-width: 500px;">
-            <h3 style="color:var(--text-color); margin-top: 0; font-size: 22px;"><i class="fa-solid fa-cloud-arrow-up" style="color:#27ae60;"></i> Ödev Yükle</h3>
-            <p style="font-size:14px; color:var(--text-color); opacity:0.8; margin-bottom: 20px;">Defterinizin veya ödevinizin fotoğraflarını / PDF'ini buradan yükleyebilirsiniz (Maksimum 10 dosya).</p>
-            
-            <input type="file" id="dosyaSecici" multiple accept="image/*,application/pdf" style="display:none;" onchange="dosyalariHazirla(event)">
-            <div class="upload-area" onclick="document.getElementById('dosyaSecici').click()">
-                <i class="fa-solid fa-images" style="font-size: 32px; color: #27ae60; margin-bottom: 10px;"></i>
-                <div style="font-weight: bold; color: var(--text-color);">Dosyaları Seçmek İçin Tıklayın</div>
-                <div style="font-size: 12px; opacity: 0.7; margin-top: 5px;">veya galerinizden birden fazla fotoğraf seçin.</div>
-            </div>
-            
-            <div class="file-list" id="secilenDosyalarListesi"></div>
-            
-            <div id="genelYuklemeDurumu" style="font-weight: bold; font-size: 14px; text-align: center; color: #27ae60; display: none;">0 / 0 Yüklendi</div>
-            <div class="progress-bar-bg" id="yuklemeBariBg"><div class="progress-bar-fill" id="yuklemeBariFill"></div></div>
-
-            <div class="modal-btn-group" style="margin-top: 20px;">
-                <button class="action-btn back-btn" id="odevIptalBtn" onclick="odevKapat()" style="margin-top:0;">İptal</button>
-                <button class="action-btn" id="odevGonderBtn" style="background-color:#27ae60; margin-top:0; box-shadow: 0 4px 15px rgba(39, 174, 96, 0.3);" onclick="odevleriGonder()" disabled>Gönder</button>
-            </div>
-        </div>
-    </div>
-
-</div>
-<div id="audioPlayerContainer" class="glass-player">
-    <div class="player-top-row">
-        <div class="player-info-custom">
-            <div class="player-icon-custom" id="podcastIconBox"><i class="fa-solid fa-podcast"></i></div>
-            <div class="player-text-custom">
-                <span id="playerTitle" class="player-title-custom">Podcast Başlığı</span>
-                <span class="player-subtitle-custom">Özel Batman Boğaziçi Koleji</span>
-            </div>
-        </div>
-        <button class="ctrl-btn" onclick="kapatPlayer()" title="Kapat" style="font-size:24px; margin-left:10px;"><i class="fa-solid fa-xmark"></i></button>
-    </div>
-    <div class="progress-container">
-        <span id="currentTimeDisplay">00:00</span>
-        <div class="progress-bar-custom" id="progressBarBg" onclick="seekAudio(event)">
-            <div class="progress-fill" id="progressBarFill"></div>
-        </div>
-        <span id="durationDisplay">00:00</span>
-    </div>
-    <div class="player-controls">
-        <button class="ctrl-btn" onclick="skipAudio(-15)" title="15 Saniye Geri"><i class="fa-solid fa-rotate-left"></i></button>
-        <button class="ctrl-btn play-btn" id="playPauseBtn" onclick="togglePlay()"><i class="fa-solid fa-play" style="margin-left: 3px;"></i></button>
-        <button class="ctrl-btn" onclick="skipAudio(15)" title="15 Saniye İleri"><i class="fa-solid fa-rotate-right"></i></button>
-    </div>
-    <audio id="mainAudio" src="" ontimeupdate="updateProgress()" onloadedmetadata="setDuration()" onended="audioEnded()"></audio>
-</div>
-
-<div id="inlineVideoContainer" class="hidden" style="width: 100%; margin-top: 15px; margin-bottom: 5px; border-radius: 12px; overflow: hidden; box-shadow: 0 8px 25px rgba(0,0,0,0.1); border: 2px solid var(--accent-color); background: #000; animation: fadeIn 0.4s ease;">
-    <div style="display: flex; justify-content: space-between; align-items: center; padding: 10px 15px; background: var(--accent-color); color: #fff;">
-        <h3 id="inlineVideoBaslik" style="margin: 0; font-size: 15px; color: #fff; font-weight: 700; text-align: left;">Video</h3>
-        <button onclick="videoKapat()" style="background: transparent; border: none; color: #fff; cursor: pointer; font-size: 20px; display: flex; align-items: center; justify-content: center;" title="Kapat"><i class="fa-solid fa-xmark"></i></button>
-    </div>
-    <div class="plyr__video-embed" id="player">
-        <iframe id="youtubeIframe" src="" allowfullscreen allowtransparency allow="autoplay"></iframe>
-    </div>
-</div>
-
-<div id="inlinePdfContainer" class="hidden" style="width: 100%; margin-top: 15px; margin-bottom: 5px; border-radius: 12px; overflow: hidden; box-shadow: 0 8px 25px rgba(0,0,0,0.1); border: 2px solid var(--accent-color); background: #fff; animation: fadeIn 0.4s ease; height: 500px; display: flex; flex-direction: column;">
-    <div style="display: flex; justify-content: space-between; align-items: center; padding: 10px 15px; background: var(--accent-color); color: #fff; flex-shrink: 0;">
-        <h3 id="inlinePdfBaslik" style="margin: 0; font-size: 15px; color: #fff; font-weight: 700; text-align: left;">Doküman</h3>
-        <button onclick="pdfKapat()" style="background: transparent; border: none; color: #fff; cursor: pointer; font-size: 20px; display: flex; align-items: center; justify-content: center;" title="Kapat"><i class="fa-solid fa-xmark"></i></button>
-    </div>
-    <iframe id="pdfIframe" src="" style="width: 100%; height: 100%; border: none; flex: 1;"></iframe>
-</div>
-<script src="sinif11sorular/menu_verisi.js"></script>
-<script src="sinif11sorular/u1_degisim_avrupa.js"></script>
-<script src="sinif11sorular/u1_isyanlar_ve_duzen.js"></script>
-<script src="sinif11sorular/u1_osmanli_diplomasi.js"></script>
-<script src="sinif11sorular/u2_denge_stratejisi.js"></script>
-<script src="sinif11sorular/u2_osmanli_rusya_rekabeti.js"></script>
-<script src="sinif11sorular/u2_milliyetcilik_akimlari.js"></script>
-<script src="sinif11sorular/u3_devrimler_cagi.js"></script>
-<script src="sinif11sorular/u3_sanayi_inkilabi.js"></script>
-<script src="sinif11sorular/u3_demokratiklesme_cabasi.js"></script>
-<script src="sinif11sorular/s11kavramlar.js"></script>
-<script>
-    // --- 11. SINIF SCRIPT VE API YOLLARI ---
-    // (Eski 11. sınıf dosyanızdaki SCRIPT URL'nizi buraya otomatik entegre ettim)
+// --- 12. SINIF SCRIPT VE API YOLLARI ---
     const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwDZ3mW8pTOoDlv5ZoEbY1wrilIj9ojvnZT8Ofc_QZWp3PHKBCuNiRSsg9pnO-Jezoz6A/exec"; 
-    const SIFRE_API_URL = "https://script.google.com/macros/s/AKfycbwDZ3mW8pTOoDlv5ZoEbY1wrilIj9ojvnZT8Ofc_QZWp3PHKBCuNiRSsg9pnO-Jezoz6A/exec"; 
+    const SIFRE_API_URL = "https://script.google.com/macros/s/AKfycbzH3YQxw_6r0i7uItFStlp2nkUzmxaPhUw_v1u8hs6swV6lqY9XXRZ3Q5x64C5vpPEROQ/exec"; 
     const ODEV_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxcjHGzdFq96J7JD9YKJJE20DEUqQLgfdzilAci7kpUVS-lHMFM25a39zdvxeaOPhtgjw/exec"; 
     
     document.addEventListener('contextmenu', e => e.preventDefault());
@@ -578,7 +17,7 @@
     let aktifOda = null;
     let aktifMateryaller = [];
 	
-    const AKTIF_DUYURU_VERSIYONU = "duyuru_v1_11sinif"; // 11. sınıfa özel duyuru kimliği
+    const AKTIF_DUYURU_VERSIYONU = "duyuru_v1_12sinif"; // 12. sınıfa özel duyuru kimliği
 
     let fcCurrentIndex = 0;
     let fcAktifKartlar = [];
@@ -756,42 +195,36 @@
         }
     }
 
-    /* --- 11. SINIF MATERYAL HAVUZU --- */
+    /* --- 12. SINIF MATERYAL HAVUZU --- */
     function materyalleriYukle(uniteId) {
         aktifMateryaller = [];
         
         if (uniteId === 'u1') {
             aktifMateryaller = [
-                { baslik: "Westphalia Barışı ve Yeni Düzen", tur: "Video Ders", icon: "fa-youtube", renk: "#e74c3c", link: "#" },
-                { baslik: "Celali İsyanları ve Etkileri", tur: "Belgesel", icon: "fa-film", renk: "#e74c3c", link: "#" },
-                { baslik: "Karlofça Antlaşması (1699)", tur: "Video Ders", icon: "fa-youtube", renk: "#e74c3c", link: "#" },
-                { baslik: "17. Yüzyılda Osmanlı Diplomasi", tur: "Podcast", icon: "fa-podcast", renk: "#9b59b6", link: "#" },
-                { baslik: "Rönesans ve Reform'un Etkileri", tur: "Podcast", icon: "fa-podcast", renk: "#9b59b6", link: "#" },
+                { baslik: "Trablusgarp ve Balkan Savaşları", tur: "Video Ders", icon: "fa-youtube", renk: "#e74c3c", link: "#" },
+                { baslik: "I. Dünya Savaşı ve Çanakkale", tur: "Belgesel", icon: "fa-film", renk: "#e74c3c", link: "#" },
+                { baslik: "Mondros Ateşkes Antlaşması", tur: "Video Ders", icon: "fa-youtube", renk: "#e74c3c", link: "#" },
+                { baslik: "Cemiyetler ve Hazırlıklar", tur: "Podcast", icon: "fa-podcast", renk: "#9b59b6", link: "#" },
                 { baslik: "1. Ünite Ders Notu", tur: "PDF Not", icon: "fa-file-pdf", renk: "#e67e22", link: "#" },
-                { baslik: "Avrupa'da Değişim Kavramları", tur: "PDF Not", icon: "fa-file-pdf", renk: "#e67e22", link: "#" },
-                { baslik: "17. Yüzyıl Avrupa Haritası", tur: "İnteraktif Harita", icon: "fa-map-location-dot", renk: "#2ecc71", link: "#" }
+                { baslik: "I. Dünya Savaşı Cepheler Haritası", tur: "İnteraktif Harita", icon: "fa-map-location-dot", renk: "#2ecc71", link: "#" }
             ];
         } else if (uniteId === 'u2') {
             aktifMateryaller = [
-                { baslik: "Uluslararası İlişkilerde Denge", tur: "Video Ders", icon: "fa-youtube", renk: "#e74c3c", link: "#" },
-                { baslik: "Viyana Kongresi (1815)", tur: "Belgesel", icon: "fa-film", renk: "#e74c3c", link: "#" },
-                { baslik: "Osmanlı-Rus Rekabeti ve 93 Harbi", tur: "Video Ders", icon: "fa-youtube", renk: "#e74c3c", link: "#" },
-                { baslik: "Hasta Adam Ne Demek?", tur: "Podcast", icon: "fa-podcast", renk: "#9b59b6", link: "#" },
-                { baslik: "Kırım Savaşı'nın Önemi", tur: "Podcast", icon: "fa-podcast", renk: "#9b59b6", link: "#" },
+                { baslik: "Genelgeler ve Kongreler", tur: "Video Ders", icon: "fa-youtube", renk: "#e74c3c", link: "#" },
+                { baslik: "TBMM'nin Açılışı", tur: "Belgesel", icon: "fa-film", renk: "#e74c3c", link: "#" },
+                { baslik: "Kurtuluş Savaşı Cepheleri", tur: "Video Ders", icon: "fa-youtube", renk: "#e74c3c", link: "#" },
+                { baslik: "Mudanya ve Lozan Barış Antlaşması", tur: "Podcast", icon: "fa-podcast", renk: "#9b59b6", link: "#" },
                 { baslik: "2. Ünite Ders Notu", tur: "PDF Not", icon: "fa-file-pdf", renk: "#e67e22", link: "#" },
-                { baslik: "Denge Stratejisi Özeti", tur: "PDF Not", icon: "fa-file-pdf", renk: "#e67e22", link: "#" },
-                { baslik: "Berlin Antlaşması Sonrası Balkanlar", tur: "İnteraktif Harita", icon: "fa-map-location-dot", renk: "#2ecc71", link: "#" }
+                { baslik: "Milli Mücadele Cepheleri Haritası", tur: "İnteraktif Harita", icon: "fa-map-location-dot", renk: "#2ecc71", link: "#" }
             ];
         } else if (uniteId === 'u3') {
             aktifMateryaller = [
-                { baslik: "Fransız İhtilali ve Etkileri", tur: "Video Ders", icon: "fa-youtube", renk: "#e74c3c", link: "#" },
-                { baslik: "Sanayi İnkılabı", tur: "Belgesel", icon: "fa-film", renk: "#e74c3c", link: "#" },
-                { baslik: "Osmanlı'da Demokratikleşme", tur: "Video Ders", icon: "fa-youtube", renk: "#e74c3c", link: "#" },
-                { baslik: "Tanzimat ve Islahat Fermanları", tur: "Podcast", icon: "fa-podcast", renk: "#9b59b6", link: "#" },
-                { baslik: "Kanun-i Esasi ve I. Meşrutiyet", tur: "Podcast", icon: "fa-podcast", renk: "#9b59b6", link: "#" },
+                { baslik: "Atatürk İlkeleri", tur: "Video Ders", icon: "fa-youtube", renk: "#e74c3c", link: "#" },
+                { baslik: "Siyasi ve Hukuki Alanda İnkılaplar", tur: "Belgesel", icon: "fa-film", renk: "#e74c3c", link: "#" },
+                { baslik: "Eğitim ve Kültür Alanında İnkılaplar", tur: "Video Ders", icon: "fa-youtube", renk: "#e74c3c", link: "#" },
+                { baslik: "Atatürk Dönemi Türk Dış Politikası", tur: "Podcast", icon: "fa-podcast", renk: "#9b59b6", link: "#" },
                 { baslik: "3. Ünite Ders Notu", tur: "PDF Not", icon: "fa-file-pdf", renk: "#e67e22", link: "#" },
-                { baslik: "Demokratikleşme Kavramları", tur: "PDF Not", icon: "fa-file-pdf", renk: "#e67e22", link: "#" },
-                { baslik: "19. Yüzyıl Osmanlı Haritası", tur: "İnteraktif Harita", icon: "fa-map-location-dot", renk: "#2ecc71", link: "#" }
+                { baslik: "Atatürk İnkılapları Kavram Haritası", tur: "İnteraktif Harita", icon: "fa-map-location-dot", renk: "#2ecc71", link: "#" }
             ];
         }
     }
@@ -888,9 +321,37 @@
 
             filtrelenmis.forEach(m => {
                 if (m.tur === 'Podcast') {
-                    matAlani.innerHTML += `<div class="mat-card" style="cursor:pointer;" onclick="oynatPodcast('${m.link.replace(/'/g, "\\'")}', '${m.baslik.replace(/'/g, "\\'")}')">...</div>`;
-                    // Kısaltılmış şekilde render ediliyor (yukarıdaki kategoriSec fonksiyonu ile aynı)
-                    kategoriSec('AramaTetiklendi'); // Arama esnasında dinamik basım
+                    matAlani.innerHTML += `<div class="mat-card" style="cursor:pointer;" onclick="oynatPodcast('${m.link.replace(/'/g, "\\'")}', '${m.baslik.replace(/'/g, "\\'")}')">
+                        <div class="mat-icon" style="color: ${m.renk};"><i class="fa-solid ${m.icon}"></i></div>
+                        <div class="mat-info">
+                            <span class="mat-title">${m.baslik}</span>
+                            <span class="mat-type">${m.tur}</span>
+                        </div>
+                    </div>`;
+                } else if (m.tur === 'Video Ders' || m.tur === 'Belgesel') {
+                    matAlani.innerHTML += `<div class="mat-card" style="cursor:pointer;" onclick="oynatVideo('${m.link.replace(/'/g, "\\'")}', '${m.baslik.replace(/'/g, "\\'")}', this)">
+                        <div class="mat-icon" style="color: ${m.renk};"><i class="fa-solid ${m.icon}"></i></div>
+                        <div class="mat-info">
+                            <span class="mat-title">${m.baslik}</span>
+                            <span class="mat-type">${m.tur}</span>
+                        </div>
+                    </div>`;
+                } else if (m.tur === 'PDF Not' || m.tur === 'Sunu') {
+                    matAlani.innerHTML += `<div class="mat-card" style="cursor:pointer;" onclick="oynatPdf('${m.link.replace(/'/g, "\\'")}', '${m.baslik.replace(/'/g, "\\'")}', this)">
+                        <div class="mat-icon" style="color: ${m.renk};"><i class="fa-solid ${m.icon}"></i></div>
+                        <div class="mat-info">
+                            <span class="mat-title">${m.baslik}</span>
+                            <span class="mat-type">${m.tur}</span>
+                        </div>
+                    </div>`;
+                } else {
+                    matAlani.innerHTML += `<a href="${m.link}" target="_blank" class="mat-card">
+                        <div class="mat-icon" style="color: ${m.renk};"><i class="fa-solid ${m.icon}"></i></div>
+                        <div class="mat-info">
+                            <span class="mat-title">${m.baslik}</span>
+                            <span class="mat-type">${m.tur}</span>
+                        </div>
+                    </a>`;
                 }
             });
         } else { 
@@ -905,8 +366,7 @@
         materyalAra();
         input.focus();
     }
-
-    function oynatPodcast(link, baslik) {
+	function oynatPodcast(link, baslik) {
         if(link === "#") { alert("Öğretmeniniz bu podcast içeriğini henüz yüklemedi."); return; }
         
         const playerContainer = document.getElementById('audioPlayerContainer');
@@ -1067,8 +527,8 @@
         if (filtrelenmisTestler.length === 0) {
             testAlani.innerHTML = '<div style="text-align:center; padding:20px; opacity:0.6; font-weight:bold;">Bu kritere uygun test bulunamadı.</div>';
         } else {
-            // --- 11. SINIF İZOLE HAFIZA ---
-            let cozulenler = JSON.parse(localStorage.getItem('cozulenTestler11')) || [];
+            // --- 12. SINIF İZOLE HAFIZA ---
+            let cozulenler = JSON.parse(localStorage.getItem('cozulenTestler12')) || [];
             
             filtrelenmisTestler.forEach(t => {
                 const row = document.createElement('div');
@@ -1095,8 +555,8 @@
     }
 
     window.onload = function() {
-        // --- 11. SINIF İZOLE HAFIZA ---
-        const kayitliTema = localStorage.getItem('tema11');
+        // --- 12. SINIF İZOLE HAFIZA ---
+        const kayitliTema = localStorage.getItem('tema12');
         const btnTema = document.getElementById('btnTema');
         
         if(kayitliTema !== null) { 
@@ -1109,29 +569,51 @@
         } else {
             document.body.className = '';
             if(btnTema) btnTema.innerHTML = '<i class="fa-solid fa-moon"></i>';
-            localStorage.setItem('tema11', '');
+            localStorage.setItem('tema12', '');
         }
         
-        if(localStorage.getItem('fontSize11')) {
-            document.documentElement.style.setProperty('--font-size-base', localStorage.getItem('fontSize11') + 'px');
+        if(localStorage.getItem('fontSize12')) {
+            document.documentElement.style.setProperty('--font-size-base', localStorage.getItem('fontSize12') + 'px');
         }
         
-        const kayitliOgrenci = localStorage.getItem('aktifOgrenci11');
-        if(kayitliOgrenci) {
+// --- YENİ SSO (EVRENSEL GİRİŞ) KONTROLÜ ---
+        const globalZumre = localStorage.getItem('globalZumreOturumu');
+        const sayfaNo = window.location.pathname.match(/\d+/) ? window.location.pathname.match(/\d+/)[0] : "9";
+        const kayitliOgrenci = localStorage.getItem('aktifOgrenci' + sayfaNo);
+        
+        if(globalZumre) {
+            // Öğretmen daha önce herhangi bir sınıftan girmişse, direkt kapıları aç.
+            ogrenci = JSON.parse(globalZumre);
+            document.getElementById("girisEkrani").classList.add("hidden");
+            document.getElementById("menuEkrani").classList.remove("hidden");
+            document.getElementById("kullaniciAdiSpan").innerText = ogrenci.ad;
+            const btnSozluk = document.getElementById("btnSozluk");
+            if(btnSozluk) btnSozluk.classList.remove("hidden");
+        
+        const btnMuzik = document.getElementById("btnMuzik");
+        if(btnMuzik) btnMuzik.classList.remove("hidden");
+            const btnDuyuru = document.getElementById("btnDuyuru");
+            if (btnDuyuru) { btnDuyuru.classList.remove("hidden"); if(typeof duyuruRozetKontrol === 'function') duyuruRozetKontrol(); }
+        } else if(kayitliOgrenci) {
+            // Sadece bu sınıfa girmiş bir öğrenci varsa içeri al.
             ogrenci = JSON.parse(kayitliOgrenci);
             document.getElementById("girisEkrani").classList.add("hidden");
             document.getElementById("menuEkrani").classList.remove("hidden");
             document.getElementById("kullaniciAdiSpan").innerText = ogrenci.ad;
-            document.getElementById("btnSozluk").classList.remove("hidden");
-            if (document.getElementById("btnDuyuru")) { document.getElementById("btnDuyuru").classList.remove("hidden"); duyuruRozetKontrol(); }
+            const btnSozluk = document.getElementById("btnSozluk");
+            if(btnSozluk) btnSozluk.classList.remove("hidden");
+            const btnMuzik = document.getElementById("btnMuzik");
+            if(btnMuzik) btnMuzik.classList.remove("hidden");
+            const btnDuyuru = document.getElementById("btnDuyuru");
+            if (btnDuyuru) { btnDuyuru.classList.remove("hidden"); if(typeof duyuruRozetKontrol === 'function') duyuruRozetKontrol(); }
         }
 
-        const savedSession = localStorage.getItem('sinavSession11');
+        const savedSession = localStorage.getItem('sinavSession12');
         if (savedSession) {
             if(confirm("Yarım kalmış bir sınavınız var. Devam etmek ister misiniz?")) {
                 restoreSession(JSON.parse(savedSession));
             } else {
-                localStorage.removeItem('sinavSession11');
+                localStorage.removeItem('sinavSession12');
             }
         }
         
@@ -1150,16 +632,16 @@
 
         if (!isDark && !isSepia) {
             body.classList.add('dark-mode');
-            localStorage.setItem('tema11', 'dark-mode');
+            localStorage.setItem('tema12', 'dark-mode');
             btnTema.innerHTML = '<i class="fa-solid fa-scroll"></i>';
         } else if (isDark) {
             body.classList.remove('dark-mode');
             body.classList.add('sepia-mode');
-            localStorage.setItem('tema11', 'sepia-mode');
+            localStorage.setItem('tema12', 'sepia-mode');
             btnTema.innerHTML = '<i class="fa-solid fa-sun"></i>';
         } else if (isSepia) {
             body.classList.remove('sepia-mode');
-            localStorage.setItem('tema11', '');
+            localStorage.setItem('tema12', '');
             btnTema.innerHTML = '<i class="fa-solid fa-moon"></i>';
         }
     }
@@ -1171,17 +653,36 @@
         let newSize = currentSize + delta;
         if(newSize >= 14 && newSize <= 24) {
             htmlRoot.style.setProperty('--font-size-base', newSize + 'px');
-            localStorage.setItem('fontSize11', newSize);
+            localStorage.setItem('fontSize12', newSize);
         }
     }
 
-    function girisBasariliIslemleri(ogr) {
-        localStorage.setItem('aktifOgrenci11', JSON.stringify(ogr));
+function girisBasariliIslemleri(ogr) {
+        // --- YENİ SSO (EVRENSEL GİRİŞ) MOTORU ---
+        // Eğer giriş yapan bir öğretmense, onu evrensel "Zümre" hafızasına kaydet.
+        if (ogr.ad.includes('(Zümre)') || ogr.ad.includes('(Öğretmen)')) {
+            localStorage.setItem('globalZumreOturumu', JSON.stringify(ogr));
+        } else {
+            // Eğer öğrenciyse, sadece girdiği sınıfın yerel hafızasına kaydet.
+            // Sınıf numarasını URL'den (sinif9.html vb.) otomatik olarak çekiyoruz.
+            const sayfaNo = window.location.pathname.match(/\d+/) ? window.location.pathname.match(/\d+/)[0] : "9";
+            localStorage.setItem('aktifOgrenci' + sayfaNo, JSON.stringify(ogr));
+        }
+
         document.getElementById("girisEkrani").classList.add("hidden");
         document.getElementById("menuEkrani").classList.remove("hidden");
         document.getElementById("kullaniciAdiSpan").innerText = ogr.ad;
-        document.getElementById("btnSozluk").classList.remove("hidden");
-        if (document.getElementById("btnDuyuru")) { document.getElementById("btnDuyuru").classList.remove("hidden"); duyuruRozetKontrol(); }
+        
+        const btnSozluk = document.getElementById("btnSozluk");
+        if(btnSozluk) btnSozluk.classList.remove("hidden");
+        const btnMuzik = document.getElementById("btnMuzik");
+        if(btnMuzik) btnMuzik.classList.remove("hidden");
+        
+        const btnDuyuru = document.getElementById("btnDuyuru");
+        if (btnDuyuru) { 
+            btnDuyuru.classList.remove("hidden"); 
+            if(typeof duyuruRozetKontrol === 'function') duyuruRozetKontrol(); 
+        }
     }
 
     function girisTuruDegistir(tur) {
@@ -1323,7 +824,7 @@
 
     function duyuruGoster() { 
         document.getElementById('duyuruModal').style.display = 'block'; 
-        localStorage.setItem("okunanDuyuru", AKTIF_DUYURU_VERSIYONU); 
+        localStorage.setItem("okunanDuyuru12", AKTIF_DUYURU_VERSIYONU); 
         document.getElementById('duyuruRozeti').classList.add('hidden'); 
         const genelRozet = document.getElementById('duyuruRozetiGenel');
         if(genelRozet) genelRozet.classList.add('hidden'); 
@@ -1332,7 +833,7 @@
     }
 
     function duyuruRozetKontrol() {
-        const okunan = localStorage.getItem("okunanDuyuru");
+        const okunan = localStorage.getItem("okunanDuyuru12");
         if (okunan !== AKTIF_DUYURU_VERSIYONU) {
             document.getElementById('duyuruRozeti').classList.remove('hidden'); 
             const genelRozet = document.getElementById('duyuruRozetiGenel');
@@ -1341,7 +842,7 @@
     }
     
     function duyuruKapat() { document.getElementById('duyuruModal').style.display = 'none'; }
-    function odeveGit() { duyuruKapat(); testSec('test_u1_degisim_1'); }
+    function odeveGit() { duyuruKapat(); testSec('test_u1_20_yuzyil_1'); }
 
     function testSec(testKodu) {
         aktifTest = testKodu;
@@ -1470,7 +971,7 @@
     }
 
     function saveToLocal() {
-        autoSaveData.ihlal = ihlalSayisi; localStorage.setItem('sinavSession11', JSON.stringify(autoSaveData));
+        autoSaveData.ihlal = ihlalSayisi; localStorage.setItem('sinavSession12', JSON.stringify(autoSaveData));
     }
 
     function restoreSession(data) {
@@ -1522,14 +1023,14 @@
     function testiBitir(otomatik = false) {
         modalKapat(); clearInterval(timerInterval);
         document.removeEventListener("visibilitychange", ihlalTakip);
-        localStorage.removeItem('sinavSession11'); 
+        localStorage.removeItem('sinavSession12'); 
 
-        /* --- 11. SINIF İZOLE HAFIZA (KAYIT) --- */
+        /* --- 12. SINIF İZOLE HAFIZA (KAYIT) --- */
         if (aktifTest && !aktifTest.includes('robot_sinavi')) {
-            let cozulenler = JSON.parse(localStorage.getItem('cozulenTestler11')) || [];
+            let cozulenler = JSON.parse(localStorage.getItem('cozulenTestler12')) || [];
             if (!cozulenler.includes(aktifTest)) {
                 cozulenler.push(aktifTest);
-                localStorage.setItem('cozulenTestler11', JSON.stringify(cozulenler));
+                localStorage.setItem('cozulenTestler12', JSON.stringify(cozulenler));
             }
         }
 
@@ -1610,7 +1111,7 @@
     function testtenCik() {
         if(confirm("Testten çıkmak istediğinize emin misiniz? Kaydetmediğiniz ilerlemeler kaybolacaktır.")) {
             clearInterval(timerInterval); document.removeEventListener("visibilitychange", ihlalTakip);
-            localStorage.removeItem('sinavSession11'); document.getElementById("testEkrani").classList.add("hidden");
+            localStorage.removeItem('sinavSession12'); document.getElementById("testEkrani").classList.add("hidden");
             document.getElementById("menuEkrani").classList.remove("hidden");
             aktifTest = null; ihlalSayisi = 0; window.scrollTo(0,0);
         }
@@ -1738,15 +1239,15 @@
 
     function verileriIndir() {
         const data = {
-            aktifOgrenci: localStorage.getItem('aktifOgrenci11'),
-            cozulenTestler: localStorage.getItem('cozulenTestler11'),
-            tema: localStorage.getItem('tema11'),
-            fontSize: localStorage.getItem('fontSize11')
+            aktifOgrenci: localStorage.getItem('aktifOgrenci12'),
+            cozulenTestler: localStorage.getItem('cozulenTestler12'),
+            tema: localStorage.getItem('tema12'),
+            fontSize: localStorage.getItem('fontSize12')
         };
         const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(data));
         const a = document.createElement('a');
         a.href = dataStr;
-        a.download = "Tarih_Portali_Yedek_11.json";
+        a.download = "Tarih_Portali_Yedek_12.json";
         document.body.appendChild(a);
         a.click();
         document.body.removeChild(a);
@@ -1759,10 +1260,10 @@
         reader.onload = function(e) {
             try {
                 const data = JSON.parse(e.target.result);
-                if(data.aktifOgrenci) localStorage.setItem('aktifOgrenci11', data.aktifOgrenci);
-                if(data.cozulenTestler) localStorage.setItem('cozulenTestler11', data.cozulenTestler);
-                if(data.tema) localStorage.setItem('tema11', data.tema);
-                if(data.fontSize) localStorage.setItem('fontSize11', data.fontSize);
+                if(data.aktifOgrenci) localStorage.setItem('aktifOgrenci12', data.aktifOgrenci);
+                if(data.cozulenTestler) localStorage.setItem('cozulenTestler12', data.cozulenTestler);
+                if(data.tema) localStorage.setItem('tema12', data.tema);
+                if(data.fontSize) localStorage.setItem('fontSize12', data.fontSize);
                 alert("Veriler başarıyla yüklendi! Sayfa yenileniyor.");
                 location.reload();
             } catch (err) {
@@ -1990,8 +1491,3 @@
             dropdown.classList.remove('active');
         }
     });
-    
-</script>
-
-</body>
-</html>

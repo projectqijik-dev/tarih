@@ -11,7 +11,7 @@ window.MENU_VERI = {
             { id: "klasik_u1_askeri_1", baslik: "Açık Uçlu (Klasik) Sınav 1", aciklama: "Önemli Askeri Mücadeleler - Yorumlama", konu: "Önemli Askeri Mücadeleler", isKlasik: true },
             { id: "klasik_u1_askeri_2", baslik: "Açık Uçlu (Klasik) Sınav 2", aciklama: "Önemli Askeri Mücadeleler - Yorumlama", konu: "Önemli Askeri Mücadeleler", isKlasik: true },
             { id: "klasik_u1_askeri_3", baslik: "Açık Uçlu (Klasik) Sınav 3", aciklama: "Önemli Askeri Mücadeleler - Yorumlama", konu: "Önemli Askeri Mücadeleler", isKlasik: true },
-
+            
             // 1.2. Türkistan'dan Türkiye'ye Türklerde Devlet ve Ordu Teşkilatları
             { id: "test_u1_teskilat_1", baslik: "Test 1", aciklama: "Türkistan'dan Türkiye'ye Türklerde Devlet ve Ordu Teşkilatları", konu: "Devlet ve Ordu Teşkilatları", isKlasik: false },
             { id: "test_u1_teskilat_2", baslik: "Test 2", aciklama: "Türkistan'dan Türkiye'ye Türklerde Devlet ve Ordu Teşkilatları", konu: "Devlet ve Ordu Teşkilatları", isKlasik: false },
@@ -181,4 +181,5 @@ window.MENU_VERI = {
             { id: "klasik_u3_genel_3", baslik: "Ünite Sonu Klasik Sınavı 3", aciklama: "3. Ünite Genel Yorumlama Sınavı", konu: "Ünite Değerlendirme", isKlasik: true }
         ]
     }
+	
 };

@@ -4123,3 +4123,703 @@ window.HARITA_MOTORU["harita_u2_arac_1402_20"] = function() {
     };
     window.ANKARA_MOTORU.goster();
 };
+window.HARITA_MOTORU = window.HARITA_MOTORU || {};
+
+// =============================================================================
+// 1. HARİTA: FATİH'TEN KANUNİ'YE CİHAN DEVLETİ (1453-1566)
+// =============================================================================
+window.HARITA_MOTORU["harita_u3_cihan_1"] = function() {
+    // GÜVENLİK KONTROLÜ
+    if (window.currentMapInstance) {
+        window.currentMapInstance.remove();
+        window.currentMapInstance = null;
+    }
+
+    const controlsContainer = document.getElementById('mapControlsContainer');
+    controlsContainer.innerHTML = `
+        <div style="text-align: center; color: #F4E4B0; display: flex; flex-direction: column; align-items: center; gap: 8px;">
+            <input type="range" id="yearSlider" min="1453" max="1566" value="1453" step="1" style="width: 60%; cursor: pointer; accent-color: #E8A020; margin: 0 auto;">
+            <label for="yearSlider" style="font-size: 1.1em; margin-bottom: 5px;">
+                <b>Tarih: <span id="yearDisplay" style="color: #E8A020;">1453</span></b>
+            </label>
+            <p style="font-size: 0.85em; opacity: 0.8;">Osmanlı'nın bölgesel bir güçten üç kıtaya yayılan Cihan Devleti'ne dönüşümü.</p>
+        </div>
+    `;
+    controlsContainer.style.display = 'block';
+
+    window.currentMapInstance = L.map('mapCanvas').setView([38.0, 35.0], 5);
+    L.tileLayer('http://mt0.google.com/vt/lyrs=p&hl=tr&x={x}&y={y}&z={z}', { maxZoom: 10 }).addTo(window.currentMapInstance);
+
+    const veri = [
+        { id: "istanbul", isim: "İstanbul'un Fethi ve Cihanşümul Anlayış", kisaAd: "İstanbul (1453)", renk: "#8B1A1A", startYear: 1453, endYear: 1473, odak: [41.01, 28.97], bilgi: "<b>Büyük Dönüşüm:</b> Bizans yıkıldı. Fatih, Roma Kayseri (Kayser-i Rum) unvanıyla evrensel hakimiyet (cihanşümul) iddiasını pekiştirdi.", rota: [[41.01, 28.97]] },
+        { id: "misir", isim: "Yavuz Dönemi: Doğu ve Güney Siyaseti", kisaAd: "Mısır & Hicaz (1517)", renk: "#C9A84C", startYear: 1474, endYear: 1517, odak: [30.04, 31.23], bilgi: "<b>İslam Dünyası Liderliği:</b> Çaldıran ve Ridaniye zaferleriyle Memlukler yıkıldı. Halifelik, Kutsal Topraklar ve Baharat Yolu Osmanlı'ya geçti.", rota: [[41.01, 28.97], [38.33, 44.08], [36.20, 37.15], [30.04, 31.23]] },
+        { id: "kanuni", isim: "Kanuni Dönemi: Zirve ve Avrupa Siyaseti", kisaAd: "Belgrad & Mohaç (1526)", renk: "#2980b9", startYear: 1518, endYear: 1566, odak: [44.81, 20.45], bilgi: "<b>Batı'da Zirve:</b> Belgrad'ın alınması ve Mohaç zaferiyle Orta Avrupa'nın kapıları açıldı. Osmanlı, Habsburg (Şarlken) hegemonyasına karşı Fransa'yı destekleyerek dünya siyasetine yön verdi.", rota: [[41.01, 28.97], [42.13, 24.74], [44.81, 20.45], [45.94, 18.66]] }
+    ];
+
+    let cizgiler = {}, markerlar = {};
+    const highContrast = "#2c3e50 !important";
+
+    veri.forEach(v => {
+        if(v.rota.length > 1) {
+            cizgiler[v.id] = L.polyline([], {color: v.renk, weight: 6, opacity: 0.8, dashArray: '8, 8'}).bindPopup(`<div style="color: ${highContrast}; max-width:220px;"><h4 style="margin:0 0 5px 0; color:${v.renk};">${v.isim}</h4><p style="margin:0; font-size:13px;">${v.bilgi}</p></div>`);
+        }
+        markerlar[v.id] = L.circleMarker(v.odak, {radius: 8, color: '#fff', fillColor: v.renk, weight: 2, fillOpacity: 1}).bindPopup(`<div style="color: ${highContrast}; max-width:220px;"><h4 style="margin:0 0 5px 0; color:${v.renk};">${v.kisaAd}</h4><p style="margin:0; font-size:13px;">${v.bilgi}</p></div>`);
+    });
+
+    function guncelle(yil) {
+        veri.forEach(v => {
+            let rota = [], aktif = false;
+            if (yil >= v.endYear) { rota = v.rota; aktif = true; } 
+            else if (yil >= v.startYear) {
+                let oran = (yil - v.startYear) / (v.endYear - v.startYear);
+                if(v.rota.length > 1) rota = v.rota.slice(0, Math.floor(v.rota.length * (oran || 0.1)) + 1);
+                aktif = true;
+            }
+            if(cizgiler[v.id]) {
+                if (rota.length > 1) { cizgiler[v.id].addTo(window.currentMapInstance).setLatLngs(rota); } 
+                else { window.currentMapInstance.removeLayer(cizgiler[v.id]); }
+            }
+            if (aktif) { markerlar[v.id].addTo(window.currentMapInstance); } 
+            else { window.currentMapInstance.removeLayer(markerlar[v.id]); }
+        });
+    }
+
+    document.getElementById('yearSlider').addEventListener('input', e => {
+        const y = parseInt(e.target.value);
+        document.getElementById('yearDisplay').innerText = y;
+        guncelle(y);
+    });
+
+    const legend = L.control({position: 'bottomright'});
+    legend.onAdd = () => {
+        const div = L.DomUtil.create('div', 'info legend');
+        div.style.cssText = `background: rgba(255,255,255,0.95); padding: 12px; border-radius: 8px; color: ${highContrast};`;
+        div.innerHTML = '<h4 style="margin: 0 0 8px 0; font-size:14px; border-bottom:1px solid #ccc; padding-bottom:3px;">Cihan Devleti Süreci</h4>';
+        veri.forEach(v => {
+            const item = L.DomUtil.create('div', 'legend-item', div);
+            item.style.cssText = "display:flex; align-items:center; margin-bottom:6px; font-size:11px; cursor:pointer;";
+            item.innerHTML = `<i style="background: ${v.renk}; width: 12px; height: 12px; border-radius:50%; display: inline-block; margin-right: 8px;"></i> <b>${v.kisaAd}</b>`;
+            item.onclick = () => {
+                window.currentMapInstance.flyTo(v.odak, 6, { duration: 1.5 });
+                document.getElementById('yearSlider').value = v.endYear;
+                document.getElementById('yearDisplay').innerText = v.endYear;
+                guncelle(v.endYear);
+                setTimeout(() => markerlar[v.id].openPopup(), 1200);
+            };
+        });
+        return div;
+    };
+    legend.addTo(window.currentMapInstance);
+    guncelle(1453);
+};
+
+// =============================================================================
+// 2. HARİTA: ZENGİN TİCARET YOLLARININ DENETİMİ
+// =============================================================================
+window.HARITA_MOTORU["harita_u3_ticaret_2"] = function() {
+    if (window.currentMapInstance) {
+        window.currentMapInstance.remove();
+        window.currentMapInstance = null;
+    }
+
+    const controlsContainer = document.getElementById('mapControlsContainer');
+    controlsContainer.innerHTML = `
+        <div style="text-align: center; color: #F4E4B0; display: flex; flex-direction: column; align-items: center; gap: 8px;">
+            <input type="range" id="routeSlider" min="1" max="3" value="1" step="1" style="width: 60%; cursor: pointer; accent-color: #27ae60; margin: 0 auto;">
+            <label for="routeSlider" style="font-size: 1.1em; margin-bottom: 5px;">
+                <b>Rota: <span id="routeDisplay" style="color: #E8A020;">1. İpek Yolu (Karadeniz)</span></b>
+            </label>
+            <p style="font-size: 0.85em; opacity: 0.8;">Osmanlı'nın küresel ticaret ağlarını nasıl kontrol altına alması.</p>
+        </div>
+    `;
+    controlsContainer.style.display = 'block';
+
+    window.currentMapInstance = L.map('mapCanvas').setView([35.0, 35.0], 5);
+    L.tileLayer('http://mt0.google.com/vt/lyrs=p&hl=tr&x={x}&y={y}&z={z}', { maxZoom: 10 }).addTo(window.currentMapInstance);
+
+    const veri = [
+        { id: "ipek", isim: "İpek Yolu ve Karadeniz", etiket: "1. İpek Yolu", renk: "#8B1A1A", phase: 1, odak: [45.0, 34.0], bilgi: "<b>Kuzey Hattı:</b> Fatih Sultan Mehmet döneminde Kırım'ın alınmasıyla (1475) Karadeniz bir Türk gölü haline geldi ve İpek Yolu'nun kuzey koridoru Osmanlı denetimine girdi.", rota: [[40.3, 49.8], [42.2, 42.2], [45.0, 34.0], [41.0, 29.0]] },
+        { id: "baharat", isim: "Baharat Yolu ve Mısır", etiket: "2. Baharat Yolu", renk: "#C9A84C", phase: 2, odak: [30.0, 31.2], bilgi: "<b>Güney Hattı:</b> Yavuz Sultan Selim'in Mısır Seferi (1517) ile Hindistan'dan gelen Baharat Yolu, Kızıldeniz ve İskenderiye limanları üzerinden Osmanlı kontrolüne geçti.", rota: [[12.7, 43.3], [21.4, 39.1], [30.0, 31.2], [31.2, 29.9]] },
+        { id: "akdeniz", isim: "Akdeniz Ticaret Ağı", etiket: "3. Akdeniz Hakimiyeti", renk: "#2980b9", phase: 3, odak: [35.0, 18.0], bilgi: "<b>Deniz İpeği:</b> Preveze Deniz Zaferi (1538) ve Kıbrıs'ın fethiyle Doğu Akdeniz ticareti tamamen güvenlik altına alındı. Avrupa'nın doğuya giden tüm yolları kesilmiş oldu.", rota: [[41.0, 29.0], [38.0, 23.0], [35.0, 18.0], [36.8, 10.3]] }
+    ];
+
+    let cizgiler = {}, markerlar = {};
+    const highContrast = "#2c3e50 !important";
+
+    veri.forEach(v => {
+        cizgiler[v.id] = L.polyline(v.rota, {color: v.renk, weight: 6, opacity: 0.8, dashArray: '5, 10'})
+            .bindPopup(`<div style="color: ${highContrast}; max-width:220px;"><h4 style="margin:0 0 5px 0; color:${v.renk};">${v.isim}</h4><p style="margin:0; font-size:13px;">${v.bilgi}</p></div>`);
+        markerlar[v.id] = L.circleMarker(v.odak, {radius: 8, color: '#fff', fillColor: v.renk, weight: 2, fillOpacity: 1})
+            .bindPopup(`<div style="color: ${highContrast}; max-width:220px;"><h4 style="margin:0 0 5px 0; color:${v.renk};">${v.etiket}</h4><p style="margin:0; font-size:13px;">${v.bilgi}</p></div>`);
+    });
+
+    function guncelle(asama) {
+        veri.forEach(v => {
+            if (asama >= v.phase) {
+                cizgiler[v.id].addTo(window.currentMapInstance);
+                markerlar[v.id].addTo(window.currentMapInstance);
+            } else {
+                window.currentMapInstance.removeLayer(cizgiler[v.id]);
+                window.currentMapInstance.removeLayer(markerlar[v.id]);
+            }
+        });
+    }
+
+    document.getElementById('routeSlider').addEventListener('input', e => {
+        const a = parseInt(e.target.value);
+        const v = veri.find(x => x.phase === a);
+        document.getElementById('routeDisplay').innerText = v ? v.etiket : a + ". Rota";
+        guncelle(a);
+    });
+
+    const legend = L.control({position: 'bottomright'});
+    legend.onAdd = () => {
+        const div = L.DomUtil.create('div', 'info legend');
+        div.style.cssText = `background: rgba(255,255,255,0.95); padding: 12px; border-radius: 8px; color: ${highContrast};`;
+        div.innerHTML = '<h4 style="margin: 0 0 8px 0; font-size:14px; border-bottom:1px solid #ccc; padding-bottom:3px;">Ticaret Rotaları</h4>';
+        veri.forEach(v => {
+            const item = L.DomUtil.create('div', 'legend-item', div);
+            item.style.cssText = "display:flex; align-items:center; margin-bottom:6px; font-size:11px; cursor:pointer;";
+            item.innerHTML = `<i style="background: ${v.renk}; width: 12px; height: 12px; border-radius:50%; display: inline-block; margin-right: 8px;"></i> <b>${v.etiket}</b>`;
+            item.onclick = () => {
+                window.currentMapInstance.flyTo(v.odak, 6, { duration: 1.5 });
+                document.getElementById('routeSlider').value = v.phase;
+                document.getElementById('routeDisplay').innerText = v.etiket;
+                guncelle(v.phase);
+                setTimeout(() => markerlar[v.id].openPopup(), 1200);
+            };
+        });
+        return div;
+    };
+    legend.addTo(window.currentMapInstance);
+    guncelle(1);
+};
+
+// =============================================================================
+// 3. HARİTA: ORDU REVİZYONU: TIMAR'IN DÜŞÜŞÜ, KAPIKULU'NUN YÜKSELİŞİ
+// =============================================================================
+window.HARITA_MOTORU["harita_u3_ordudevrimi_3"] = function() {
+    if (window.currentMapInstance) {
+        window.currentMapInstance.remove();
+        window.currentMapInstance = null;
+    }
+
+    const controlsContainer = document.getElementById('mapControlsContainer');
+    controlsContainer.innerHTML = `
+        <div style="text-align: center; color: #F4E4B0; display: flex; flex-direction: column; align-items: center; gap: 8px;">
+            <input type="range" id="yearSlider" min="1500" max="1600" value="1500" step="50" style="width: 60%; cursor: pointer; accent-color: #8B1A1A; margin: 0 auto;">
+            <label for="yearSlider" style="font-size: 1.1em; margin-bottom: 5px;">
+                <b>Yüzyıl: <span id="yearDisplay" style="color: #E8A020;">1500'ler (Klasik Dönem)</span></b>
+            </label>
+            <p style="font-size: 0.85em; opacity: 0.8;">Ateşli silahların yaygınlaşmasıyla değişen ordu demografisi.</p>
+        </div>
+    `;
+    controlsContainer.style.display = 'block';
+
+    window.currentMapInstance = L.map('mapCanvas').setView([39.0, 32.0], 6);
+    L.tileLayer('http://mt0.google.com/vt/lyrs=p&hl=tr&x={x}&y={y}&z={z}', { maxZoom: 10 }).addTo(window.currentMapInstance);
+
+    const highContrastColor = "#2c3e50 !important";
+
+    // 1500'ler (Klasik) ve 1600'ler (Değişim) Verileri
+    const donemVerisi = {
+        1500: [
+            { id: "timar_1500", isim: "Eyalet Askerleri (Tımarlı Sipahiler)", odak: [38.5, 33.0], yariCap: 45, renk: "#27ae60", bilgi: "<b>Klasik Dönem (Zirve):</b> Ordunun belkemiği atlı Tımarlı Sipahilerdir. Ateşli silahlar henüz yaygın değildir. Eyalet ordusu çok büyüktür." },
+            { id: "kapi_1500", isim: "Kapıkulu (Yeniçeriler)", odak: [41.0, 29.0], yariCap: 15, renk: "#8B1A1A", bilgi: "<b>Merkez Ordusu:</b> Yeniçeri sayısı nispeten az ve öz bir elit piyade birliğidir." }
+        ],
+        1550: [
+            { id: "timar_1550", isim: "Eyalet Askerleri (Düşüş Başlıyor)", odak: [38.5, 33.0], yariCap: 30, renk: "#27ae60", bilgi: "<b>Değişim Başlıyor:</b> Uzun süren Avusturya ve İran savaşları, tımar sistemini zorlamaya başladı." },
+            { id: "kapi_1550", isim: "Kapıkulu (Büyüme)", odak: [41.0, 29.0], yariCap: 25, renk: "#8B1A1A", bilgi: "<b>Ateşli Silah İhtiyacı:</b> Avrupa ordularının ateşli silah gücüne karşı koyabilmek için tüfek kullanan yeniçeri sayısı artırıldı." }
+        ],
+        1600: [
+            { id: "timar_1600", isim: "Eyalet Askerleri (Çöküş)", odak: [38.5, 33.0], yariCap: 15, renk: "#d35400", bilgi: "<b>Tımarın Zayıflaması:</b> Tımarların rüşvetle dağıtılması ve enflasyon nedeniyle sipahi sayısı dramatik şekilde düştü." },
+            { id: "kapi_1600", isim: "Kapıkulu (Şişkinlik)", odak: [41.0, 29.0], yariCap: 45, renk: "#8B1A1A", bilgi: "<b>Bozulma:</b> Yeniçeri sayısı kontrolsüzce arttı. Maaş (ulufe) ödemeleri hazineyi tüketti, disiplinsizlik ve isyanlar başladı." }
+        ]
+    };
+
+    let aktifCemberler = [];
+
+    function guncelle(yil) {
+        aktifCemberler.forEach(c => window.currentMapInstance.removeLayer(c));
+        aktifCemberler = [];
+
+        donemVerisi[yil].forEach(veri => {
+            let cember = L.circleMarker(veri.odak, {
+                radius: veri.yariCap,
+                color: '#fff',
+                fillColor: veri.renk,
+                weight: 2,
+                fillOpacity: 0.6
+            }).bindPopup(`<div style="color: ${highContrastColor}; font-family: 'Inter', sans-serif; max-width:220px;">
+                            <h4 style="margin:0 0 5px 0; color:${veri.renk};">${veri.isim}</h4>
+                            <p style="margin:0; font-size:13px; line-height:1.4;">${veri.bilgi}</p>
+                          </div>`);
+            cember.addTo(window.currentMapInstance);
+            aktifCemberler.push(cember);
+        });
+    }
+
+    document.getElementById('yearSlider').addEventListener('input', e => {
+        const y = parseInt(e.target.value);
+        let etiket = y === 1500 ? "1500'ler (Klasik Dönem)" : (y === 1550 ? "1550'ler (Değişim Başlıyor)" : "1600'ler (Tımarın Çöküşü)");
+        document.getElementById('yearDisplay').innerText = etiket;
+        guncelle(y);
+    });
+
+    const legend = L.control({position: 'bottomright'});
+    legend.onAdd = () => {
+        const div = L.DomUtil.create('div', 'info legend');
+        div.style.cssText = `background: rgba(255,255,255,0.95); padding: 12px; border-radius: 8px; color: ${highContrastColor};`;
+        div.innerHTML = '<h4 style="margin: 0 0 8px 0; font-size:14px; border-bottom:1px solid #ccc; padding-bottom:3px;">Askeri Dönüşüm</h4>';
+        div.innerHTML += `<div style="margin-bottom:6px; font-size:11px;"><i style="background: #27ae60; width: 12px; height: 12px; border-radius:50%; display: inline-block; margin-right: 8px;"></i> <b>Tımarlı Sipahi (Atlı)</b></div>`;
+        div.innerHTML += `<div style="font-size:11px;"><i style="background: #8B1A1A; width: 12px; height: 12px; border-radius:50%; display: inline-block; margin-right: 8px;"></i> <b>Yeniçeri (Tüfekli)</b></div>`;
+        return div;
+    };
+    legend.addTo(window.currentMapInstance);
+    guncelle(1500);
+};
+window.HARITA_MOTORU = window.HARITA_MOTORU || {};
+
+// =============================================================================
+// 5. HARİTA: COĞRAFİ KEŞİFLER VE SÖMÜRGECİLİK (PARŞÖMEN EFEKTLİ)
+// =============================================================================
+window.HARITA_MOTORU["harita_u3_kesifler_5"] = function() {
+    // 1. GÜVENLİK KONTROLÜ
+    if (window.currentMapInstance) {
+        window.currentMapInstance.remove();
+        window.currentMapInstance = null;
+    }
+
+    const mapCanvas = document.getElementById('mapCanvas');
+    const controlsContainer = document.getElementById('mapControlsContainer');
+
+    // 2. KONTROL PANELİ VE SLIDER
+    controlsContainer.innerHTML = `
+        <div style="text-align: center; color: #F4E4B0;">
+            <h3 style="margin:0; color: #E8A020;">Coğrafi Keşifler: Yeni Dünyaya Yolculuk</h3>
+            <input type="range" id="kesifSlider" min="1480" max="1522" value="1480" step="1" style="width: 70%; cursor:pointer; accent-color: #8B1A1A; margin: 10px 0;">
+            <p style="margin:0; font-size:1.1em; font-weight:bold;">Yıl: <span id="kesifYilGosterge">1480</span></p>
+        </div>
+    `;
+    controlsContainer.style.display = 'block';
+
+    // Parşömen Efekti İçin CSS
+    mapCanvas.style.filter = "sepia(0.5) contrast(1.1) brightness(0.9)";
+
+    // 3. HARİTA KURULUMU
+    window.currentMapInstance = L.map('mapCanvas').setView([20.0, -20.0], 2);
+    L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/NatGeo_World_Map/MapServer/tile/{z}/{y}/{x}', { 
+        maxZoom: 7, 
+        attribution: 'Tiles &copy; Esri &mdash; National Geographic' 
+    }).addTo(window.currentMapInstance);
+
+    // 4. MODÜLER VERİ SETİ (4 Büyük Kâşif)
+    const kesifVerisi = {
+        rotalar: [
+            {
+                id: "dias", kasif: "Bartolomeu Dias", renk: "#8B1A1A",
+                baslangicYil: 1487, bitisYil: 1488,
+                koordinatlar: [[38.7, -9.1], [14.7, -17.4], [-10.0, 10.0], [-34.3, 18.4]]
+            },
+            {
+                id: "kolomb", kasif: "Kristof Kolomb", renk: "#2980b9",
+                baslangicYil: 1492, bitisYil: 1493,
+                koordinatlar: [[37.2, -6.9], [28.1, -15.4], [24.0, -74.5]]
+            },
+            {
+                id: "gama", kasif: "Vasco da Gama", renk: "#27ae60",
+                baslangicYil: 1497, bitisYil: 1499,
+                koordinatlar: [[38.7, -9.1], [-34.3, 18.4], [-25.9, 32.5], [3.0, 40.0], [11.2, 75.7]]
+            },
+            {
+                id: "macellan", kasif: "Macellan & Elcano", renk: "#C9A84C",
+                baslangicYil: 1519, bitisYil: 1522,
+                // Çizginin kopmaması için doğu boylamları eksi değerlerle batıdan devam ettirildi (Sürekli Dünya)
+                koordinatlar: [[36.7, -6.3], [-22.9, -43.1], [-53.1, -70.9], [10.3, -236.1], [-34.3, -341.6], [36.7, -366.3]]
+            }
+        ],
+        duraklar: [
+            {
+                id: "umit_burnu", koordinat: [-34.3, 18.4], baslik: "Ümit Burnu", yil: 1488, kasif: "Bartolomeu Dias", ikon: "fa-anchor",
+                aciklama: "Afrika'nın en güney ucuna ulaşıldı. Hindistan'a giden doğrudan deniz yolu için ilk büyük adımdır.",
+                alinti: "Günlerce süren fırtınaların ardından karayı gördük. Buraya 'Fırtınalar Burnu' adını verdim.",
+                soru: {
+                    id: "test_u3_kesifler_1",
+                    metin: "Ümit Burnu'nun keşfi, Osmanlı'nın kontrolündeki hangi ticaret yolunun önemini kaybetmesine neden olmuştur?",
+                    secenekler: ["A) İpek Yolu", "B) Baharat Yolu", "C) Kürk Yolu", "D) Kral Yolu"],
+                    dogruCevap: "B"
+                }
+            },
+            {
+                id: "bahamalar", koordinat: [24.0, -74.5], baslik: "San Salvador (Bahamalar)", yil: 1492, kasif: "Kristof Kolomb", ikon: "fa-compass",
+                aciklama: "Kolomb, sürekli batıya giderek Hindistan'a ulaşacağını sandı ancak yeni bir kıta (Amerika) keşfettiğini ölene dek fark etmedi.",
+                alinti: "Yerliler çok uysal insanlar. Ellerinde silah yok, kılıcı gösterdiğimde keskinliğini bilmediklerinden ellerini kestiler...",
+                soru: {
+                    id: "test_u3_kesifler_2",
+                    metin: "Avrupalıların Amerika kıtasındaki yerli uygarlıkları (İnka, Aztek) yıkıp altın ve gümüşü Avrupa'ya taşıması hangi kavramla ifade edilir?",
+                    secenekler: ["A) İstimalet", "B) Feodalizm", "C) Sömürgecilik", "D) Rönesans"],
+                    dogruCevap: "C"
+                }
+            },
+            {
+                id: "calicut", koordinat: [11.2, 75.7], baslik: "Calicut (Hindistan)", yil: 1498, kasif: "Vasco da Gama", ikon: "fa-ship",
+                aciklama: "Avrupa'dan Hindistan'a doğrudan deniz yoluyla ulaşan ilk filo oldu. Akdeniz ticareti ağır darbe aldı.",
+                alinti: "Kralın huzuruna çıktığımızda ona baharat ticareti yapmak istediğimizi söyledik. Limandaki Arap tüccarlar bize hiç iyi gözle bakmıyordu.",
+                soru: {
+                    id: "test_u3_kesifler_3",
+                    metin: "Aşağıdakilerden hangisi, Osmanlı'nın Coğrafi Keşiflerin olumsuz etkisini kırmak için attığı adımlardan biridir?",
+                    secenekler: ["A) Hint Deniz Seferleri", "B) Viyana Kuşatması", "C) Tımar Sistemini Kurması", "D) Yeniçeri Ocağını Açması"],
+                    dogruCevap: "A"
+                }
+            },
+            {
+                id: "filipinler", koordinat: [10.3, -236.1], baslik: "Mactan (Filipinler)", yil: 1521, kasif: "Ferdinand Macellan", ikon: "fa-globe",
+                aciklama: "Macellan bu adada yerlilerle çıkan çatışmada öldü. Yardımcısı Elcano, Victoria gemisiyle yolculuğu tamamlayıp dünyanın yuvarlak olduğunu kanıtladı.",
+                alinti: "Kaptanımız Macellan zehirli bir okla vuruldu. Okyanus sandığımızdan çok daha büyüktü...",
+                soru: {
+                    id: "test_u3_kesifler_4",
+                    metin: "Dünyanın dolaşılması ve yuvarlak olduğunun ispatlanması, Avrupa'da öncelikle hangi kurumun otoritesini derinden sarsmıştır?",
+                    secenekler: ["A) Monarşi", "B) Kilise (Papalık)", "C) Burjuvazi", "D) Feodalite"],
+                    dogruCevap: "B"
+                }
+            }
+        ]
+    };
+
+    let aktifCizgiler = {};
+    let aktifDuraklar = {};
+
+    // 5. MODAL OLUŞTURUCU (Taşmayı Engelleyen Responsive Tasarım)
+    function modalIcerikOlustur(durak) {
+        return `
+            <div style="color:#2c3e50; font-family:'Inter', sans-serif; min-width:280px; max-width:320px; max-height: 55vh; overflow-y: auto; padding-right: 5px;">
+                <h3 style="margin:0 0 5px 0; color:#8B1A1A; border-bottom:2px solid #E8A020; padding-bottom:5px; font-size:15px;">
+                    <i class="fa-solid ${durak.ikon}"></i> ${durak.baslik} (${durak.yil})
+                </h3>
+                <p style="font-size:12px; font-weight:bold; margin:4px 0;">Kâşif: ${durak.kasif}</p>
+                <p style="font-size:12px; margin:4px 0;">${durak.aciklama}</p>
+                
+                <div style="background:#f1e7d0; padding:8px; border-left:4px solid #C9A84C; font-style:italic; font-size:11px; margin-bottom:10px;">
+                    "${durak.alinti}"
+                </div>
+
+                <div id="soruKutusu_${durak.soru.id}" style="background:#e4e9ed; padding:10px; border-radius:5px;">
+                    <p style="margin:0 0 6px 0; font-weight:bold; font-size:11px; color:#2980b9;">GÖREV SORUSU:</p>
+                    <p style="font-size:12px; margin-bottom:8px; line-height:1.3;">${durak.soru.metin}</p>
+                    
+                    <!-- EKRAN TAŞMASINI ÇÖZEN 2x2 GRID YAPISI -->
+                    <div style="display:grid; grid-template-columns: 1fr 1fr; gap:5px;">
+                        ${durak.soru.secenekler.map(secenek => `
+                            <button onclick="window.KESIF_MOTORU.cevapKontrol('${durak.soru.id}', '${secenek.charAt(0)}', '${durak.soru.dogruCevap}')" 
+                                    id="btn_${durak.soru.id}_${secenek.charAt(0)}"
+                                    style="padding:6px; border:1px solid #bdc3c7; background:#fff; border-radius:4px; cursor:pointer; text-align:left; font-size:10px; font-weight:600;">
+                                ${secenek}
+                            </button>
+                        `).join('')}
+                    </div>
+                    <p id="sonuc_${durak.soru.id}" style="margin:8px 0 0 0; font-weight:bold; font-size:11px; text-align:center; height:15px;"></p>
+                </div>
+            </div>
+        `;
+    }
+
+    // Harita Dışından Erişilebilir Soru Motoru
+    window.KESIF_MOTORU = {
+        cevapKontrol: function(soruId, verilenCevap, dogruCevap) {
+            const sonucAlani = document.getElementById(`sonuc_${soruId}`);
+            const secilenButon = document.getElementById(`btn_${soruId}_${verilenCevap}`);
+            
+            // Tüm butonların renklerini sıfırla
+            ["A", "B", "C", "D"].forEach(harf => {
+                const btn = document.getElementById(`btn_${soruId}_${harf}`);
+                if(btn) { btn.style.background = "#fff"; btn.style.color = "#000"; }
+            });
+
+            if (verilenCevap === dogruCevap) {
+                sonucAlani.innerText = "Doğru Yanıt!";
+                sonucAlani.style.color = "#27ae60";
+                secilenButon.style.background = "#27ae60";
+                secilenButon.style.color = "#fff";
+            } else {
+                sonucAlani.innerText = "Hatalı, tekrar düşün.";
+                sonucAlani.style.color = "#8B1A1A";
+                secilenButon.style.background = "#8B1A1A";
+                secilenButon.style.color = "#fff";
+            }
+        }
+    };
+
+    // 6. HARİTA KATMANLARINI OLUŞTURMA
+    kesifVerisi.rotalar.forEach(rota => {
+        aktifCizgiler[rota.id] = L.polyline([], {color: rota.renk, weight: 4, opacity: 0.8, dashArray: '5, 10'});
+    });
+
+    kesifVerisi.duraklar.forEach(durak => {
+        aktifDuraklar[durak.id] = L.marker(durak.koordinat)
+            .bindPopup(modalIcerikOlustur(durak), {maxWidth: 320});
+    });
+
+    // 7. SLIDER İLE ANİMASYON MANTIĞI
+    function haritayiGuncelle(yil) {
+        kesifVerisi.rotalar.forEach(rota => {
+            let gosterilecekRota = [];
+            if (yil >= rota.bitisYil) {
+                gosterilecekRota = rota.koordinatlar;
+            } else if (yil >= rota.baslangicYil) {
+                let oran = (yil - rota.baslangicYil) / (rota.bitisYil - rota.baslangicYil);
+                // Başlangıç ve bitiş yılı aynıysa (Kolomb gibi) hatayı önlemek için
+                if (rota.bitisYil === rota.baslangicYil) {
+                    gosterilecekRota = rota.koordinatlar;
+                } else {
+                    let hedefIndex = Math.floor(rota.koordinatlar.length * oran);
+                    if(hedefIndex === 0) hedefIndex = 1;
+                    gosterilecekRota = rota.koordinatlar.slice(0, hedefIndex + 1);
+                }
+            }
+
+            if (gosterilecekRota.length > 1) {
+                aktifCizgiler[rota.id].addTo(window.currentMapInstance);
+                aktifCizgiler[rota.id].setLatLngs(gosterilecekRota);
+            } else {
+                window.currentMapInstance.removeLayer(aktifCizgiler[rota.id]);
+            }
+        });
+
+        kesifVerisi.duraklar.forEach(durak => {
+            if (yil >= durak.yil) {
+                aktifDuraklar[durak.id].addTo(window.currentMapInstance);
+            } else {
+                window.currentMapInstance.removeLayer(aktifDuraklar[durak.id]);
+            }
+        });
+    }
+
+    document.getElementById('kesifSlider').addEventListener('input', e => {
+        const y = parseInt(e.target.value);
+        document.getElementById('kesifYilGosterge').innerText = y;
+        haritayiGuncelle(y);
+    });
+
+    // Başlangıç Yılı Tetiklemesi
+    haritayiGuncelle(1480);
+};
+window.HARITA_MOTORU = window.HARITA_MOTORU || {};
+
+// =============================================================================
+// 1. HARİTA: FATİH'TEN KANUNİ'YE CİHAN DEVLETİ (GEOJSON POLİGON EFEKTLİ)
+// =============================================================================
+window.HARITA_MOTORU["harita_u3_cihan_1"] = function() {
+    // 1. GÜVENLİK KONTROLÜ (Çökme Koruması)
+    if (window.currentMapInstance) {
+        window.currentMapInstance.remove();
+        window.currentMapInstance = null;
+    }
+
+    const mapCanvas = document.getElementById('mapCanvas');
+    const controlsContainer = document.getElementById('mapControlsContainer');
+
+    // 2. KONTROL PANELİ, SLIDER VE SENARYO BUTONU
+    controlsContainer.innerHTML = `
+        <div style="text-align: center; color: #F4E4B0;">
+            <h3 style="margin:0; color: #E8A020;">Dünya Gücü Osmanlı (1453 - 1566)</h3>
+            <p style="font-size: 0.85em; opacity: 0.8; margin:5px 0 10px 0;">Zaman çizelgesini kaydırarak sınırların değişimini izleyin.</p>
+            
+            <div style="display:flex; justify-content:center; align-items:center; gap:15px; margin-bottom:10px;">
+                <input type="range" id="cihanSlider" min="1453" max="1566" value="1453" step="1" style="width: 50%; cursor:pointer; accent-color: #8B1A1A;">
+                <b style="font-size:1.1em; color:#E8A020;" id="cihanYilGosterge">1453</b>
+            </div>
+
+            <!-- SENARYO BUTONU -->
+            <button onclick="window.CIHAN_MOTORU.doguSiyasetiSenaryosu()" style="padding:6px 12px; border:1px solid #E8A020; border-radius:5px; background:#2c3e50; color:#F4E4B0; cursor:pointer; font-weight:bold; font-size:0.85em; transition:0.3s;">
+                <i class="fa-solid fa-location-crosshairs"></i> Senaryo: Yavuz'un Doğu Siyaseti
+            </button>
+        </div>
+    `;
+    controlsContainer.style.display = 'block';
+
+    // 3. HARİTA KURULUMU
+    window.currentMapInstance = L.map('mapCanvas').setView([39.0, 35.0], 5);
+    L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/NatGeo_World_Map/MapServer/tile/{z}/{y}/{x}', { 
+        maxZoom: 8, 
+        attribution: 'Tiles &copy; Esri &mdash; National Geographic' 
+    }).addTo(window.currentMapInstance);
+
+    // 4. GEOJSON VERİ SETİ (Sınırlar ve Yıllara Göre Değişim)
+    // NOT: Bu koordinatlar sistemi göstermek için kaba (rough) poligonlardır. 
+    // Daha sonra gerçek detaylı GeoJSON koordinatlarıyla değiştirilebilir.
+    const geoVeri = [
+        {
+            type: "Feature",
+            properties: { isim: "Osmanlı Devleti (1453)", baslangic: 1453, bitis: 1515, renk: "#27ae60" },
+            geometry: { type: "Polygon", coordinates: [[[26.0, 36.0], [38.0, 36.0], [38.0, 42.0], [26.0, 42.0], [20.0, 40.0], [26.0, 36.0]]] }
+        },
+        {
+            type: "Feature",
+            properties: { isim: "Memlük Devleti", baslangic: 1453, bitis: 1516, renk: "#C9A84C" },
+            geometry: { type: "Polygon", coordinates: [[[25.0, 22.0], [35.0, 22.0], [36.0, 35.0], [30.0, 31.0], [25.0, 31.0], [25.0, 22.0]]] }
+        },
+        {
+            type: "Feature",
+            properties: { isim: "Safevi Devleti", baslangic: 1501, bitis: 1566, renk: "#8e44ad" },
+            geometry: { type: "Polygon", coordinates: [[[44.0, 25.0], [60.0, 25.0], [60.0, 40.0], [44.0, 40.0], [44.0, 25.0]]] }
+        },
+        {
+            type: "Feature",
+            // Memlüklerin yıkılıp Mısır ve Hicaz'ın Osmanlı'ya geçişi
+            properties: { isim: "Osmanlı Devleti (Genişlemiş)", baslangic: 1517, bitis: 1566, renk: "#27ae60" },
+            geometry: { type: "Polygon", coordinates: [[[20.0, 40.0], [26.0, 42.0], [42.0, 40.0], [42.0, 30.0], [35.0, 22.0], [25.0, 22.0], [25.0, 31.0], [26.0, 36.0], [20.0, 40.0]]] }
+        }
+    ];
+
+    // 5. KRİTİK ÇATIŞMALAR VE MODAL VERİLERİ (İSTENEN ID STANDARTLARINDA)
+    const savasVerisi = [
+        {
+            id: "caldiran", koordinat: [39.09, 44.29], yil: 1514, baslik: "Çaldıran Muharebesi",
+            bilgi: "Yavuz Sultan Selim, Şah İsmail'i mağlup ederek Doğu Anadolu'nun güvenliğini sağladı.",
+            soru: {
+                id: "test_u3_cihan_1", // İSTENEN STANDART: test_u3_[konu]_[no]
+                metin: "Çaldıran Muharebesi'nin kazanılmasıyla Osmanlı Devleti, doğudaki hangi büyük siyasi tehlikeyi bertaraf etmiştir?",
+                secenekler: ["A) Memlükler", "B) Safeviler", "C) Akkoyunlular", "D) İlhanlılar"],
+                dogru: "B"
+            }
+        },
+        {
+            id: "mercidabik", koordinat: [36.56, 37.28], yil: 1516, baslik: "Mercidabık Muharebesi",
+            bilgi: "Memlük ordusu mağlup edildi. Suriye, Lübnan ve Filistin Osmanlı topraklarına katıldı.",
+            soru: {
+                id: "test_u3_cihan_2",
+                metin: "Yavuz Sultan Selim'in Memlükleri mağlup etmesi, aşağıdakilerden hangisine zemin hazırlamıştır?",
+                secenekler: ["A) Balkan fetihlerinin durmasına", "B) Halifeliğin Osmanlı'ya geçmesine", "C) Celali İsyanlarına", "D) Haçlı İttifaklarına"],
+                dogru: "B"
+            }
+        }
+    ];
+
+    let geoJsonKatmani;
+    let aktifMarkerlar = [];
+
+    // 6. POP-UP (MODAL) ŞABLONU (2x2 Grid ve Scroll Korumalı)
+    function modalOlustur(savas) {
+        return `
+            <div style="color:#2c3e50; font-family:'Inter', sans-serif; min-width:280px; max-width:320px; max-height: 55vh; overflow-y: auto; padding-right: 5px;">
+                <h3 style="margin:0 0 5px 0; color:#8B1A1A; border-bottom:2px solid #E8A020; padding-bottom:5px; font-size:15px;">
+                    <i class="fa-solid fa-khanda"></i> ${savas.baslik} (${savas.yil})
+                </h3>
+                <p style="font-size:12px; margin:8px 0;">${savas.bilgi}</p>
+
+                <div id="soruKutusu_${savas.soru.id}" style="background:#e4e9ed; padding:10px; border-radius:5px;">
+                    <p style="margin:0 0 6px 0; font-weight:bold; font-size:11px; color:#2980b9;">BİLGİ TESTİ:</p>
+                    <p style="font-size:12px; margin-bottom:8px; line-height:1.3;">${savas.soru.metin}</p>
+                    
+                    <div style="display:grid; grid-template-columns: 1fr 1fr; gap:5px;">
+                        ${savas.soru.secenekler.map(sec => `
+                            <button onclick="window.CIHAN_MOTORU.cevapKontrol('${savas.soru.id}', '${sec.charAt(0)}', '${savas.soru.dogru}')" 
+                                    id="btn_${savas.soru.id}_${sec.charAt(0)}"
+                                    style="padding:6px; border:1px solid #bdc3c7; background:#fff; border-radius:4px; cursor:pointer; text-align:left; font-size:10px; font-weight:600;">
+                                ${sec}
+                            </button>
+                        `).join('')}
+                    </div>
+                    <p id="sonuc_${savas.soru.id}" style="margin:8px 0 0 0; font-weight:bold; font-size:11px; text-align:center; height:15px;"></p>
+                </div>
+            </div>
+        `;
+    }
+
+    // 7. DIŞARIDAN ERİŞİLEBİLİR MOTOR (Senaryo ve Test Kontrolü)
+    window.CIHAN_MOTORU = {
+        // Test Motoru
+        cevapKontrol: function(soruId, verilen, dogru) {
+            const sonucAlani = document.getElementById(`sonuc_${soruId}`);
+            const secilenButon = document.getElementById(`btn_${soruId}_${verilen}`);
+            
+            ["A", "B", "C", "D"].forEach(harf => {
+                const btn = document.getElementById(`btn_${soruId}_${harf}`);
+                if(btn) { btn.style.background = "#fff"; btn.style.color = "#000"; }
+            });
+
+            if(verilen === dogru) {
+                sonucAlani.innerText = "Doğru Yanıt!";
+                sonucAlani.style.color = "#27ae60";
+                secilenButon.style.background = "#27ae60"; secilenButon.style.color = "#fff";
+            } else {
+                sonucAlani.innerText = "Hatalı, tekrar düşün.";
+                sonucAlani.style.color = "#8B1A1A";
+                secilenButon.style.background = "#8B1A1A"; secilenButon.style.color = "#fff";
+            }
+        },
+        
+        // Senaryo Motoru: Haritayı doğrudan Doğu Seferlerine kilitler
+        doguSiyasetiSenaryosu: function() {
+            const hedefYil = 1516; // Mercidabık
+            document.getElementById('cihanSlider').value = hedefYil;
+            document.getElementById('cihanYilGosterge').innerText = hedefYil;
+            haritayiGuncelle(hedefYil);
+            
+            // Haritayı Orta Doğu'ya uçur ve yakınlaştır
+            window.currentMapInstance.flyTo([33.0, 38.0], 6, {
+                duration: 2,
+                easeLinearity: 0.25
+            });
+        }
+    };
+
+    // 8. ANA GÜNCELLEME DÖNGÜSÜ (Slider Tetikleyicisi)
+    function haritayiGuncelle(yil) {
+        // 8.1. GeoJSON Katmanlarını Filtrele ve Çiz
+        if (geoJsonKatmani) {
+            window.currentMapInstance.removeLayer(geoJsonKatmani);
+        }
+
+        const oYildakiSınirlar = geoVeri.filter(f => yil >= f.properties.baslangic && yil <= f.properties.bitis);
+
+        geoJsonKatmani = L.geoJSON(oYildakiSınirlar, {
+            style: function(feature) {
+                return {
+                    color: feature.properties.renk,
+                    weight: 2,
+                    fillOpacity: 0.3
+                };
+            },
+            onEachFeature: function(feature, layer) {
+                // Bilgi Kutucuğu (Tooltip)
+                layer.bindTooltip(`<b>${feature.properties.isim}</b>`, {permanent: false, direction: "center", className: 'custom-tooltip'});
+                
+                // Hover (Üzerine Gelme) Efekti
+                layer.on({
+                    mouseover: function(e) {
+                        const l = e.target;
+                        l.setStyle({ fillOpacity: 0.6, weight: 4 });
+                        l.bringToFront();
+                    },
+                    mouseout: function(e) {
+                        geoJsonKatmani.resetStyle(e.target);
+                    }
+                });
+            }
+        }).addTo(window.currentMapInstance);
+
+        // 8.2. Markerları (Savaşları) Filtrele ve Çiz
+        aktifMarkerlar.forEach(m => window.currentMapInstance.removeLayer(m));
+        aktifMarkerlar = [];
+
+        savasVerisi.forEach(savas => {
+            if (yil >= savas.yil) {
+                const isaretci = L.marker(savas.koordinat)
+                    .bindPopup(modalOlustur(savas), {maxWidth: 320});
+                isaretci.addTo(window.currentMapInstance);
+                aktifMarkerlar.push(isaretci);
+            }
+        });
+    }
+
+    // Slider Dinleyicisi
+    document.getElementById('cihanSlider').addEventListener('input', e => {
+        const y = parseInt(e.target.value);
+        document.getElementById('cihanYilGosterge').innerText = y;
+        haritayiGuncelle(y);
+    });
+
+    // Başlat
+    haritayiGuncelle(1453);
+};

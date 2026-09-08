@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Profilim — Tarih Portalı</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,700;0,900;1,700;1,900&family=IBM+Plex+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<style>
+:root { --bg-app: #e8e4d9; --panel-bg: #fdfcf9; --ink: #1a1815; --muted: #736b60; --border-light: rgba(0,0,0,0.06); --c-9: #8E523A; }
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body { background: var(--bg-app); color: var(--ink); font-family: 'Inter', sans-serif; -webkit-user-select: none; user-select: none; }
+.header { padding: 24px 20px 16px; text-align: center; }
+</style>
+<link rel="stylesheet" href="stiller/portal.css">
+</head>
+<body>
+
+<div class="header">
+    <a href="index.html" style="color: var(--muted); text-decoration: none; font-family: 'IBM Plex Mono', monospace; font-size: 0.8rem; margin-bottom: 10px; display: inline-block;"><i class="fa-solid fa-arrow-left"></i> Portala Dön</a>
+    <h1 style="font-family: 'Playfair Display', serif; font-size: 2rem;">Tarih Kurumu Kimliği</h1>
+</div>
+
+<div class="id-card">
+    <div class="id-header">
+        <div class="id-logo"><i class="fa-solid fa-landmark-dome" style="color: #8E523A;"></i> B.K. Tarih Kurumu</div>
+        <div class="id-stamp">ONAYLI</div>
+    </div>
+    <div class="id-body">
+        <div>
+            <div class="id-field-label">ÖĞRENCİ / ARAŞTIRMACI ADI:</div>
+            <div class="id-field-value">
+                <input type="text" class="id-input" id="profile-name" placeholder="Adınızı girin..." onchange="updateName(this.value)">
+            </div>
+        </div>
+        <div style="display: flex; gap: 20px;">
+            <div style="flex: 1;">
+                <div class="id-field-label">ÜYELİK TARİHİ:</div>
+                <div class="id-field-value" id="profile-date" style="font-family: 'IBM Plex Mono', monospace; font-size: 0.9rem;">-</div>
+            </div>
+            <div style="flex: 1;">
+                <div class="id-field-label">KAZANILAN ROZET:</div>
+                <div class="id-field-value" id="profile-badge-count" style="font-family: 'IBM Plex Mono', monospace; font-size: 0.9rem; color: #9B1C1C;">0 / 8</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div style="padding: 0 20px 15px; font-family: 'IBM Plex Mono', monospace; font-size: 0.7rem; font-weight: bold; color: var(--muted); text-transform: uppercase;">Açılan Başarımlar</div>
+
+<div class="badge-grid" id="badge-grid">
+    <!-- Rozetler JS ile doldurulacak -->
+</div>
+
+<script src="motorlar/portal.js"></script>
+<script>
+function renderProfile() {
+    let data = loadPortalData();
+    document.getElementById('profile-name').value = data.studentName;
+    document.getElementById('profile-date').innerText = data.joinDate;
+    
+    let totalBadges = Object.keys(badgesDB).length;
+    let unlocked = data.unlockedBadges.length;
+    document.getElementById('profile-badge-count').innerText = `${unlocked} / ${totalBadges}`;
+    
+    let grid = document.getElementById('badge-grid');
+    grid.innerHTML = '';
+    
+    for (const [key, badge] of Object.entries(badgesDB)) {
+        let isUnlocked = data.unlockedBadges.includes(key);
+        let bDiv = document.createElement('div');
+        bDiv.className = `badge-item ${isUnlocked ? 'unlocked' : ''}`;
+        if(isUnlocked) bDiv.style.color = badge.color;
+        
+        bDiv.innerHTML = `
+            <div class="badge-item-icon">${badge.icon}</div>
+            <div class="badge-item-title">${badge.title}</div>
+            <div style="font-size: 0.55rem; color: var(--muted); margin-top: auto;">${isUnlocked ? badge.desc : 'Kilitli'}</div>
+        `;
+        grid.appendChild(bDiv);
+    }
+}
+
+function updateName(name) {
+    setStudentName(name);
+}
+
+window.addEventListener('DOMContentLoaded', renderProfile);
+</script>
+</body>
+</html>

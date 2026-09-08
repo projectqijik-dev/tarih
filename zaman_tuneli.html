@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Zaman Tüneli — Tarih Portalı</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,700;0,900;1,700;1,900&family=IBM+Plex+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<style>
+:root { --bg-app: #e8e4d9; --panel-bg: #fdfcf9; --ink: #1a1815; --muted: #736b60; --border-light: rgba(0,0,0,0.06); --c-9: #8E523A; --c-10: #295F4E; }
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body { background: var(--bg-app); color: var(--ink); font-family: 'Inter', sans-serif; overflow-x: hidden; }
+.header { padding: 24px 20px 16px; text-align: center; position: sticky; top: 0; background: rgba(232,228,217,0.9); backdrop-filter: blur(5px); z-index: 10; border-bottom: 1px solid var(--border-light); }
+.end-message { text-align: center; padding: 40px 20px; font-family: 'Playfair Display', serif; color: var(--muted); font-size: 1.2rem; font-style: italic; opacity: 0; transition: opacity 1s; }
+</style>
+<link rel="stylesheet" href="stiller/portal.css">
+</head>
+<body>
+
+<div class="header">
+    <a href="index.html" style="color: var(--muted); text-decoration: none; font-family: 'IBM Plex Mono', monospace; font-size: 0.8rem; margin-bottom: 10px; display: inline-block;"><i class="fa-solid fa-arrow-left"></i> Portala Dön</a>
+    <h1 style="font-family: 'Playfair Display', serif; font-size: 2rem;"><i class="fa-solid fa-hourglass-half" style="color: #295F4E;"></i> Zaman Tüneli</h1>
+</div>
+
+<div class="timeline-container" id="timeline-container">
+    <!-- İçerik JS ile eklenecek -->
+</div>
+
+<div class="end-message" id="end-message">
+    Tarihin sonuna geldin. Zaman Yolcusu rozetini kazandın!
+</div>
+
+<script src="motorlar/portal.js"></script>
+<script>
+const timelineEvents = [
+    { year: "MÖ 9600", title: "Göbeklitepe", desc: "İnsanlığın bilinen en eski tapınağı inşa edildi. Din, yerleşik hayata geçişten önce geldi.", color: "#8E523A" },
+    { year: "MÖ 3200", title: "Sümerler ve Yazı", desc: "Mezopotamya'da çivi yazısı icat edildi. Tarihin başlangıcı kabul edilir.", color: "#8E523A" },
+    { year: "MÖ 1750", title: "Hammurabi Kanunları", desc: "Babil Kralı Hammurabi tarafından hazırlanan tarihin ilk kapsamlı yazılı yasaları.", color: "#4A3B52" },
+    { year: "MÖ 1280", title: "Kadeş Antlaşması", desc: "Mısır ve Hititler arasındaki tarihin bilinen ilk yazılı antlaşması.", color: "#8E523A" },
+    { year: "MÖ 399", title: "Sokrates'in Ölümü", desc: "Felsefenin temellerini atan Sokrates, Atina'da zehir içirilerek idam edildi.", color: "#4A3B52" },
+    { year: "MÖ 44", title: "Sezar'a Suikast", desc: "Jül Sezar, Roma Senatosu'nda öldürüldü. Roma İmparatorluğa geçiş sürecine girdi.", color: "#9B1C1C" },
+    { year: "0", title: "Milat", desc: "Hz. İsa'nın doğumu. Miladi takvimin başlangıcı.", color: "#1F425A" },
+    { year: "375", title: "Kavimler Göçü", desc: "Hunların baskısıyla Cermen kavimleri Roma'ya girdi, Avrupa'nın etnik yapısı değişti.", color: "#1E3A8A" },
+    { year: "395", title: "Roma'nın Bölünmesi", desc: "Roma İmparatorluğu Doğu ve Batı olarak ikiye ayrıldı.", color: "#9B1C1C" },
+    { year: "571", title: "Hz. Muhammed'in Doğumu", desc: "İslam dininin peygamberi Mekke'de doğdu.", color: "#295F4E" },
+    { year: "1071", title: "Malazgirt Meydan Muharebesi", desc: "Büyük Selçuklu Hükümdarı Alparslan, Bizans'ı yenerek Anadolu'nun kapılarını Türklere açtı.", color: "#295F4E" },
+    { year: "1096", title: "Haçlı Seferleri Başladı", desc: "Avrupa orduları, Kudüs'ü ele geçirmek için İslam dünyasına büyük seferler düzenledi.", color: "#B45309" },
+    { year: "1215", title: "Magna Carta", desc: "İngiltere'de kralın yetkilerini kısıtlayan ve anayasacılığın ilk adımı sayılan belge.", color: "#1E3A8A" },
+    { year: "1258", title: "Bağdat'ın Düşüşü", desc: "Moğol İlhanlılar Bağdat'ı yıktı. İslam Altın Çağı büyük bir darbe aldı.", color: "#9B1C1C" },
+    { year: "1453", title: "İstanbul'un Fethi", desc: "Fatih Sultan Mehmet İstanbul'u fethetti. Orta Çağ kapandı, Yeni Çağ başladı.", color: "#8E523A" },
+    { year: "1492", title: "Amerika'nın Keşfi", desc: "Kristof Kolomb Amerika kıtasına ulaştı, coğrafi keşifler hız kazandı.", color: "#1E3A8A" },
+    { year: "1517", title: "Reform Hareketleri", desc: "Martin Luther'in 95 Tez'i asmasıyla Avrupa'da dinde yenilik dönemi başladı.", color: "#B45309" },
+    { year: "1683", title: "2. Viyana Kuşatması", desc: "Osmanlı ordusu Viyana önlerinde bozguna uğradı. Türklerin Avrupa'dan çekilişi başladı.", color: "#9B1C1C" },
+    { year: "1760", title: "Sanayi Devrimi Başlangıcı", desc: "İngiltere'de makineleşme başladı, dünyada üretim biçimi tamamen değişti.", color: "#736b60" },
+    { year: "1789", title: "Fransız İhtilali", desc: "Mutlak monarşi yıkıldı. Milliyetçilik, eşitlik, özgürlük fikirleri tüm dünyaya yayıldı.", color: "#1E3A8A" },
+    { year: "1914", title: "I. Dünya Savaşı", desc: "Tarihin en kanlı savaşlarından biri başladı. İmparatorluklar yıkıldı.", color: "#9B1C1C" },
+    { year: "1923", title: "Cumhuriyet'in İlanı", desc: "Mustafa Kemal Atatürk önderliğinde Türkiye Cumhuriyeti kuruldu.", color: "#9B1C1C" },
+    { year: "1939", title: "II. Dünya Savaşı", desc: "Faşizm yükseldi ve dünya yıkıcı bir savaşa sürüklendi. Nükleer silahlar ilk kez kullanıldı.", color: "#4A3B52" },
+    { year: "1947", title: "Soğuk Savaş Başladı", desc: "Dünya, ABD ve SSCB önderliğinde iki kutba ayrıldı.", color: "#1F425A" },
+    { year: "1969", title: "Ay'a İlk Adım", desc: "Apollo 11 göreviyle Neil Armstrong Ay yüzeyine ayak bastı.", color: "#1F425A" },
+    { year: "1989", title: "Berlin Duvarı'nın Yıkılışı", desc: "Soğuk Savaş'ın simgesi yıkıldı, dünya yeni bir döneme girdi.", color: "#4A3B52" },
+    { year: "2007", title: "Akıllı Telefonların Yükselişi", desc: "Bilgi çağı hızlandı, dijital devrim tüm dünyayı sardı.", color: "#736b60" },
+    { year: "2020", title: "Küresel Pandemi", desc: "COVID-19 salgını tüm dünyada sosyal ve ekonomik düzeni sarstı.", color: "#9B1C1C" }
+];
+
+function initTimeline() {
+    const container = document.getElementById('timeline-container');
+    
+    timelineEvents.forEach((ev, index) => {
+        const item = document.createElement('div');
+        item.className = 'timeline-item';
+        item.innerHTML = `
+            <div class="tl-year" style="color: ${ev.color}">${ev.year}</div>
+            <div class="tl-content" style="border-left-color: ${ev.color}">
+                <div class="tl-title">${ev.title}</div>
+                <div class="tl-desc">${ev.desc}</div>
+            </div>
+        `;
+        container.appendChild(item);
+    });
+
+    // Observer setup for fade-in animations
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.classList.add('visible');
+            }
+        });
+    }, { threshold: 0.2 });
+
+    document.querySelectorAll('.timeline-item').forEach(item => {
+        observer.observe(item);
+    });
+    
+    // Check if reached the bottom to give badge
+    const endObserver = new IntersectionObserver((entries) => {
+        if(entries[0].isIntersecting) {
+            document.getElementById('end-message').style.opacity = '1';
+            setTimeout(() => {
+                unlockBadge('zaman_yolcusu');
+            }, 1000);
+        }
+    });
+    endObserver.observe(document.getElementById('end-message'));
+}
+
+window.addEventListener('DOMContentLoaded', initTimeline);
+</script>
+</body>
+</html>
