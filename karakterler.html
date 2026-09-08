@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Tarihi Şahsiyetler — Tarih Portalı</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,700;0,900;1,700;1,900&family=IBM+Plex+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<style>
+:root { --bg-app: #e8e4d9; --panel-bg: #fdfcf9; --ink: #1a1815; --muted: #736b60; --border-light: rgba(0,0,0,0.06); --c-9: #8E523A; }
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body { background: var(--bg-app); color: var(--ink); font-family: 'Inter', sans-serif; overflow-x: hidden; overflow-y: auto; padding-bottom: 50px; }
+.header { padding: 24px 20px 16px; text-align: center; }
+
+/* Animasyonlar */
+.swipe-left { animation: swipeL 0.5s forwards; }
+.swipe-right { animation: swipeR 0.5s forwards; }
+@keyframes swipeL { to { transform: translateX(-200px) rotate(-20deg) scale(0.8); opacity: 0; } }
+@keyframes swipeR { to { transform: translateX(200px) rotate(20deg) scale(0.8); opacity: 0; } }
+</style>
+<link rel="stylesheet" href="stiller/portal.css">
+</head>
+<body>
+
+<div class="header">
+    <a href="index.html" style="color: var(--muted); text-decoration: none; font-family: 'IBM Plex Mono', monospace; font-size: 0.8rem; margin-bottom: 10px; display: inline-block;"><i class="fa-solid fa-arrow-left"></i> Portala Dön</a>
+    <h1 style="font-family: 'Playfair Display', serif; font-size: 2rem;"><i class="fa-solid fa-masks-theater" style="color: #9B1C1C;"></i> Şahsiyetler</h1>
+    <p style="font-size: 0.8rem; color: var(--muted); margin-top: 5px;">Tarihe Yön Veren Şahsiyetler</p>
+</div>
+
+<div class="cards-container" id="cards-container">
+    <div id="end-message" style="position: absolute; text-align: center; font-family: 'Playfair Display', serif; opacity: 0; transition: opacity 0.5s; z-index: 1;">
+        <h2 style="color: var(--c-9); margin-bottom: 10px;">Deste Bitti!</h2>
+        <p style="color: var(--muted); font-size: 0.9rem;">Kart Kaşifi rozetini kazandın.</p>
+    </div>
+    <!-- Kartlar JS ile Yüklenecek -->
+</div>
+
+<div style="text-align: center; padding: 20px; font-family: 'IBM Plex Mono', monospace; font-size: 0.7rem; color: var(--muted);">
+    Karakterleri incelemek için sağa ve/ya sola kaydırın.
+</div>
+
+<script src="motorlar/portal.js"></script>
+<script>
+let charDB = [
+    {
+        "name": "Mustafa Kemal Atatürk",
+        "title": "Türkiye Cumhuriyeti Kurucusu",
+        "image": "https://upload.wikimedia.org/wikipedia/commons/a/a8/Ataturk1930s.jpg",
+        "summary": "Kurtuluş Savaşı'na başkomutanlık ederek Türk milletini bağımsızlığına kavuşturdu. Gerçekleştirdiği devrimlerle modern ve laik Türkiye Cumhuriyeti'ni inşa etti."
+    },
+    {
+        "name": "Fatih Sultan Mehmet",
+        "title": "Osmanlı Padişahı",
+        "image": "https://upload.wikimedia.org/wikipedia/commons/e/ea/Gentile_Bellini_-_Portrait_of_Sultan_Mehmed_II_-_National_Gallery_London.jpg",
+        "summary": "1453'te İstanbul'u fethederek Bizans İmparatorluğu'na son verdi ve Orta Çağ'ı kapatıp Yeni Çağ'ı başlattı. Askeri dehasının yanında sanata ve bilime büyük değer verdi."
+    },
+    {
+        "name": "Sokrates",
+        "title": "Antik Yunan Filozofu",
+        "image": "https://upload.wikimedia.org/wikipedia/commons/a/a4/Socrates_Louvre.jpg",
+        "summary": "Soru sorma yöntemiyle (Sokratik yöntem) Batı felsefesinin temellerini attı. İnançları uğruna ölümü göze alarak düşünce özgürlüğünün simgesi haline geldi."
+    },
+    {
+        "name": "Napolyon Bonapart",
+        "title": "Fransa İmparatoru",
+        "image": "https://upload.wikimedia.org/wikipedia/commons/0/0e/Jacques-Louis_David_-_The_Emperor_Napoleon_in_His_Study_at_the_Tuileries_-_Google_Art_Project.jpg",
+        "summary": "Fransız Devrimi sonrası Avrupa'nın siyasi haritasını baştan çizen askeri bir dehadır. Uygulamaya koyduğu Napolyon Kanunları, modern hukuk sistemlerinin çoğuna ilham vermiştir."
+    },
+    {
+        "name": "İbn-i Haldun",
+        "title": "Sosyoloji'nin Kurucusu",
+        "image": "https://upload.wikimedia.org/wikipedia/commons/3/30/Ibn_Khaldun_statue_in_Tunis_%28cropped%29.jpg",
+        "summary": "Mukaddime adlı eseriyle sosyoloji, tarih felsefesi ve iktisat bilimlerinin öncüsü kabul edilir. Toplumların gelişimini ve çöküşünü bilimsel bir yaklaşımla incelemiştir."
+    },
+    {
+        "name": "Mete Han",
+        "title": "Büyük Hun İmparatoru",
+        "image": "https://upload.wikimedia.org/wikipedia/commons/6/6f/Mete_Khan_statue.jpg",
+        "summary": "Asya Hun İmparatorluğu'na en parlak dönemini yaşatan büyük Türk hükümdarıdır. Kurduğu onlu ordu sistemi, günümüzde dünya ordularının temel organizasyon yapısını oluşturur."
+    },
+    {
+        "name": "Galileo Galilei",
+        "title": "Astronomi Bilgini",
+        "image": "https://upload.wikimedia.org/wikipedia/commons/c/cc/Justus_Sustermans_-_Portrait_of_Galileo_Galilei%2C_1636.jpg",
+        "summary": "Teleskobu astronomik amaçlarla kullanarak Güneş merkezli evren modelini kanıtladı. Modern gözlemsel astronominin ve modern fiziğin babası olarak anılır."
+    },
+    {
+        "name": "El-Cezeri",
+        "title": "Sibernetiğin Kurucusu",
+        "image": "https://upload.wikimedia.org/wikipedia/commons/6/69/Al-Jazari_elephant_clock.jpg",
+        "summary": "Sibernetik ve robotik biliminin tarihteki ilk kurucularından kabul edilir. Tasarladığı su saatleri ve mekanik robotlar, döneminin çok ötesinde bir mühendislik harikasıdır."
+    },
+    {
+        "name": "Nikola Tesla",
+        "title": "Mucit ve Fizikçi",
+        "image": "https://upload.wikimedia.org/wikipedia/commons/d/d4/N.Tesla.JPG",
+        "summary": "Alternatif akım (AC) sistemini geliştirerek günümüzdeki elektrik dağıtım ağının temelini attı. Kablosuz enerji aktarımı ve radyo frekansları üzerine çığır açan buluşlar yaptı."
+    },
+    {
+        "name": "Tomris Hatun",
+        "title": "Sakaların Kadın Hükümdarı",
+        "image": "https://upload.wikimedia.org/wikipedia/commons/3/30/Mattia_Preti_-_Tomyris_Receives_the_Head_of_Cyrus_-_WGA18392.jpg",
+        "summary": "Tarihte bilinen ilk kadın hükümdarlardan biridir. Pers İmparatoru Kiros'un yenilmez denilen ordusunu büyük bir zekayla mağlup ederek halkını korumuştur."
+    },
+    {
+        "name": "Büyük İskender",
+        "title": "Makedonya Kralı",
+        "image": "https://upload.wikimedia.org/wikipedia/commons/5/59/Alexander_the_Great_mosaic_%28cropped%29.jpg",
+        "summary": "Makedonya'dan Hindistan'a kadar uzanan devasa bir imparatorluk kurarak Helenistik dönemi başlattı. Doğu ve Batı kültürlerinin kaynaşmasında en büyük rolü oynadı."
+    },
+    {
+        "name": "Marie Curie",
+        "title": "Radyolojinin Öncüsü",
+        "image": "https://upload.wikimedia.org/wikipedia/commons/c/c8/Marie_Curie_c._1920s.jpg",
+        "summary": "Radyoaktivite üzerine yaptığı çalışmalarla iki farklı alanda Nobel Ödülü alan ilk insandır. Buluşları sayesinde kanser tedavisinde ve modern tıpta çığır açılmıştır."
+    },
+    {
+        "name": "Kanuni Sultan Süleyman",
+        "title": "Osmanlı Padişahı",
+        "image": "https://upload.wikimedia.org/wikipedia/commons/d/d4/Suleiman_I_portrait_by_Titian_c_1530.jpg",
+        "summary": "Osmanlı İmparatorluğu'na hem askeri hem de ekonomik olarak en ihtişamlı dönemini yaşattı. Yaptığı adil yasal düzenlemeler nedeniyle Batı'da Muhteşem, Doğu'da Kanuni olarak anılır."
+    },
+    {
+        "name": "Sun Tzu",
+        "title": "Askeri Stratejist",
+        "image": "https://upload.wikimedia.org/wikipedia/commons/2/28/SunTzu-Statue-Enchoen.jpg",
+        "summary": "'Savaş Sanatı' adlı eseri yazarak askeri strateji ve taktiklerin temelini belirledi. Düşünceleri binlerce yıl sonra bile iş dünyasında ve siyasette uygulanmaya devam etmektedir."
+    },
+    {
+        "name": "Ali Kuşçu",
+        "title": "Matematikçi ve Astronom",
+        "image": "https://upload.wikimedia.org/wikipedia/commons/3/36/Ali_Qushji.jpg",
+        "summary": "Semerkant ve İstanbul'da yaptığı astronomi ve matematik çalışmalarıyla bilim dünyasına yön verdi. Ay haritasını çıkaran ilk bilim insanlarından biri olarak adı Ay'da bir kratere verildi."
+    },
+    {
+        "name": "Bilge Kağan",
+        "title": "Göktürk Hakanı",
+        "image": "https://upload.wikimedia.org/wikipedia/commons/4/4b/Bilge_kagan_bust.jpg",
+        "summary": "Göktürk İmparatorluğu'nu kardeşi Kül Tigin ve veziri Tonyukuk ile beraber en güçlü seviyesine ulaştırdı. Türk adının geçtiği ilk yazılı metinler olan Orhun Yazıtları'nı diktirerek tarihe not düştü."
+    },
+    {
+        "name": "Piri Reis",
+        "title": "Osmanlı Denizcisi ve Haritacı",
+        "image": "https://upload.wikimedia.org/wikipedia/commons/6/69/Piri_reis_map_1513.jpg",
+        "summary": "Kitab-ı Bahriye eseri ve çizdiği dünya haritası ile dönemin coğrafya bilgisini zirveye taşıdı. Haritası, Amerika kıtasının doğu kıyılarını inanılmaz bir doğrulukla göstermektedir."
+    },
+    {
+        "name": "Alan Turing",
+        "title": "Bilgisayar Biliminin Babası",
+        "image": "https://upload.wikimedia.org/wikipedia/commons/a/a1/Alan_Turing_Aged_16.jpg",
+        "summary": "İkinci Dünya Savaşı'nda Enigma şifresini kırarak milyonlarca insanın hayatını kurtardı. Yapay zeka konseptinin ve modern bilgisayar biliminin teorik babasıdır."
+    },
+    {
+        "name": "İbni Sina",
+        "title": "Tıbbın Hükümdarı",
+        "image": "https://upload.wikimedia.org/wikipedia/commons/c/c2/Avicenna.jpg",
+        "summary": "'El-Kanun fi't-Tıb' (Tıbbın Kanunu) eseri, yüzyıllar boyunca Avrupa üniversitelerinde temel tıp ders kitabı olarak okutuldu. Modern tıbbın gelişmesinde en büyük pay sahibi hekimlerden biridir."
+    },
+    {
+        "name": "Cengiz Han",
+        "title": "Moğol İmparatoru",
+        "image": "https://upload.wikimedia.org/wikipedia/commons/3/35/YuanEmperorAlbumGenghisPortrait.jpg",
+        "summary": "Birbirine düşman göçebe kabileleri birleştirerek tarihin bitişik sınırlara sahip en büyük imparatorluğunu kurdu. Kurduğu posta teşkilatı ve İpek Yolu hakimiyeti ile Asya-Avrupa ticaretini baştan şekillendirdi."
+    },
+    {
+        "name": "Leonardo da Vinci",
+        "title": "Rönesans Dahisi",
+        "image": "https://upload.wikimedia.org/wikipedia/commons/c/cb/Francesco_Melzi_-_Portrait_of_Leonardo.png",
+        "summary": "Rönesans döneminin en büyük dehasıdır. Sadece eşsiz bir ressam değil, aynı zamanda anatomi uzmanı, mühendis ve uçan makineler tasarlayan vizyoner bir mucittir."
+    },
+    {
+        "name": "Hezarfen Ahmed Çelebi",
+        "title": "Osmanlı Havacısı",
+        "image": "https://upload.wikimedia.org/wikipedia/commons/a/ab/Galata_Tower_in_Istanbul.jpg",
+        "summary": "Kendi tasarladığı kanatlarla Galata Kulesi'nden Üsküdar'a uçmayı başaran efsanevi Osmanlı bilginidir. İnsanoğlunun uçma tutkusunun tarihteki en büyük sembollerinden biridir."
+    },
+    {
+        "name": "Jeanne d'Arc (Jan Dark)",
+        "title": "Fransız Halk Kahramanı",
+        "image": "https://upload.wikimedia.org/wikipedia/commons/3/39/Joan_of_arc_miniature_graded.jpg",
+        "summary": "Yüz Yıl Savaşları sırasında inancı ve cesaretiyle Fransız ordusuna liderlik edip İngiliz kuşatmasını kırdı. Haksız yere yakılarak idam edilse de ülkesinin kurtuluş simgesi oldu."
+    },
+    {
+        "name": "Hammurabi",
+        "title": "Babil Kralı",
+        "image": "https://upload.wikimedia.org/wikipedia/commons/8/81/Code-de-Hammurabi-1.jpg",
+        "summary": "Tarihte bilinen ilk yazılı ve kapsamlı kanunlar olan 'Hammurabi Kanunları'nı oluşturdu. Toplum düzenini yazılı kurallara ve 'kısasa kısas' ilkesine dayandırarak hukukun temellerini attı."
+    },
+    {
+        "name": "Harezmi",
+        "title": "Cebir ve Algoritmanın Babası",
+        "image": "https://upload.wikimedia.org/wikipedia/commons/4/4c/Al-Khwarizmi_statue_in_Khiva.jpg",
+        "summary": "Sıfır rakamını matematiğe kazandırarak günümüz hesaplama sistemlerinin yolunu açtı. Yazdığı kitapla 'Cebir' biliminin kurucusu ve algoritma kavramının isim babası oldu."
+    },
+    {
+        "name": "Farabi",
+        "title": "İkinci Öğretmen ve Müzik Kuramcısı",
+        "image": "https://upload.wikimedia.org/wikipedia/commons/b/bd/Al-Farabi_on_the_Republic_of_Kazakhstan_currency.jpg",
+        "summary": "Antik Yunan felsefesini İslam düşüncesiyle harmanlayarak 'İkinci Öğretmen' unvanını aldı. Sesin fiziki açıklamasını yapmış ve siyaset felsefesinde 'Erdemli Şehir' kavramını geliştirmiştir."
+    },
+    {
+        "name": "Ada Lovelace",
+        "title": "Tarihin İlk Bilgisayar Programcısı",
+        "image": "https://upload.wikimedia.org/wikipedia/commons/a/a4/Ada_Lovelace_portrait.jpg",
+        "summary": "Charles Babbage'ın tasarladığı analitik makine için yazılmış ilk algoritmayı oluşturarak tarihin ilk bilgisayar programcısı oldu. Bilgisayarların sadece işlem yapmaktan öteye geçeceğini öngördü."
+    },
+    {
+        "name": "Mimar Sinan",
+        "title": "Osmanlı Başmimarı",
+        "image": "https://upload.wikimedia.org/wikipedia/commons/0/07/Mimar_Sinan_Statue_Edirne.jpg",
+        "summary": "Yarım asırlık başmimarlığı döneminde yüzlerce eşsiz esere imza attı. Süleymaniye ve Selimiye camilerindeki akustik ve depreme dayanıklılık mühendisliği bugün bile hayranlık uyandırmaktadır."
+    },
+    {
+        "name": "Georges Méliès",
+        "title": "Sinemanın Sihirbazı",
+        "image": "https://upload.wikimedia.org/wikipedia/commons/c/c5/Georges_Melies_1890.jpg",
+        "summary": "Sinemada kurguyu, özel efektleri ve hikaye anlatıcılığını kullanan ilk yönetmenlerden biridir. 'Aya Seyahat' filmiyle bilimkurgu sinemasının temellerini attı."
+    },
+    {
+        "name": "Selahaddin Eyyubi",
+        "title": "Kudüs Fatihi",
+        "image": "https://upload.wikimedia.org/wikipedia/commons/8/85/Saladin_Statue_Damascus.jpg",
+        "summary": "Hıttin Muharebesi'nde Haçlı ordusunu mağlup ederek Kudüs'ü 88 yıl aradan sonra tekrar fethetti. Düşmanlarına karşı gösterdiği merhamet ve adaletle Batı dünyasında bile saygı gördü."
+    },
+    {
+        "name": "Yuri Gagarin",
+        "title": "Uzaya Çıkan İlk İnsan",
+        "image": "https://upload.wikimedia.org/wikipedia/commons/e/e0/Yuri_Gagarin_in_Sweden_1964.jpg",
+        "summary": "12 Nisan 1961'de Vostok 1 uzay aracıyla atmosferi aşarak uzaya çıkan ilk insan unvanını aldı. Bu tarihi uçuşuyla uzay çağının kapılarını aralayan sembol isim oldu."
+    },
+    {
+        "name": "Sultan Alparslan",
+        "title": "Büyük Selçuklu Hükümdarı",
+        "image": "https://upload.wikimedia.org/wikipedia/commons/4/41/Alp_Arslan.jpg",
+        "summary": "1071 Malazgirt Meydan Muharebesi'nde Bizans ordusunu yenerek Anadolu'nun kapılarını Türklere açtı. Bu zaferiyle dünya tarihinin akışını değiştiren en büyük komutanlardan biri oldu."
+    },
+    {
+        "name": "Charlie Chaplin",
+        "title": "Sinema Dehası ve Yönetmen",
+        "image": "https://upload.wikimedia.org/wikipedia/commons/3/34/Charlie_Chaplin_portrait.jpg",
+        "summary": "Yarattığı 'Şarlo' karakteriyle sessiz sinema dönemine damga vurdu. Filmlerinde mizahın ardına gizlediği derin sosyal ve politik eleştirilerle sinemayı bir sanat eserine dönüştürdü."
+    },
+    {
+        "name": "Grace Hopper",
+        "title": "Bilgisayar Bilimcisi",
+        "image": "https://upload.wikimedia.org/wikipedia/commons/a/ad/Commodore_Grace_M._Hopper%2C_USN_%28covered%29.jpg",
+        "summary": "İlk bilgisayar derleyicisini (compiler) geliştirerek bilgisayar dillerinin insanların anlayabileceği kelimelerle yazılmasını sağladı. COBOL programlama dilinin geliştiricilerinden biridir."
+    },
+    {
+        "name": "Emir Timur",
+        "title": "Timur İmparatorluğu Kurucusu",
+        "image": "https://upload.wikimedia.org/wikipedia/commons/3/3f/Timur_reconstruction02.jpg",
+        "summary": "Asya'nın büyük bir bölümünü hakimiyeti altına alarak devasa Timur İmparatorluğu'nu kurdu. Askeri bir deha olmasının yanı sıra başkenti Semerkant'ı bilim ve sanatın merkezi haline getirdi."
+    },
+    {
+        "name": "Johannes Gutenberg",
+        "title": "Matbaanın Mucidi",
+        "image": "https://upload.wikimedia.org/wikipedia/commons/3/33/Gutenberg.jpg",
+        "summary": "Hareketli harflerle baskı yapan matbaayı icat ederek bilginin seri üretilmesini sağladı. Bu buluşu, Rönesans, Reform ve Bilimsel Devrim'in en büyük tetikleyicisi oldu."
+    },
+    {
+        "name": "Nene Hatun",
+        "title": "Erzurum Savunması Kahramanı",
+        "image": "https://upload.wikimedia.org/wikipedia/commons/a/af/Nene_Hatun.jpg",
+        "summary": "1877-1878 Osmanlı-Rus Savaşı'nda (93 Harbi) Aziziye Tabyası'nın savunulmasında halka liderlik etti. Vatan savunmasındaki eşsiz cesaretiyle Türk kadınının kahramanlık sembolü oldu."
+    },
+    {
+        "name": "Carl Sagan",
+        "title": "Gökbilimci ve Yazar",
+        "image": "https://upload.wikimedia.org/wikipedia/commons/b/be/Carl_Sagan_Planetary_Society.ROM.jpg",
+        "summary": "Kozmos belgeseli ve yazdığı kitaplarla bilimi ve astronomiyi milyonlarca sıradan insana sevdirdi. Evrendeki yerimizi sorgulatan vizyonuyla popüler bilimin en büyük elçisiydi."
+    },
+    {
+        "name": "Pisagor",
+        "title": "Antik Yunan Matematikçisi",
+        "image": "https://upload.wikimedia.org/wikipedia/commons/1/1a/Kapitolinischer_Pythagoras_adjusted.jpg",
+        "summary": "Matematiğin sadece bir hesaplama aracı değil, evrenin dili olduğunu savundu. Kendi adıyla anılan teoremle geometriye, ses frekansları üzerine yaptığı çalışmalarla da müziğe büyük katkı sağladı."
+    },
+    {
+        "name": "Barbaros Hayreddin Paşa",
+        "title": "Osmanlı Kaptanıderyası",
+        "image": "https://upload.wikimedia.org/wikipedia/commons/7/73/Barbaros_Hayreddin_Pasha.jpg",
+        "summary": "Preveze Deniz Muharebesi'nde kazandığı zaferle Akdeniz'i bir Türk gölü haline getirdi. Kurduğu güçlü donanma ve stratejileriyle Osmanlı denizciliğinin altın çağını başlattı."
+    },
+    {
+        "name": "Albert Einstein",
+        "title": "Teorik Fizikçi",
+        "image": "https://upload.wikimedia.org/wikipedia/commons/3/3e/Einstein_1921_by_F_Schmutzer_-_restoration.jpg",
+        "summary": "İzafiyet Teorisi ile uzay, zaman ve kütleçekimi anlayışımızı kökünden değiştirdi. E=mc² formülüyle kütle ve enerjinin eşdeğer olduğunu kanıtlayarak modern fiziğin seyrini baştan yazdı."
+    },
+    {
+        "name": "Jül Sezar",
+        "title": "Roma Cumhuriyeti Diktatörü",
+        "image": "https://upload.wikimedia.org/wikipedia/commons/4/40/Retrato_de_Julio_C%C3%A9sar_%2826724093101%29_%28cropped%29.jpg",
+        "summary": "Galya'yı fethederek Roma sınırlarını İngiltere'ye kadar genişletti. Cumhuriyet'in yıkılıp Roma İmparatorluğu'nun kurulmasına giden yolu açtı ve bugün kullandığımız Jülyen takvimini oluşturdu."
+    },
+    {
+        "name": "Tim Berners-Lee",
+        "title": "World Wide Web'in Mucidi",
+        "image": "https://upload.wikimedia.org/wikipedia/commons/4/4e/Sir_Tim_Berners-Lee_%28cropped%29.jpg",
+        "summary": "Bilginin dünya çapında paylaşılabilmesi için 'World Wide Web'i (WWW) icat etti. İnterneti askeri/akademik bir ağ olmaktan çıkarıp milyarlarca insanın kullanımına sunarak bilgi çağını başlattı."
+    },
+    {
+        "name": "Alfred Hitchcock",
+        "title": "Gerilim Sinemasının Ustası",
+        "image": "https://upload.wikimedia.org/wikipedia/commons/4/49/Alfred_Hitchcock_by_Jack_Mitchell_in_1968.jpg",
+        "summary": "Seyircinin psikolojisini ustalıkla yönlendiren çekim teknikleri ve gerilim yaratma becerisiyle sinemada çığır açtı. 'Gerilimin Ustası' olarak, modern gerilim ve korku sinemasının standartlarını belirledi."
+    },
+    {
+        "name": "Evliya Çelebi",
+        "title": "Seyyah ve Yazar",
+        "image": "https://upload.wikimedia.org/wikipedia/commons/0/05/Evliya_%C3%A7elebi_2.jpg",
+        "summary": "50 yıl boyunca Osmanlı coğrafyasını ve ötesini gezerek 10 ciltlik eşsiz 'Seyahatname'sini yazdı. Gözlemleri sayesinde 17. yüzyılın kültürünü, coğrafyasını ve toplum yapısını günümüze taşıdı."
+    },
+    {
+        "name": "Aristoteles",
+        "title": "Antik Yunan Filozofu",
+        "image": "https://upload.wikimedia.org/wikipedia/commons/a/ae/Aristotle_Altemps_Inv8575.jpg",
+        "summary": "Mantıktan biyolojiye, etikten siyasete kadar neredeyse her alanda eser vererek Batı felsefesini ve bilimsel düşünceyi temellendirdi. İskender'in de hocalığını yapan çok yönlü bir dahiydi."
+    },
+    {
+        "name": "Osman Gazi",
+        "title": "Osmanlı Devleti Kurucusu",
+        "image": "https://upload.wikimedia.org/wikipedia/commons/2/23/Osman_Gazi_portrait_by_John_Young.jpg",
+        "summary": "Söğüt ve Domaniç'te küçük bir uç beyliğinden, üç kıtaya hükmedecek ve 600 yıl sürecek olan Osmanlı İmparatorluğu'nun temellerini attı. Kurduğu devlet, dünya tarihinin en uzun soluklu güçlerinden biri oldu."
+    }
+];
+
+let currentIndex = 0;
+
+function initCards() {
+    shuffleArray(charDB);
+
+    const container = document.getElementById('cards-container');
+    
+    // Kartları ters sırayla ekleyelim ki ilk kart en üstte (z-index yüksek) olsun.
+    for (let i = charDB.length - 1; i >= 0; i--) {
+        const c = charDB[i];
+        const el = document.createElement('div');
+        el.className = 'swipe-card';
+        el.id = 'card-' + i;
+        el.style.zIndex = charDB.length - i;
+        
+        // Ufak bir rotasyon ve kayma efekti vererek deste hissi uyandıralım
+        let randomRot = (Math.random() * 4) - 2;
+        let scale = 1 - (i * 0.02);
+        let topOffset = i * 5;
+        
+        // Sadece ilk 3 kartı görünür ve dizilmiş yap, gerisini düz ve arkada bırak
+        if(i > 2) {
+            randomRot = 0; scale = 0.94; topOffset = 15;
+        }
+        
+        el.style.transform = `translateY(${topOffset}px) scale(${scale}) rotate(${randomRot}deg)`;
+        
+        el.innerHTML = `
+            <img src="${c.image}" alt="${c.name}" class="card-image" onerror="this.onerror=null; this.src='https://ui-avatars.com/api/?name=' + encodeURIComponent('${c.name}') + '&background=8E523A&color=fff&size=200';">
+            <div class="card-name">${c.name}</div>
+            <div class="card-title">${c.title}</div>
+            <div class="card-quote" style="font-size: 0.90rem; line-height: 1.5; text-align: justify; font-style: normal; opacity: 0.90;">${c.summary}</div>
+            <div class="card-actions">
+                <button class="c-btn no" onclick="swipeCard(${i}, 'left')"><i class="fa-solid fa-arrow-left-long"></i></button>
+                <button class="c-btn yes" onclick="swipeCard(${i}, 'right')"><i class="fa-solid fa-arrow-right-long"></i></button>
+            </div>
+        `;
+        container.appendChild(el);
+    }
+}
+
+let isAnimating = false;
+
+function swipeCard(index, direction) {
+    if(index !== currentIndex || isAnimating) return; 
+    
+    const card = document.getElementById('card-' + index);
+    if(!card) return;
+    
+    isAnimating = true;
+    
+    // Animasyon ekle
+    if(direction === 'left') card.classList.add('swipe-left');
+    else card.classList.add('swipe-right');
+    
+    setTimeout(() => {
+        card.style.display = 'none';
+        currentIndex++;
+        
+        // Alttaki kartlarin pozisyonunu guncelle
+        updateDeckPositions();
+        
+        if (currentIndex >= charDB.length) {
+            document.getElementById('end-message').style.opacity = '1';
+            unlockBadge('kart_kasifi');
+        }
+        isAnimating = false;
+    }, 500);
+}
+
+function updateDeckPositions() {
+    for (let i = currentIndex; i < charDB.length; i++) {
+        let card = document.getElementById('card-' + i);
+        let pos = i - currentIndex; // Yeni derinlik sırası
+        
+        let randomRot = (Math.random() * 4) - 2;
+        let scale = 1 - (pos * 0.02);
+        let topOffset = pos * 5;
+        
+        if(pos > 2) { randomRot = 0; scale = 0.94; topOffset = 15; }
+        
+        card.style.transform = `translateY(${topOffset}px) scale(${scale}) rotate(${randomRot}deg)`;
+    }
+}
+
+
+
+// Deste karıştırma fonksiyonu
+function shuffleArray(array) {
+    for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
+    }
+}
+
+// Touch events for swiping
+let touchStartX = 0;
+let touchEndX = 0;
+
+document.addEventListener('touchstart', e => {
+    touchStartX = e.changedTouches[0].screenX;
+});
+
+document.addEventListener('touchend', e => {
+    touchEndX = e.changedTouches[0].screenX;
+    handleSwipe();
+});
+
+function handleSwipe() {
+    if (currentIndex >= charDB.length) return;
+    const swipeThreshold = 50;
+    if (touchEndX < touchStartX - swipeThreshold) {
+        swipeCard(currentIndex, 'left');
+    }
+    if (touchEndX > touchStartX + swipeThreshold) {
+        swipeCard(currentIndex, 'right');
+    }
+}
+
+// Keyboard events for swiping
+document.addEventListener('keydown', e => {
+    if (currentIndex >= charDB.length) return;
+    if (e.key === 'ArrowLeft') {
+        swipeCard(currentIndex, 'left');
+    } else if (e.key === 'ArrowRight') {
+        swipeCard(currentIndex, 'right');
+    }
+});
+
+window.addEventListener('DOMContentLoaded', initCards);
+</script>
+</body>
+</html>
