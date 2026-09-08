@@ -9,6 +9,7 @@ değiştirebilirsiniz.
 Bu site ve araçları, yararlı olması ümidiyle dağıtılmaktadır, ancak HİÇBİR GARANTİSİ YOKTUR.
 Ayrıntılar için GNU Genel Kamu Lisansına bakın. https://www.gnu.org/licenses/gpl-3.0.tr.html
 -->
+
 <!DOCTYPE html>
 <html lang="tr">
 <head>
@@ -23,6 +24,7 @@ Ayrıntılar için GNU Genel Kamu Lisansına bakın. https://www.gnu.org/license
 
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,700;0,900;1,700;1,900&family=IBM+Plex+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link rel="stylesheet" href="stiller/portal.css">
 
 <style>
 :root {
@@ -121,7 +123,7 @@ html, body {
 
 <div class="monolith-viewport">
 
-  <div class="header">
+  <div class="header" style="padding-bottom: 10px;">
     <span class="ph-eyebrow">ÖZEL BATMAN BOĞAZİÇİ KOLEJİ MTAL</span>
     <h1 class="ph-title">Tarih Portalı</h1>
   </div>
@@ -161,7 +163,10 @@ html, body {
     </div>
   </div>
 
+  <!-- Ana Sayfa İçerik Sonu -->
+
   <div class="bottom-dock">
+    <a href="oyunlar.html" class="dock-item" style="color: var(--c-9);"><i class="fas fa-gamepad dock-icon"></i><span class="dock-label">Ders Dışı</span></a>
     <a href="muze.html" class="dock-item"><i class="fas fa-landmark dock-icon"></i><span class="dock-label">Müze</span></a>
     <a href="https://sinema.kirkyama.uk" class="dock-item" target="_blank"><i class="fas fa-film dock-icon"></i><span class="dock-label">Sinema</span></a>
     <div class="dock-item" id="annToggle"><i class="fas fa-bullhorn dock-icon"></i><span class="dock-label">Duyuru</span></div>
@@ -200,8 +205,9 @@ html, body {
       <div class="modal-header"><i class="fas fa-book-open"></i> Portal Rehberi</div>
       <div class="info-item"><h4>1. Seçim</h4><p>Numaralı sütunlara dokunarak tarih dönemlerini genişletin.</p></div>
       <div class="info-item"><h4>2. Keşif</h4><p>"Sınıfa Git" butonu ile ders içeriklerine ulaşın.</p></div>
-	  <div class="info-item"><h4>3. Giriş</h4><p>Sınıfınızın sayfasına girmek için tüm alanları doldurun. Şifreniz ilk giriş için okul numaranız+soyadınızdır.</p></div>
-    </div>
+	  <div class="info-item"><h4>3. Giriş</h4><p>Sınıfınızın sayfasına girmek için tüm alanları doldurun. Şifreniz ilk giriş için okul numaranız+soyadınızdır. İlk kez giriş yaptıktan sonra şifrenizi mutlaka değiştirin. Unutmayın; şifrenizin sorumluluğu tamamen sizdedir.</p></div>
+      <div class="info-item"><h4>4. Giriş Sorunu</h4><p>Şifrenizi unutmanız veya sisteme giremezseniz okul saatleri içinde Tarih öğretmeni Murat Mutlu'ya ulaşın. Yeni şifreniz hemen verilecektir.</p></div>
+	</div>
   </div>
 
 </div>
@@ -229,6 +235,8 @@ html, body {
   document.addEventListener('contextmenu', e => e.preventDefault());
   document.onkeydown = e => { if (e.keyCode === 123 || (e.ctrlKey && (e.keyCode === 85 || e.keyCode === 67 || e.keyCode === 83))) return false; };
 </script>
+
+<script src="motorlar/portal.js"></script>
 
 </body>
 </html>
