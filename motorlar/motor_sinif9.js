@@ -1,4 +1,4 @@
-﻿const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwIj5rQkpizqiOqJYlUdYmefOyPMbhmquaqlHpN76dmlZ8S7pV_O-eEgRjQjkZMD14NnQ/exec"; 
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwIj5rQkpizqiOqJYlUdYmefOyPMbhmquaqlHpN76dmlZ8S7pV_O-eEgRjQjkZMD14NnQ/exec"; 
     const SIFRE_API_URL = "https://script.google.com/macros/s/AKfycbzH3YQxw_6r0i7uItFStlp2nkUzmxaPhUw_v1u8hs6swV6lqY9XXRZ3Q5x64C5vpPEROQ/exec"; 
     const ODEV_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxcjHGzdFq96J7JD9YKJJE20DEUqQLgfdzilAci7kpUVS-lHMFM25a39zdvxeaOPhtgjw/exec"; 
     
@@ -336,7 +336,7 @@ function materyalleriYukle(uniteId) {
             aktifMateryaller = [
                 { baslik: "Tarih Bilimine Giriş", tur: "Video Ders", icon: "fa-film", renk: "#e74c3c", link: "#" },
                 { baslik: "Zaman ve Takvim", tur: "Video Ders", icon: "fa-film", renk: "#e74c3c", link: "#" },
-                { baslik: "Tarihe Yardımcı Bilimler", tur: "Video Ders", icon: "fa-film", renk: "#e74c3c", link: "#" },
+                { baslik: "Tarihe Yardımcı Bilimler", tur: "Video Ders", icon: "fa-film", renk: "#e74c3c", link: "https://youtu.be/lu1FFhYAVT8" },
                 { baslik: "Göbeklitepe Gizemi", tur: "Belgesel", icon: "fa-film", renk: "#e74c3c", link: "#" },
                 { baslik: "Tarih Yazıcılığı", tur: "Video Ders", icon: "fa-film", renk: "#e74c3c", link: "#" },
                 { baslik: "Bir Savaş Makinesinin Analizi - Roma Ordusu (Kuruluştan İtibaren Tüm Aşamalarıyla) (Kronik Tarih)", tur: "Podcast", icon: "fa-podcast", renk: "#9b59b6", link: "https://depo.kirkyama.uk/Podcast/Kronik%20Tarih/Kronik-Bir%20Sava%C5%9F%20Makinesinin%20Analizi%20-%20Roma%20Ordusu%20(Kurulu%C5%9Ftan%20%C4%B0tibaren%20T%C3%BCm%20A%C5%9Famalar%C4%B1yla).mp3" },
@@ -349,7 +349,7 @@ function materyalleriYukle(uniteId) {
                 { baslik: "İnsanlığın Hafızası Tarih", tur: "PDF Not", icon: "fa-file-pdf", renk: "#e67e22", link: "https://depo.kirkyama.uk/PDF/9.%20S%C4%B1n%C4%B1f%20OGM/1-%20%C4%B0nsanl%C4%B1%C4%9F%C4%B1n%20Haf%C4%B1zas%C4%B1%20Tarih.pdf" },
 				{ baslik: "Neden Tarih", tur: "PDF Not", icon: "fa-file-pdf", renk: "#e67e22", link: "https://depo.kirkyama.uk/PDF/9.%20S%C4%B1n%C4%B1f%20OGM/2-%20Neden%20Tarih.pdf" },
 				{ baslik: "Zamanın Taksimi", tur: "PDF Not", icon: "fa-file-pdf", renk: "#e67e22", link: "https://depo.kirkyama.uk/PDF/9.%20S%C4%B1n%C4%B1f%20OGM/3-%20Zaman%C4%B1n%20Taksimi.pdf" },
-				{ baslik: "Notİsmi", tur: "PDF Not", icon: "fa-file-pdf", renk: "#e67e22", link: "NotLinki" },
+				{ baslik: "Tarihe Yardımcı Bilim Dalları", tur: "PDF Not", icon: "fa-file-pdf", renk: "#e67e22", link: "https://depo.kirkyama.uk/PDF/9.SinifSunular/1.%20%C3%9Cnite/Tarihe%20Yard%C4%B1mc%C4%B1%20Bilim%20Dallar%C4%B1.pdf" },
 				{ baslik: "Notİsmi", tur: "PDF Not", icon: "fa-file-pdf", renk: "#e67e22", link: "NotLinki" },
 				{ baslik: "Notİsmi", tur: "PDF Not", icon: "fa-file-pdf", renk: "#e67e22", link: "NotLinki" },
 				{ baslik: "Tarih Öğrenmenin Faydaları", tur: "Sunu", icon: "fa-chalkboard-user", renk: "#e84393", link: "https://depo.kirkyama.uk/PDF/9.SinifSunular/1.%20%C3%9Cnite/1-Tarih%20%C3%96%C4%9Frenmenin%20Faydalar%C4%B1.pdf" },
@@ -2177,17 +2177,24 @@ window.sonAktifLrcIndex = -1;
 
 function parseLRC(lrcText) {
     if(!lrcText) return [];
-    const lines = lrcText.split('\n');
+    // Her türlü satır sonu karakterine göre böl (CRLF, LF, CR)
+    const lines = lrcText.split(/\r\n|\n|\r/);
     const result = [];
     let lastTime = -1;
     
     for(let line of lines) {
-        const match = line.match(/\[(\d+):(\d+\.\d+)\](.*)/);
+        // [mm:ss.xx] veya [mm:ss:xx] veya [mm:ss] formatlarını destekler
+        // Başında boşluk vb. olabilir
+        const match = line.match(/\[(\d+):(\d+)[.:]?(\d*)\](.*)/);
         if(match) {
             const minutes = parseInt(match[1]);
-            const seconds = parseFloat(match[2]);
+            let secondsStr = match[2];
+            if (match[3]) {
+                secondsStr += "." + match[3];
+            }
+            const seconds = parseFloat(secondsStr);
             const time = minutes * 60 + seconds;
-            let text = match[3].trim();
+            let text = match[4].trim();
             
             // Aynı saniyeye sahip bir satır daha varsa onu çeviri olarak ekle
             if(lastTime === time && result.length > 0) {

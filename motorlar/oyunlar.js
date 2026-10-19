@@ -8,20 +8,85 @@ function toggleCategory(cat) {
     document.getElementById('category-' + cat).classList.add('active');
     document.getElementById('btn-cat-' + cat).style.background = 'rgba(0,0,0,0.05)';
     
-    // Açılan kategorideki ilk oyunu otomatik seç
-    if(cat === 'mini') switchGame('game-2048');
-    if(cat === 'strategy') switchGame('game-reigns');
+    // Açılan kategorideki ilk oyunu otomatik seç (mobil tam ekrana zorlamadan)
+    if(cat === 'mini') switchGame('game-2048', false);
+    if(cat === 'gamesnroll') switchGame('game-hagane', false);
 }
 
-function switchGame(gameId) {
+const gameTitlesMap = {
+    'game-2048': '2048 Klasik',
+    'game-chess': 'Satranç',
+    'game-hangman': 'Adam Asmaca',
+    'game-sudoku': 'Sudoku',
+    'game-timeline': 'Önce mi, Sonra mı?',
+    'game-wordle': 'Tarihle',
+    'game-connections': 'Tarihsel Bağlantılar',
+    'game-whoami': '5 İpucu — Ben Kimim?',
+    'game-hagane': 'Hagane',
+    'game-tekir': 'Tekir'
+};
+
+function isMobileOrSmallScreen() {
+    return window.innerWidth <= 768 || (window.innerHeight <= 520 && window.matchMedia('(orientation: landscape)').matches);
+}
+
+function switchGame(gameId, autoFullscreen = true) {
     document.querySelectorAll('.game-container').forEach(c => c.classList.remove('active'));
     document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-    document.getElementById(gameId).classList.add('active');
-    event.target.classList.add('active');
+    
+    const targetGame = document.getElementById(gameId);
+    if(targetGame) targetGame.classList.add('active');
+    
+    const clickedBtn = window.event && window.event.target ? window.event.target.closest('.nav-btn') : null;
+    if (clickedBtn) {
+        clickedBtn.classList.add('active');
+    } else {
+        const btn = document.querySelector(`button[onclick*="switchGame('${gameId}')"]`);
+        if(btn) btn.classList.add('active');
+    }
+
+    // Sadece mobil ve küçük ekranlarda tam ekran odak modunu aç
+    if (autoFullscreen && isMobileOrSmallScreen()) {
+        enterMobileFullscreen(gameId);
+    }
 }
+
+function enterMobileFullscreen(gameId) {
+    if (!gameId) {
+        const activeContainer = document.querySelector('.game-container.active');
+        if (activeContainer) gameId = activeContainer.id;
+    }
+    
+    const title = gameTitlesMap[gameId] || 'Oyun';
+    const titleEl = document.getElementById('mobileFsTitle');
+    if (titleEl) titleEl.innerText = title;
+
+    document.body.classList.add('mobile-fullscreen-active');
+}
+
+function exitMobileFullscreen() {
+    document.body.classList.remove('mobile-fullscreen-active');
+
+    // Ekranı aktif kategorinin oyun menüsüne doğru yumuşakça kaydır
+    setTimeout(() => {
+        const nav = document.querySelector('.category-section.active .nav-bar') || document.querySelector('.nav-bar');
+        if (nav) nav.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }, 100);
+}
+
+// ESC tuşu ile çıkış desteği
+document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && document.body.classList.contains('mobile-fullscreen-active')) {
+        exitMobileFullscreen();
+    }
+});
 
 // Data Export/Import
 function exportData() {
+    if (typeof exportUserData === 'function') {
+        exportUserData();
+        return;
+    }
     const data = {
         score2048: localStorage.getItem('tarih_2048_score') || 0,
         best2048: localStorage.getItem('tarih_2048_best') || 0,
@@ -41,6 +106,10 @@ function exportData() {
 }
 
 function importData(event) {
+    if (typeof importUserData === 'function') {
+        importUserData(event);
+        return;
+    }
     const file = event.target.files[0];
     if (!file) return;
     const reader = new FileReader();
@@ -92,6 +161,7 @@ function save2048() {
         localStorage.setItem('tarih_2048_best', best2048);
         document.getElementById('best-2048').innerText = best2048;
     }
+    if (typeof syncActiveUserGameData === 'function') syncActiveUserGameData();
 }
 
 function addRandomTile() {
@@ -109,6 +179,7 @@ function addRandomTile() {
 
 function updateBoard2048() {
     const grid = document.getElementById('grid-2048');
+    if (!grid) return;
     grid.innerHTML = '';
     
     for(let i=0; i<16; i++) {
@@ -122,17 +193,24 @@ function updateBoard2048() {
             if(board2048[r][c] !== 0) {
                 let val = board2048[r][c];
                 let tile = document.createElement('div');
-                tile.className = `tile tile-${val > 2048 ? 2048 : val}`;
-                tile.style.width = '22.5%';
-                tile.style.height = '22.5%';
-                tile.style.left = `${c * 25 + 2.5}%`;
-                tile.style.top = `${r * 25 + 2.5}%`;
+                let digitCount = val.toString().length;
+                let digitClass = digitCount >= 5 ? 'tile-5-digits' : 
+                                 digitCount === 4 ? 'tile-4-digits' : 
+                                 digitCount === 3 ? 'tile-3-digits' : 
+                                 digitCount === 2 ? 'tile-2-digits' : 'tile-1-digit';
+                let valClass = val > 2048 ? 'tile-super' : `tile-${val}`;
+                tile.className = `tile ${valClass} ${digitClass}`;
+                tile.style.width = 'calc((100% - 50px) / 4)';
+                tile.style.height = 'calc((100% - 50px) / 4)';
+                tile.style.left = `calc(10px + ${c} * ((100% - 50px) / 4 + 10px))`;
+                tile.style.top = `calc(10px + ${r} * ((100% - 50px) / 4 + 10px))`;
                 tile.innerText = val;
                 grid.appendChild(tile);
             }
         }
     }
-    document.getElementById('score-2048').innerText = score2048;
+    const scoreEl = document.getElementById('score-2048');
+    if (scoreEl) scoreEl.innerText = score2048;
     save2048();
 }
 
@@ -226,120 +304,6 @@ function handleSwipe(startX, startY, endX, endY) {
 }
 
 
-/* --- HAFIZA KARTLARI (Sadeleştirilmiş 6 Çift) --- */
-const memoryPairs = [
-    { id: 1, text: "1453", match: "Fatih Sultan Mehmet" },
-    { id: 2, text: "1923", match: "Mustafa Kemal Atatürk" },
-    { id: 3, text: "Malazgirt", match: "Alparslan" },
-    { id: 4, text: "Matbaa", match: "Gutenberg" },
-    { id: 6, text: "Göbeklitepe", match: "Sıfır Noktası" },
-    { id: 7, text: "Yazı", match: "Sümerler" }
-];
-
-let memoryCards = [];
-let hasFlippedCard = false;
-let lockBoard = false;
-let firstCard, secondCard;
-let memoryMoves = 0;
-let matchedPairs = 0;
-let bestMemory = localStorage.getItem('tarih_memory_best') || '-';
-
-function initMemory() {
-    document.getElementById('best-memory').innerText = bestMemory;
-    const grid = document.getElementById('grid-memory');
-    grid.innerHTML = '';
-    // Dinamik grid boyutu ayarlama (12 kart için 4x3)
-    grid.style.gridTemplateColumns = 'repeat(4, 1fr)';
-    
-    memoryMoves = 0;
-    matchedPairs = 0;
-    document.getElementById('moves-memory').innerText = memoryMoves;
-    hasFlippedCard = false;
-    lockBoard = false;
-    firstCard = null;
-    secondCard = null;
-
-    memoryCards = [];
-    memoryPairs.forEach(pair => {
-        memoryCards.push({ id: pair.id, text: pair.text });
-        memoryCards.push({ id: pair.id, text: pair.match });
-    });
-
-    memoryCards.sort(() => 0.5 - Math.random());
-
-    memoryCards.forEach((card, index) => {
-        const cardElement = document.createElement('div');
-        cardElement.classList.add('memory-card');
-        cardElement.dataset.id = card.id;
-        
-        cardElement.innerHTML = `
-            <div class="memory-card-inner">
-                <div class="memory-card-front">?</div>
-                <div class="memory-card-back">${card.text}</div>
-            </div>
-        `;
-        
-        cardElement.addEventListener('click', flipCard);
-        grid.appendChild(cardElement);
-    });
-}
-
-function flipCard() {
-    if (lockBoard) return;
-    if (this === firstCard) return;
-
-    this.classList.add('flipped');
-
-    if (!hasFlippedCard) {
-        hasFlippedCard = true;
-        firstCard = this;
-        return;
-    }
-
-    secondCard = this;
-    memoryMoves++;
-    document.getElementById('moves-memory').innerText = memoryMoves;
-    checkForMatch();
-}
-
-function checkForMatch() {
-    let isMatch = firstCard.dataset.id === secondCard.dataset.id;
-    isMatch ? disableCards() : unflipCards();
-}
-
-function disableCards() {
-    firstCard.removeEventListener('click', flipCard);
-    secondCard.removeEventListener('click', flipCard);
-    firstCard.classList.add('matched');
-    secondCard.classList.add('matched');
-    matchedPairs++;
-
-    if (matchedPairs === memoryPairs.length) {
-        setTimeout(() => {
-            alert(`Tebrikler! Oyunu ${memoryMoves} hamlede bitirdin.`);
-            let currentBest = localStorage.getItem('tarih_memory_best');
-            if (!currentBest || memoryMoves < parseInt(currentBest)) {
-                localStorage.setItem('tarih_memory_best', memoryMoves);
-                document.getElementById('best-memory').innerText = memoryMoves;
-            }
-        }, 500);
-    }
-    resetBoard();
-}
-
-function unflipCards() {
-    lockBoard = true;
-    setTimeout(() => {
-        firstCard.classList.remove('flipped');
-        secondCard.classList.remove('flipped');
-        resetBoard();
-    }, 1000);
-}
-
-function resetBoard() {
-    [hasFlippedCard, lockBoard] = [false, false];
-    [firstCard, secondCard] = [null, null];
-}
 
 /* --- ADAM ASMACA (Tarih Sürümü) --- */
 const hangmanWords = [
@@ -449,6 +413,7 @@ function updateHangmanDisplay() {
                 localStorage.setItem('tarih_hangman_best', bestHangman);
                 document.getElementById('best-hangman').innerText = bestHangman;
             }
+            if (typeof syncActiveUserGameData === 'function') syncActiveUserGameData();
             initHangman();
         }, 300);
     } else if(mistakes >= maxMistakes) {
@@ -556,6 +521,7 @@ function changeSudokuDiff(diff) {
 
 function saveSudoku() {
     localStorage.setItem('tarih_sudoku_grid', JSON.stringify(currentSudoku));
+    if (typeof syncActiveUserGameData === 'function') syncActiveUserGameData();
 }
 
 function renderSudoku() {
@@ -619,7 +585,6 @@ function checkSudokuWin() {
 // Initial Loads
 window.onload = () => {
     init2048();
-    initMemory();
     initHangman();
     initSudoku();
 };

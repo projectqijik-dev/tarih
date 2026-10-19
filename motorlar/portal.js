@@ -7,13 +7,7 @@
 // Rozet Veritabanı
 const badgesDB = {
     'satranc_usta': { title: 'Büyük Usta', desc: 'Satrançta bilgisayarı yendin.', icon: '♔', color: '#5d4037' },
-    'ipekyolu_kral': { title: 'İpek Yolu Tüccarı', desc: 'İpek Yolu oyununu tamamladın.', icon: '🐪', color: '#d4af37' },
-    'padisah_adil': { title: 'Adil Hükümdar', desc: 'Padişah oyununda 20 yıl tahtta kaldın.', icon: '👑', color: '#295F4E' },
-    'fransa_devrim': { title: 'Robespierre', desc: 'Devrim Mahkemesinde 12 ay hayatta kaldın.', icon: '⚖️', color: '#1E3A8A' },
-    'reform_atesi': { title: 'Protestan', desc: '95 Tez oyununu kazandın.', icon: '📜', color: '#B45309' },
-    '2048_zekasi': { title: '2048 Zekası', desc: '2048 oyununda 2048 karesine ulaştın.', icon: '🧠', color: '#8E523A' },
-    'zaman_yolcusu': { title: 'Zaman Yolcusu', desc: 'Zaman Tünelini sonuna kadar inceledin.', icon: '⏳', color: '#4A3B52' },
-    'kart_kasifi': { title: 'Kart Kaşifi', desc: 'Tüm tarihi karakterleri inceledin.', icon: '🃏', color: '#1F425A' }
+    '2048_zekasi': { title: '2048 Zekası', desc: '2048 oyununda 2048 karesine ulaştın.', icon: '🧠', color: '#8E523A' }
 };
 
 // Portal Verilerini Yükle
@@ -49,6 +43,7 @@ function unlockBadge(badgeId) {
         data.unlockedBadges.push(badgeId);
         savePortalData(data);
         showBadgeNotification(badgesDB[badgeId]);
+        if(typeof syncActiveUserGameData === 'function') syncActiveUserGameData();
         
         // Eğer profil sayfasındaysa arayüzü güncelle
         if(typeof renderProfile === 'function') {

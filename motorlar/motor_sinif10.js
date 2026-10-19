@@ -1,4 +1,4 @@
-﻿// --- 10. SINIF SCRIPT VE API YOLLARI ---
+// --- 10. SINIF SCRIPT VE API YOLLARI ---
     const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwSSZmA83naSrT4Smwgxnhpa9YIMFXfjP2ufQI8WS2q0NrvDULuBa2a-DiyQsNBSAZK7Q/exec"; 
     const SIFRE_API_URL = "https://script.google.com/macros/s/AKfycbzH3YQxw_6r0i7uItFStlp2nkUzmxaPhUw_v1u8hs6swV6lqY9XXRZ3Q5x64C5vpPEROQ/exec"; 
     const ODEV_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxcjHGzdFq96J7JD9YKJJE20DEUqQLgfdzilAci7kpUVS-lHMFM25a39zdvxeaOPhtgjw/exec"; 
@@ -2093,17 +2093,24 @@ window.sonAktifLrcIndex = -1;
 
 function parseLRC(lrcText) {
     if(!lrcText) return [];
-    const lines = lrcText.split('\n');
+    // Her türlü satır sonu karakterine göre böl (CRLF, LF, CR)
+    const lines = lrcText.split(/\r\n|\n|\r/);
     const result = [];
     let lastTime = -1;
     
     for(let line of lines) {
-        const match = line.match(/\[(\d+):(\d+\.\d+)\](.*)/);
+        // [mm:ss.xx] veya [mm:ss:xx] veya [mm:ss] formatlarını destekler
+        // Başında boşluk vb. olabilir
+        const match = line.match(/\[(\d+):(\d+)[.:]?(\d*)\](.*)/);
         if(match) {
             const minutes = parseInt(match[1]);
-            const seconds = parseFloat(match[2]);
+            let secondsStr = match[2];
+            if (match[3]) {
+                secondsStr += "." + match[3];
+            }
+            const seconds = parseFloat(secondsStr);
             const time = minutes * 60 + seconds;
-            let text = match[3].trim();
+            let text = match[4].trim();
             
             // Aynı saniyeye sahip bir satır daha varsa onu çeviri olarak ekle
             if(lastTime === time && result.length > 0) {

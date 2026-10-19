@@ -4,18 +4,95 @@ window.MUZIK_VERITABANI = [
         kategoriIkon: "fa-compact-disc",
         sarkilar: [
             {
-                baslik: "Özgürlük",
-                sanatci: "Zülfü Livaneli",
+                baslik: "A Whiter Shade of Pale",
+                sanatci: "Royal Philharmonic Orchestra",
                 sure: "", 
                 kapak: "fa-music", 
-                link: "https://depo.kirkyama.uk/music/turkish/%C3%96zg%C3%BCrl%C3%BCk.mp3"
+                link: "https://depo.kirkyama.uk/music/mola/Royal%20Phil./A%20Whiter%20Shade%20of%20Pale.mp3"
             },
 			{
-                baslik: "Experience",
-                sanatci: "Ludovico Einaudi",
+                baslik: "Beautiful Day",
+                sanatci: "Royal Philharmonic Orchestra",
                 sure: "",
                 kapak: "fa-music", 
-                link: "https://depo.kirkyama.uk/music/other/Experience.mp3"
+                link: "https://depo.kirkyama.uk/music/mola/Royal%20Phil./Beautiful%20Day.mp3"
+            },
+			{
+                baslik: "Bittersweet Symphony",
+                sanatci: "Royal Philharmonic Orchestra",
+                sure: "",
+                kapak: "fa-music", 
+                link: "https://depo.kirkyama.uk/music/mola/Royal%20Phil./Bittersweet%20Symphony.mp3"
+            },
+			{
+                baslik: "Bohemian Rhapsody",
+                sanatci: "Royal Philharmonic Orchestra",
+                sure: "",
+                kapak: "fa-music", 
+                link: "https://depo.kirkyama.uk/music/mola/Royal%20Phil./Bohemian%20Rhapsody.mp3"
+            },
+			{
+                baslik: "Champagne Supernova",
+                sanatci: "Royal Philharmonic Orchestra",
+                sure: "",
+                kapak: "fa-music", 
+                link: "https://depo.kirkyama.uk/music/mola/Royal%20Phil./Champagne%20Supernova.mp3"
+            },
+			{
+                baslik: "China in Your Hand",
+                sanatci: "Royal Philharmonic Orchestra",
+                sure: "",
+                kapak: "fa-music", 
+                link: "https://depo.kirkyama.uk/music/mola/Royal%20Phil./China%20in%20Your%20Hand.mp3"
+            },
+			{
+                baslik: "Flying Without Wings",
+                sanatci: "Royal Philharmonic Orchestra",
+                sure: "",
+                kapak: "fa-music", 
+                link: "https://depo.kirkyama.uk/music/mola/Royal%20Phil./Flying%20Without%20Wings.mp3"
+            },
+			{
+                baslik: "Why Does It Always Rain On Me",
+                sanatci: "Royal Philharmonic Orchestra",
+                sure: "",
+                kapak: "fa-music", 
+                link: "https://depo.kirkyama.uk/music/mola/Royal%20Phil./Why%20Does%20It%20Always%20Rain%20On%20Me.mp3"
+            },
+			{
+                baslik: "Yellow",
+                sanatci: "Royal Philharmonic Orchestra",
+                sure: "",
+                kapak: "fa-music", 
+                link: "https://depo.kirkyama.uk/music/mola/Royal%20Phil./Yellow.mp3"
+            },
+			{
+                baslik: "Apache",
+                sanatci: "The Shadows",
+                sure: "",
+                kapak: "fa-music", 
+                link: "https://depo.kirkyama.uk/music/other/Apache.mp3"
+            },
+			{
+                baslik: "Un Amico",
+                sanatci: "Ennio Morricone",
+                sure: "",
+                kapak: "fa-music", 
+                link: "https://depo.kirkyama.uk/music/other/Ennio%20Morricone%20-%20Un%20Amico.mp3"
+            },
+			{
+                baslik: "Zorba the Greek",
+                sanatci: "Mikis Theodorakis",
+                sure: "",
+                kapak: "fa-music", 
+                link: "https://depo.kirkyama.uk/music/other/Zorba%20the%20Greek.mp3"
+            },
+			{
+                baslik: "",
+                sanatci: "Royal Philharmonic Orchestra",
+                sure: "",
+                kapak: "fa-music", 
+                link: ""
             },
         ]
     },
@@ -878,13 +955,6 @@ window.MUZIK_VERITABANI = [
 [02:39.04] (Rüzgar uğuldamaya başladı, evet!)`
             },
             {
-                baslik: "Apache",
-                sanatci: "The Shadows",
-                sure: "",
-                kapak: "fa-music", 
-                link: "https://depo.kirkyama.uk/music/other/Apache.mp3"
-            },
-			{
                 baslik: "Ariel",
                 sanatci: "Rainbow",
                 sure: "",
@@ -1344,13 +1414,6 @@ window.MUZIK_VERITABANI = [
                 link: "https://depo.kirkyama.uk/music/other/Dvo%C5%99%C3%A1k%20-%20Symphony%20No.9%20From%20the%20New%20World%20Karajan.mp3"
             },
 			{
-                baslik: "Un Amico",
-                sanatci: "Ennio Morricone",
-                sure: "",
-                kapak: "fa-music", 
-                link: "https://depo.kirkyama.uk/music/other/Ennio%20Morricone%20-%20Un%20Amico.mp3"
-            },
-			{
                 baslik: "Every Breath You Take",
                 sanatci: "Sting",
                 sure: "",
@@ -1708,13 +1771,6 @@ window.MUZIK_VERITABANI = [
 [00:00.00] ((Lyrics not found))`
             },
 			{
-                baslik: "Youre X-Men",
-                sanatci: "John Ottman",
-                sure: "",
-                kapak: "fa-music", 
-                link: "https://depo.kirkyama.uk/music/other/John%20Ottman%20-%20Youre%20X-Men.mp3"
-            },
-			{
                 baslik: "Kara's Coordinates",
                 sanatci: "Bear McCreary",
                 sure: "",
@@ -2023,15 +2079,8 @@ window.MUZIK_VERITABANI = [
                 kapak: "fa-music", 
                 link: "https://depo.kirkyama.uk/music/other/White%20Rabbit.mp3"
             },
-			{
-                baslik: "Zorba the Greek",
-                sanatci: "Mikis Theodorakis",
-                sure: "",
-                kapak: "fa-music", 
-                link: "https://depo.kirkyama.uk/music/other/Zorba%20the%20Greek.mp3"
-            },
-
-        ]
+			
+			]
     },
     {
         kategoriAdi: "Canlı Radyo",
