@@ -16,7 +16,7 @@ const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwIj5rQkpizqiOqJYlUd
     let aktifOda = null;
     let aktifMateryaller = [];
 	
-    const AKTIF_DUYURU_VERSIYONU = "duyuru_v1";
+    const AKTIF_DUYURU_VERSIYONU = "duyuru_v2";
 
     let fcCurrentIndex = 0;
     let fcAktifKartlar = [];
