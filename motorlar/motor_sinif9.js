@@ -336,7 +336,7 @@ function materyalleriYukle(uniteId) {
             aktifMateryaller = [
                 { baslik: "Tarih Bilimine Giriş", tur: "Video Ders", icon: "fa-film", renk: "#e74c3c", link: "#" },
                 { baslik: "Zaman ve Takvim", tur: "Video Ders", icon: "fa-film", renk: "#e74c3c", link: "#" },
-                { baslik: "Tarihe Yardımcı Bilimler", tur: "Video Ders", icon: "fa-film", renk: "#e74c3c", link: "https://youtu.be/lu1FFhYAVT8" },
+                { baslik: "Tarihe Yardımcı Bilimler", tur: "Video Ders", icon: "fa-film", renk: "#e74c3c", link: "https://youtu.be/fgnUM-bjCEc" },
                 { baslik: "Göbeklitepe Gizemi", tur: "Belgesel", icon: "fa-film", renk: "#e74c3c", link: "#" },
                 { baslik: "Tarih Yazıcılığı", tur: "Video Ders", icon: "fa-film", renk: "#e74c3c", link: "#" },
                 { baslik: "Bir Savaş Makinesinin Analizi - Roma Ordusu (Kuruluştan İtibaren Tüm Aşamalarıyla) (Kronik Tarih)", tur: "Podcast", icon: "fa-podcast", renk: "#9b59b6", link: "https://depo.kirkyama.uk/Podcast/Kronik%20Tarih/Kronik-Bir%20Sava%C5%9F%20Makinesinin%20Analizi%20-%20Roma%20Ordusu%20(Kurulu%C5%9Ftan%20%C4%B0tibaren%20T%C3%BCm%20A%C5%9Famalar%C4%B1yla).mp3" },
