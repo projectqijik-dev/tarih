@@ -17,7 +17,7 @@
     let aktifOda = null;
     let aktifMateryaller = [];
 	
-    const AKTIF_DUYURU_VERSIYONU = "duyuru_v1_10sinif"; // 10. sınıfa özel duyuru versiyonu
+    const AKTIF_DUYURU_VERSIYONU = "duyuru_v2_10sinif"; // 10. sınıfa özel duyuru versiyonu
 
     let fcCurrentIndex = 0;
     let fcAktifKartlar = [];
