@@ -334,8 +334,8 @@ function materyalleriYukle(uniteId) {
         
         if (uniteId === 'u1') {
             aktifMateryaller = [
-                { baslik: "Tarih Bilimine Giriş", tur: "Video Ders", icon: "fa-film", renk: "#e74c3c", link: "#" },
-                { baslik: "Zaman ve Takvim", tur: "Video Ders", icon: "fa-film", renk: "#e74c3c", link: "#" },
+                { baslik: "Tarih Öğrenmenin Faydaları", tur: "Video Ders", icon: "fa-film", renk: "#e74c3c", link: "https://youtu.be/8Oyx3Bnt-h0" },
+                { baslik: "Tarihi Kaynaklar", tur: "Video Ders", icon: "fa-film", renk: "#e74c3c", link: "https://youtu.be/k4fSHuPLCaw" },
                 { baslik: "Tarihe Yardımcı Bilimler", tur: "Video Ders", icon: "fa-film", renk: "#e74c3c", link: "https://youtu.be/fgnUM-bjCEc" },
                 { baslik: "Göbeklitepe Gizemi", tur: "Belgesel", icon: "fa-film", renk: "#e74c3c", link: "#" },
                 { baslik: "Tarih Yazıcılığı", tur: "Video Ders", icon: "fa-film", renk: "#e74c3c", link: "#" },
@@ -350,9 +350,9 @@ function materyalleriYukle(uniteId) {
 				{ baslik: "Neden Tarih", tur: "PDF Not", icon: "fa-file-pdf", renk: "#e67e22", link: "https://depo.kirkyama.uk/PDF/9.%20S%C4%B1n%C4%B1f%20OGM/2-%20Neden%20Tarih.pdf" },
 				{ baslik: "Zamanın Taksimi", tur: "PDF Not", icon: "fa-file-pdf", renk: "#e67e22", link: "https://depo.kirkyama.uk/PDF/9.%20S%C4%B1n%C4%B1f%20OGM/3-%20Zaman%C4%B1n%20Taksimi.pdf" },
 				{ baslik: "Tarihe Yardımcı Bilim Dalları", tur: "PDF Not", icon: "fa-file-pdf", renk: "#e67e22", link: "https://depo.kirkyama.uk/PDF/9.SinifSunular/1.%20%C3%9Cnite/Tarihe%20Yard%C4%B1mc%C4%B1%20Bilim%20Dallar%C4%B1.pdf" },
-				{ baslik: "Notİsmi", tur: "PDF Not", icon: "fa-file-pdf", renk: "#e67e22", link: "NotLinki" },
-				{ baslik: "Notİsmi", tur: "PDF Not", icon: "fa-file-pdf", renk: "#e67e22", link: "NotLinki" },
-				{ baslik: "Tarih Öğrenmenin Faydaları", tur: "Sunu", icon: "fa-chalkboard-user", renk: "#e84393", link: "https://depo.kirkyama.uk/PDF/9.SinifSunular/1.%20%C3%9Cnite/1-Tarih%20%C3%96%C4%9Frenmenin%20Faydalar%C4%B1.pdf" },
+				{ baslik: "Tarihi Kaynaklar", tur: "PDF Not", icon: "fa-file-pdf", renk: "#e67e22", link: "https://depo.kirkyama.uk/PDF/9.SinifSunular/1.%20%C3%9Cnite/Tarihi%20Kaynaklar.pdf" },
+				{ baslik: "Tarih Bilimine Giriş", tur: "PDF Not", icon: "fa-file-pdf", renk: "#e67e22", link: "https://depo.kirkyama.uk/PDF/9.SinifSunular/1.%20%C3%9Cnite/Tarih%20Bilimine%20Giri%C5%9F.pdf" },
+				{ baslik: "Tarih Öğrenmenin Faydaları", tur: "Sunu", icon: "fa-chalkboard-user", renk: "#e84393", link: "https://depo.kirkyama.uk/PDF/9.SinifSunular/1.%20%C3%9Cnite/Tarih%20%C3%96%C4%9Frenmenin%20Faydalar%C4%B1.pdf" },
 				{ baslik: "Tarih Araştırma ve Yazımında Dijital Dönüşüm", tur: "Sunu", icon: "fa-chalkboard-user", renk: "#e84393", link: "https://depo.kirkyama.uk/PDF/9.SinifSunular/1.%20%C3%9Cnite/2-Dijitalle%C5%9Fme.pdf" },
                 { baslik: "Kavram Haritası", tur: "PDF Not", icon: "fa-file-pdf", renk: "#e67e22", link: "#" },
                 { baslik: "Tarih Çalışma Kağıdı", tur: "PDF Not", icon: "fa-file-pdf", renk: "#e67e22", link: "#" },

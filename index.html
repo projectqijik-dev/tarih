@@ -118,6 +118,7 @@ html, body {
 .theme-12 .pc-num { color: var(--c-12); } .theme-12 .pe-btn { background: var(--c-12); }
 .theme-med .pc-num { color: var(--c-med); font-size: 1.2rem;} .theme-med .pe-btn { background: var(--c-med); }
 </style>
+    <link rel="stylesheet" href="stiller/rehber.css">
 </head>
 <body>
 
@@ -207,6 +208,7 @@ html, body {
       <div class="info-item"><h4>2. Keşif</h4><p>"Sınıfa Git" butonu ile ders içeriklerine ulaşın.</p></div>
 	  <div class="info-item"><h4>3. Giriş</h4><p>Sınıfınızın sayfasına girmek için tüm alanları doldurun. Şifreniz ilk giriş için okul numaranız+soyadınızdır. İlk kez giriş yaptıktan sonra şifrenizi mutlaka değiştirin. Unutmayın; şifrenizin sorumluluğu tamamen sizdedir.</p></div>
       <div class="info-item"><h4>4. Giriş Sorunu</h4><p>Şifrenizi unutmanız veya sisteme giremezseniz okul saatleri içinde Tarih öğretmeni Murat Mutlu'ya ulaşın. Yeni şifreniz hemen verilecektir.</p></div>
+      <button type="button" class="rehber-tekrar-btn" onclick="document.getElementById('guideModal').classList.remove('active'); rehberiBaslat();"><i class="fas fa-route"></i> Etkileşimli Turu Yeniden Başlat</button>
 	</div>
   </div>
 
@@ -237,6 +239,16 @@ html, body {
 </script>
 
 <script src="motorlar/portal.js"></script>
+
+
+<!-- ═══ İNTERAKTİF KULLANIM REHBERİ ═══ -->
+<div id="rehber-overlay"></div>
+<div id="rehber-kutusu" role="dialog" aria-live="polite">
+    <div class="rehber-ust"><span id="rehber-sayac"></span><button type="button" id="rehber-atla">Atla</button></div>
+    <p id="rehber-metin"></p>
+    <button type="button" id="rehber-ileri">İleri</button>
+</div>
+<script src="motorlar/rehber.js"></script>
 
 </body>
 </html>
