@@ -7,7 +7,7 @@
     'use strict';
 
     var KILITLI = ['u2', 'u3'];
-    var MESAJ = 'Konularımız ilerledikçe bu ünite öğretmenleriniz kullanımınıza açacaktır.';
+    var MESAJ = 'Konularımız ilerledikçe öğretmenleriniz üniteyi kullanımınıza açacaktır.';
     // girisYap() içinde master şifre (1310) ile giriş yapıldığında oluşturulan oturum adı
     var YONETICI_AD = 'Murat Mutlu (Öğretmen)';
 
