@@ -132,3 +132,78 @@
     transition: background 0.2s;
 }
 .rehber-tekrar-btn:hover { background: rgba(212, 175, 55, 0.12); }
+
+/* ═══════════════════════════════════════════════════════════════
+   ÜNİTE KİLİDİ (9. ve 10. sınıf – 2. ve 3. üniteler)
+═══════════════════════════════════════════════════════════════ */
+.folder-btn.unite-kilitli { position: relative; filter: grayscale(0.55); opacity: 0.72; }
+.folder-btn.unite-kilitli::after {
+    content: '\f023';
+    font-family: 'Font Awesome 6 Free';
+    font-weight: 900;
+    position: absolute;
+    top: 10px;
+    right: 12px;
+    font-size: 14px;
+    color: #d4af37;
+}
+#uniteKilitModal {
+    position: fixed;
+    inset: 0;
+    z-index: 100010;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    background: rgba(0, 0, 0, 0.7);
+    -webkit-backdrop-filter: blur(4px);
+    backdrop-filter: blur(4px);
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.25s ease, visibility 0.25s ease;
+}
+#uniteKilitModal.aktif { opacity: 1; visibility: visible; }
+.unite-kilit-kutu {
+    box-sizing: border-box;
+    width: min(380px, 100%);
+    padding: 28px 24px 22px;
+    text-align: center;
+    color: #f5f0e6;
+    font-family: 'Josefin Sans', 'Inter', sans-serif;
+    background: rgba(30, 30, 30, 0.92);
+    border: 1px solid #d4af37;
+    border-top: 5px solid #c0392b;
+    border-radius: 12px;
+    box-shadow: 0 16px 50px rgba(0, 0, 0, 0.65), 0 0 22px rgba(212, 175, 55, 0.2);
+    transform: translateY(12px) scale(0.97);
+    transition: transform 0.25s ease;
+}
+#uniteKilitModal.aktif .unite-kilit-kutu { transform: none; }
+.unite-kilit-ikon {
+    width: 58px;
+    height: 58px;
+    margin: 0 auto 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    color: #d4af37;
+    border: 2px solid #d4af37;
+    border-radius: 50%;
+    background: rgba(212, 175, 55, 0.1);
+}
+.unite-kilit-baslik { margin: 0 0 10px; font-size: 20px; color: #d4af37; }
+.unite-kilit-metin { margin: 0 0 20px; font-size: 15px; line-height: 1.55; }
+.unite-kilit-btn {
+    padding: 10px 30px;
+    background: linear-gradient(135deg, #c0392b, #922b21);
+    color: #fff;
+    border: 1px solid #d4af37;
+    border-radius: 6px;
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    cursor: pointer;
+}
+.unite-kilit-btn:hover { box-shadow: 0 4px 14px rgba(192, 57, 43, 0.5); }
