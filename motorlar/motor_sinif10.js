@@ -38,6 +38,48 @@
     
     function rehberKapat() { document.getElementById('rehberModal').style.display = 'none'; }
 
+    function cikisYap() {
+        const dropdown = document.getElementById('hamburgerDropdown');
+        if (dropdown) dropdown.classList.remove('active');
+
+        const sayfaNo = window.location.pathname.match(/\d+/) ? window.location.pathname.match(/\d+/)[0] : "";
+        const aktifVar = (sayfaNo && localStorage.getItem('aktifOgrenci' + sayfaNo)) ||
+                         localStorage.getItem('globalZumreOturumu') ||
+                         localStorage.getItem('aktifOgrenci') ||
+                         localStorage.getItem('aktifOgrenci9') ||
+                         localStorage.getItem('aktifOgrenci10') ||
+                         localStorage.getItem('aktifOgrenci11') ||
+                         localStorage.getItem('aktifOgrenci12') ||
+                         (typeof ogrenci !== 'undefined' && ogrenci && ogrenci.ad);
+
+        if (!aktifVar) {
+            alert("Henüz sisteme giriş yapmadınız.");
+            return;
+        }
+
+        if (!confirm("Sistemden çıkış yapmak istediğinize emin misiniz?")) {
+            return;
+        }
+
+        if (sayfaNo) {
+            localStorage.removeItem('aktifOgrenci' + sayfaNo);
+        }
+        localStorage.removeItem('aktifOgrenci');
+        localStorage.removeItem('aktifOgrenci9');
+        localStorage.removeItem('aktifOgrenci10');
+        localStorage.removeItem('aktifOgrenci11');
+        localStorage.removeItem('aktifOgrenci12');
+        localStorage.removeItem('globalZumreOturumu');
+        localStorage.removeItem('sinavSession');
+        localStorage.removeItem('sinavSession11');
+        localStorage.removeItem('sinavSession12');
+        localStorage.removeItem('tarih_portal_active_user');
+
+        window.location.reload();
+    }
+    window.cikisYap = cikisYap;
+
+
     function enableDragScroll(slider) {
         let isDown = false; let startX; let scrollLeft;
         slider.addEventListener('mousedown', (e) => { isDown = true; slider.classList.add('active'); startX = e.pageX - slider.offsetLeft; scrollLeft = slider.scrollLeft; });
