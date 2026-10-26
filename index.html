@@ -215,6 +215,27 @@ html, body {
 </div>
 
 <script>
+  // Derin Link (Deep Link) Akıllı Yönlendirici
+  (function() {
+    const params = new URLSearchParams(window.location.search);
+    if ([...params.keys()].length > 0) {
+      const sinif = params.get('sinif');
+      const test = params.get('test') || params.get('sinav');
+      let hedefSayfa = null;
+
+      if (sinif === '10' || (test && (test.includes('u1_askeri') || test.includes('u1_teskilat') || test.includes('u1_sosyo') || test.includes('u2_kurulus') || test.includes('u3_cihan')))) {
+        hedefSayfa = 'sinif10.html';
+      } else if (sinif === '9' || test || params.get('video') || params.get('pdf') || params.get('sunu') || params.get('harita') || params.get('oyun')) {
+        hedefSayfa = 'sinif9.html';
+      }
+
+      if (hedefSayfa) {
+        window.location.replace(hedefSayfa + window.location.search);
+        return;
+      }
+    }
+  })();
+
   function openPillar(el) {
     if (el.classList.contains('active')) { el.classList.remove('active'); return; }
     document.querySelectorAll('.pillar').forEach(p => p.classList.remove('active'));

@@ -865,7 +865,10 @@ function oynatPodcast(link, baslik) {
 
                 let rHtml = "<div class='test-item-left'><div class='test-item-icon'>" + icon + "</div><div class='test-item-info'>";
                 rHtml += "<span class='test-item-title'>" + t.baslik + solvedBadge + "</span><span class='test-item-meta'>" + t.aciklama + "</span></div></div>";
+                rHtml += "<div class='test-item-actions'>";
+                rHtml += "<button type='button' class='test-item-share-btn' title='Test Bağlantısını Kopyala' onclick=\"event.stopPropagation(); window.DinamikUrl && window.DinamikUrl.paylasTest('" + t.id + "', '" + t.baslik.replace(/'/g, "\\'") + "')\"><i class='fa-solid fa-share-nodes'></i></button>";
                 rHtml += "<button class='test-item-start-btn' onclick=\"testSec('" + t.id + "')\">Başla ►</button>";
+                rHtml += "</div>";
                 row.innerHTML = rHtml;
                 testAlani.appendChild(row);
             });
@@ -2072,7 +2075,7 @@ function acHarita(haritaId, baslik, element) {
     const modal = document.getElementById('haritaModal');
     const controlsContainer = document.getElementById('mapControlsContainer');
     
-    document.getElementById('haritaModalBaslik').innerHTML = '<i class="fa-solid fa-map-location-dot"></i> ' + baslik;
+    document.getElementById('haritaModalBaslik').innerHTML = '<i class="fa-solid fa-map-location-dot"></i> ' + baslik + ' <button type="button" class="harita-share-btn" onclick="event.stopPropagation(); window.DinamikUrl && window.DinamikUrl.paylasHarita(\'' + haritaId + '\', \'' + baslik.replace(/'/g, "\\'") + '\')"><i class="fa-solid fa-share-nodes"></i> Paylaş</button>';
     
     if (window.currentMapInstance) {
         window.currentMapInstance.remove();
