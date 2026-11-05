@@ -334,10 +334,12 @@
     }
 
     /* ── Arka plan ── */
+    @media screen {
     body.ottoman-theme {
-        background:#0D1117 !important;
-        color:#F4E4B0 !important;
+        background: #0D1117 !important;
+        color: #F4E4B0 !important;
     }
+}
     .ottoman-bg, .ottoman-starfield, .ottoman-skyline {
         position:fixed; inset:0; pointer-events:none; transition:opacity 0.8s ease;
     }
@@ -556,3 +558,10 @@
         border:1px solid rgba(201,168,76,0.25); background:rgba(201,168,76,0.07);
         font-size:9px; color:#C9A84C; letter-spacing:1px; margin-left:4px;
     }
+
+
+@media print {
+    body, body.ottoman-theme, body.ottoman-theme.focus-mode { background: #ffffff !important; color: #000000 !important; }
+    .ottoman-bg, .ottoman-starfield, .ottoman-skyline { display: none !important; }
+    .container, .question-card, .options label { background: transparent !important; border: none !important; box-shadow: none !important; }
+}

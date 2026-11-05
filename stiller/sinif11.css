@@ -565,9 +565,11 @@ body.balance-theme .settings-panel {
 
 /* ── Arka Plan Katmanları ── */
 body,
-body.balance-theme {
-    background: #080D1A !important;
-    color: #F8F5EE !important;
+@media screen {
+    body.balance-theme {
+        background: #080D1A !important;
+        color: #F8F5EE !important;
+    }
 }
 
 .balance-bg, .balance-starfield, .balance-skyline {
@@ -973,4 +975,11 @@ body.focus-mode .balance-skyline {
     .bal-card { padding: 8px 12px 8px; }
     .bal-tabs { margin-bottom: 6px; }
     .bal-btn { padding: 8px 12px; }
+}
+
+
+@media print {
+    body, body.balance-theme, body.balance-theme.focus-mode { background: #ffffff !important; color: #000000 !important; }
+    .balance-bg, .balance-starfield, .balance-skyline { display: none !important; }
+    .container, .question-card, .options label { background: transparent !important; border: none !important; box-shadow: none !important; }
 }

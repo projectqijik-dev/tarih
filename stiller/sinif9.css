@@ -1,8 +1,10 @@
 /* --- ANTİK MISIR GENEL TEMA VE TAM EKRAN DÜZENİ --- */
-        body.egypt-theme {
-            background: #0D1117 !important;
-            color: #F4E4B0 !important;
-        }
+        @media screen {
+    body.egypt-theme {
+        background: #0D1117 !important;
+        color: #F4E4B0 !important;
+    }
+}
         
         body:has(.container.login-mode) {
             margin: 0 !important; 
@@ -125,3 +127,10 @@
         .egypt-footer-text { font-size: 10px; color: rgba(244,228,176,0.3); letter-spacing: 0.3px; }
         .egypt-footer a { color: #3BA898; text-decoration: none; font-size: 14px; transition: color 0.3s; margin-top: 2px; }
         .egypt-footer a:hover { color: #C9A84C; }
+
+
+@media print {
+    body, body.egypt-theme, body.egypt-theme.focus-mode { background: #ffffff !important; color: #000000 !important; }
+    .egypt-bg, .egypt-starfield, .egypt-pyramids { display: none !important; }
+    .container, .question-card, .options label { background: transparent !important; border: none !important; box-shadow: none !important; }
+}

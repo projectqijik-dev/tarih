@@ -509,21 +509,349 @@ select option {
     transform: translateY(-3px); box-shadow: 0 8px 20px rgba(201,168,76,0.1); border-color: var(--accent-color); background-color: rgba(201, 168, 76, 0.05); 
 }
 
-/* --- YAZDIRMA EKRANI (PRINT CSS) --- */
+/* --- YAZDIRMA EKRANI (PROFESYONEL SORU BANKASI / PRINT CSS) --- */
+.print-header-banner, .print-footer-banner, .print-q-num {
+    display: none;
+}
+.screen-q-num {
+    display: inline;
+}
+
 @media print {
-    body { background: #fff !important; color: #000 !important; }
-    .container { box-shadow: none !important; max-width: 100% !important; padding: 0 !important; margin: 0 !important; }
-    .settings-panel, #progress-container, .floating-btn, .action-btn, #navMap, .timer-box { display: none !important; }
-    .sticky-header { position: static !important; background: transparent !important; box-shadow: none !important; border: none !important; margin: 0 !important; padding: 0 0 20px 0 !important; }
-    .sticky-header button { display: none !important; }
-    #testBaslik { display: block !important; font-size: 24px !important; text-align: center !important; border-bottom: 2px solid #000 !important; padding-bottom: 10px !important; margin-bottom: 20px !important; width: 100% !important; }
-    .question-card { border: none !important; border-bottom: 1px solid #ccc !important; box-shadow: none !important; border-radius: 0 !important; margin-bottom: 15px !important; padding: 10px 0 !important; page-break-inside: avoid; }
-    .options label { border: none !important; background: transparent !important; box-shadow: none !important; padding: 5px 0 !important; margin-bottom: 2px !important; }
+    @page {
+        size: A4 portrait;
+        margin: 10mm 10mm 12mm 10mm;
+    }
+
+    * {
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+        box-sizing: border-box !important;
+    }
+
+    /* ═══ 1. TÜM ARKA PLANLARI BEYAZ / RENKSİZ YAP (SIFIR MÜREKKEP/TONER İSRAFI) ═══ */
+    html,
+    body,
+    body[class],
+    body.egypt-theme,
+    body.ottoman-theme,
+    body.balance-theme,
+    body.dark-mode,
+    body.sepia-mode,
+    body.focus-mode,
+    body.egypt-theme.focus-mode,
+    body.ottoman-theme.focus-mode,
+    body.balance-theme.focus-mode {
+        background: #ffffff !important;
+        background-color: #ffffff !important;
+        background-image: none !important;
+        color: #000000 !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        border: none !important;
+        outline: none !important;
+        box-shadow: none !important;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif !important;
+        font-size: 9.5pt !important;
+        line-height: 1.4 !important;
+    }
+
+    /* CSS Değişkenlerini Beyaz/Renksiz Temaya Zorla */
+    :root, html, body, body[class] {
+        --bg-color: #ffffff !important;
+        --container-bg: #ffffff !important;
+        --text-color: #000000 !important;
+        --accent-color: #000000 !important;
+        --card-border: transparent !important;
+        --option-hover: transparent !important;
+    }
+
+    /* Ekran arayüzü ve tema arka plan efektlerini gizle */
     body > * { display: none !important; }
-    body > .container { display: block !important; }
-    #girisEkrani, #menuEkrani, #sonucEkrani, .modal { display: none !important; }
-    #testEkrani { display: block !important; }
-    .question-header .flag-btn { display: none !important; }
+    .egypt-bg, .egypt-starfield, .egypt-pyramids,
+    .ottoman-bg, .ottoman-starfield, .ottoman-skyline,
+    .balance-bg, .balance-starfield, .balance-skyline,
+    #girisEkrani, #menuEkrani, #sonucEkrani, .modal, .settings-panel,
+    #progress-container, .floating-btn, .action-btn, #navMap, .timer-box,
+    .sticky-header, .flag-btn, #toastKutusu, #muzikKutusu, #rehberOverlay,
+    .kilit-overlay, #kilitModal, button {
+        display: none !important;
+    }
+
+    /* Sayfa geneline kenarlık ekleme: Container tamamen renksiz ve sınırsız */
+    body > .container,
+    .container,
+    body[class] .container {
+        display: block !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        padding: 0 !important;
+        margin: 0 !important;
+        box-shadow: none !important;
+        border: none !important;
+        outline: none !important;
+        border-radius: 0 !important;
+        background: #ffffff !important;
+        background-color: #ffffff !important;
+        background-image: none !important;
+    }
+
+    #testEkrani {
+        display: block !important;
+        width: 100% !important;
+        padding: 0 !important;
+        margin: 0 !important;
+        border: none !important;
+        box-shadow: none !important;
+        background: #ffffff !important;
+        background-color: #ffffff !important;
+    }
+
+    /* ═══ 2. SORU BANKASI ÜST BAŞLIK BANDI ═══ */
+    .print-header-banner {
+        display: block !important;
+        width: 100% !important;
+        margin: 0 0 12px 0 !important;
+        padding: 0 !important;
+        border: none !important;
+        page-break-inside: avoid !important;
+        page-break-after: avoid !important;
+    }
+
+    .print-banner-wrapper {
+        display: flex !important;
+        justify-content: space-between !important;
+        align-items: center !important;
+        background: #ffffff !important;
+        border: 1.5px solid #0284c7 !important;
+        border-radius: 6px !important;
+        padding: 6px 14px !important;
+        gap: 12px !important;
+        box-shadow: none !important;
+    }
+
+    .print-banner-left {
+        display: flex !important;
+        flex-direction: column !important;
+        align-items: flex-start !important;
+        min-width: 105px !important;
+    }
+
+    .print-banner-school {
+        font-size: 10.5pt !important;
+        font-weight: 900 !important;
+        letter-spacing: 0.5px !important;
+        color: #0369a1 !important;
+        text-transform: uppercase !important;
+        line-height: 1.1 !important;
+    }
+
+    .print-banner-sub {
+        font-size: 7.5pt !important;
+        font-weight: 700 !important;
+        color: #64748b !important;
+        letter-spacing: 0.3px !important;
+    }
+
+    .print-banner-center {
+        flex: 1 !important;
+        text-align: center !important;
+    }
+
+    .print-banner-title {
+        font-size: 12.5pt !important;
+        font-weight: 800 !important;
+        color: #0f172a !important;
+        margin: 0 !important;
+        padding: 0 8px !important;
+        line-height: 1.25 !important;
+        letter-spacing: -0.2px !important;
+    }
+
+    .print-banner-right {
+        display: flex !important;
+        align-items: center !important;
+        justify-content: flex-end !important;
+        min-width: 105px !important;
+    }
+
+    .print-banner-badge {
+        display: inline-flex !important;
+        flex-direction: column !important;
+        align-items: center !important;
+        justify-content: center !important;
+        background: #ffffff !important;
+        border: 1.5px solid #e11d48 !important;
+        border-radius: 999px !important;
+        padding: 3px 12px !important;
+        color: #e11d48 !important;
+        font-weight: 800 !important;
+        line-height: 1.1 !important;
+        box-shadow: none !important;
+    }
+
+    .print-banner-badge .badge-row1 {
+        font-size: 7.5pt !important;
+        letter-spacing: 0.5px !important;
+    }
+
+    .print-banner-badge .badge-row2 {
+        font-size: 7pt !important;
+        font-weight: 800 !important;
+        letter-spacing: 0.5px !important;
+    }
+
+    /* Sayfa geneline ve sorular arasına çizgi olmaması istendiğinden başlık altı çizgisini kaldır */
+    .print-banner-divider {
+        display: none !important;
+    }
+
+    /* ═══ 3. ÇİFT SÜTUN SORU BANKASI DÜZENİ (SADECE ORTA ÇİZGİ) ═══ */
+    #sorularAlani {
+        display: block !important;
+        column-count: 2 !important;
+        column-gap: 24px !important;
+        column-rule: 1px solid #cbd5e1 !important; /* YALNIZCA İKİ SÜTUN ARASINDAKİ ORTA ÇİZGİ */
+        margin-top: 8px !important;
+        width: 100% !important;
+        border: none !important;
+        background: transparent !important;
+    }
+
+    /* Sorular arasında çizgi YOK (border: none), tertemiz doğal boşluk */
+    .question-card,
+    body[class] .question-card,
+    body[class] .question-card:last-child {
+        display: block !important;
+        break-inside: avoid !important;
+        page-break-inside: avoid !important;
+        border: none !important;
+        border-bottom: none !important;
+        box-shadow: none !important;
+        border-radius: 0 !important;
+        margin: 0 0 14px 0 !important;
+        padding: 0 !important;
+        font-size: 9.5pt !important;
+        line-height: 1.4 !important;
+        color: #000000 !important;
+        background: transparent !important;
+        background-color: transparent !important;
+        background-image: none !important;
+    }
+
+    .question-header {
+        float: left !important;
+        margin: 0 6px 0 0 !important;
+        padding: 0 !important;
+        border: none !important;
+        background: none !important;
+        line-height: 1.4 !important;
+    }
+
+    .screen-q-num {
+        display: none !important;
+    }
+
+    .print-q-num {
+        display: inline !important;
+        color: #b91c1c !important; /* Net, yüksek kontrastlı soru numarası */
+        font-weight: 900 !important;
+        font-size: 10.5pt !important;
+    }
+
+    .question-number {
+        font-weight: 800 !important;
+    }
+
+    .question-text {
+        font-size: 9.5pt !important;
+        line-height: 1.4 !important;
+        color: #000000 !important;
+        text-align: justify !important;
+        margin-bottom: 5px !important;
+    }
+
+    .question-text p {
+        margin: 0 0 4px 0 !important;
+    }
+
+    .question-text b, .question-text strong {
+        font-weight: 800 !important;
+        color: #000000 !important;
+    }
+
+    .question-text img {
+        max-width: 100% !important;
+        max-height: 120px !important;
+        object-fit: contain !important;
+        display: block !important;
+        margin: 4px auto !important;
+    }
+
+    /* ═══ 4. SEÇENEKLER (RADYO BUTONLARI YOK, PÜRÜZSÜZ KOYU SİYAH OKUMA) ═══ */
+    .options {
+        clear: both !important;
+        display: flex !important;
+        flex-direction: column !important;
+        gap: 1.5px !important;
+        margin-top: 4px !important;
+        padding: 0 !important;
+        background: transparent !important;
+    }
+
+    .options input[type="radio"] {
+        display: none !important;
+    }
+
+    .options label,
+    body[class] .options label {
+        display: block !important;
+        position: static !important;
+        border: none !important;
+        background: transparent !important;
+        background-color: transparent !important;
+        box-shadow: none !important;
+        padding: 0.5px 0 !important;
+        margin: 0 !important;
+        font-size: 9.2pt !important;
+        line-height: 1.35 !important;
+        color: #111827 !important;
+        cursor: default !important;
+    }
+
+    .options label b {
+        font-weight: 800 !important;
+        color: #000000 !important;
+        margin-right: 3px !important;
+    }
+
+    /* Klasik açık uçlu soru kutuları */
+    .question-card textarea {
+        display: block !important;
+        width: 100% !important;
+        height: 65px !important;
+        border: 1px solid #94a3b8 !important;
+        background: #ffffff !important;
+        border-radius: 4px !important;
+        margin-top: 5px !important;
+        resize: none !important;
+        box-shadow: none !important;
+    }
+
+    /* ═══ 5. YAZDIRMA SAYFA ALTI BİLGİSİ (ÇİZGİSİZ, SADE) ═══ */
+    .print-footer-banner {
+        display: flex !important;
+        justify-content: space-between !important;
+        align-items: center !important;
+        border: none !important;
+        border-top: none !important;
+        padding-top: 6px !important;
+        margin-top: 14px !important;
+        font-size: 8pt !important;
+        color: #475569 !important;
+        break-inside: avoid !important;
+        page-break-inside: avoid !important;
+    }
 }
 
 .upload-area { border: 2px dashed var(--card-border); padding: 30px; text-align: center; border-radius: 16px; margin-bottom: 15px; cursor: pointer; transition: all 0.3s; background: var(--option-hover); }

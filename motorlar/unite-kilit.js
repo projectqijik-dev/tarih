@@ -1,14 +1,19 @@
 /* ═══════════════════════════════════════════════════════════════
-   ÜNİTE KİLİDİ – 9. ve 10. sınıflarda yalnızca 1. ünite aktif.
-   Kilit SADECE yönetici (Murat Mutlu, master şifre ile giriş) için kalkar.
-   KILITLI listesinden ID çıkarılırsa ilgili ünite herkese açılır.
+   ÜNİTE KİLİDİ – 9. ve 10. sınıflarda ünite erişim kontrolü.
+   - Kilit SADECE yönetici (Murat Mutlu, master şifre ile giriş) için kalkar.
+   - KILITLI listesinden ID çıkarılırsa ilgili ünite herkese açılır.
+   
+   KULLANIM:
+   - 2. Üniteyi açmak için: var KILITLI = ['u2', 'u3'];
+   - 3. Üniteyi de açmak için: var KILITLI = [];
+   - Her iki üniteyi kilitlemek için: var KILITLI = ['u2', 'u3'];
 ═══════════════════════════════════════════════════════════════ */
 (function () {
     'use strict';
 
+    // Kilitli üniteler listesi (Şu an 1. ve 2. Ünite AÇIK, 3. Ünite KİLİTLİ)
     var KILITLI = ['u2', 'u3'];
-    var MESAJ = 'Konularımız ilerledikçe bu ünite öğretmenleriniz kullanımınıza açacaktır.';
-    // girisYap() içinde master şifre (1310) ile giriş yapıldığında oluşturulan oturum adı
+    var MESAJ = 'Konularımız ilerledikçe öğretmeniniz bu üniteyi kullanımınıza açacaktır.';
     var YONETICI_AD = 'Murat Mutlu (Öğretmen)';
 
     var modal;
@@ -65,9 +70,13 @@
     // Kilitli ünite kartlarının görünümünü oturuma göre güncelle
     function kartlariGuncelle() {
         var admin = yoneticiMi();
-        KILITLI.forEach(function (id) {
+        var tumKlasorler = ['u1', 'u2', 'u3'];
+        tumKlasorler.forEach(function (id) {
             var btn = document.querySelector('.folder-btn[onclick*="\'' + id + '\'"]');
-            if (btn) btn.classList.toggle('unite-kilitli', !admin);
+            if (btn) {
+                var kilitli = !admin && KILITLI.indexOf(id) !== -1;
+                btn.classList.toggle('unite-kilitli', kilitli);
+            }
         });
     }
 
@@ -76,7 +85,10 @@
         var orijinal = window.odayaGir;
         if (typeof orijinal === 'function' && !orijinal.__uniteKilitli) {
             window.odayaGir = function (uniteId) {
-                if (KILITLI.indexOf(uniteId) !== -1 && !yoneticiMi()) { uyariGoster(); return; }
+                if (KILITLI.indexOf(uniteId) !== -1 && !yoneticiMi()) {
+                    uyariGoster();
+                    return;
+                }
                 return orijinal.apply(this, arguments);
             };
             window.odayaGir.__uniteKilitli = true;

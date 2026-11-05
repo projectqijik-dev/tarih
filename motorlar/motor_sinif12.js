@@ -9,6 +9,8 @@
     let ogrenci = {};
     let aktifTest = null;
     let suankiSorular = [];
+    let _guvenliKasa = {};
+    let _aktifSinavOturumu = null;
     let timerInterval;
     let baslangicZamani;
     let flagged = {}; 
@@ -221,7 +223,7 @@
 
         let isleyiciUrl = url;
         if (!url.includes('drive.google.com')) {
-            isleyiciUrl = 'https://docs.google.com/viewer?url=' + encodeURIComponent(url) + '&embedded=true';
+            let temiz = url; try { temiz = decodeURI(url); } catch(e){} isleyiciUrl = 'https://docs.google.com/viewer?url=' + encodeURIComponent(temiz) + '&embedded=true';
         }
 
         document.getElementById('pdfIframe').src = isleyiciUrl;
@@ -742,15 +744,59 @@ function girisBasariliIslemleri(ogr) {
         }
     }
 
-    function girisYap() {
+        // Güvenli Master Şifre Doğrulama (Tuzlanmış SHA-256)
+    function _sha256(ascii) {
+        ascii = unescape(encodeURIComponent(ascii));
+        function rr(v, a) { return (v >>> a) | (v << (32 - a)); }
+        var mathPow = Math.pow, maxWord = mathPow(2, 32), l = 'length', i, j, res = '', words = [];
+        var bitLen = ascii[l] * 8, hash = [], k = [], pc = 0, isC = {};
+        for (var c = 2; pc < 64; c++) {
+            if (!isC[c]) {
+                for (i = 0; i < 313; i += c) isC[i] = c;
+                hash[pc] = (mathPow(c, 0.5) * maxWord) | 0;
+                k[pc++] = (mathPow(c, 1 / 3) * maxWord) | 0;
+            }
+        }
+        ascii += '\x80';
+        while (ascii[l] % 64 - 56) ascii += '\x00';
+        for (i = 0; i < ascii[l]; i++) {
+            j = ascii.charCodeAt(i);
+            words[i >> 2] |= j << ((3 - i) % 4) * 8;
+        }
+        words[words[l]] = (bitLen / maxWord) | 0;
+        words[words[l]] = bitLen;
+        for (j = 0; j < words[l];) {
+            var w = words.slice(j, j += 16), oldH = hash;
+            hash = hash.slice(0, 8);
+            for (i = 0; i < 64; i++) {
+                var w15 = w[i - 15], w2 = w[i - 2], a = hash[0], e = hash[4];
+                var t1 = hash[7] + (rr(e, 6) ^ rr(e, 11) ^ rr(e, 25)) + ((e & hash[5]) ^ ((~e) & hash[6])) + k[i] + (w[i] = (i < 16) ? w[i] : (w[i - 16] + (rr(w15, 7) ^ rr(w15, 18) ^ (w15 >>> 3)) + w[i - 7] + (rr(w2, 17) ^ rr(w2, 19) ^ (w2 >>> 10))) | 0);
+                var t2 = (rr(a, 2) ^ rr(a, 13) ^ rr(a, 22)) + ((a & hash[1]) ^ (a & hash[2]) ^ (hash[1] & hash[2]));
+                hash = [(t1 + t2) | 0].concat(hash);
+                hash[4] = (hash[4] + t1) | 0;
+            }
+            for (i = 0; i < 8; i++) hash[i] = (hash[i] + oldH[i]) | 0;
+        }
+        for (i = 0; i < 8; i++) {
+            for (j = 3; j + 1; j--) {
+                var b = (hash[i] >> (j * 8)) & 255;
+                res += ((b < 16) ? 0 : '') + b.toString(16);
+            }
+        }
+        return res;
+    }
+
+function girisYap() {
         const ad = document.getElementById("adSoyad").value.trim();
         const sinif = document.getElementById("sinif").value;
         const numara = document.getElementById("numara").value.trim();
         const girilenSifre = document.getElementById("sifre").value.trim();
         
-        if (ad.toLocaleLowerCase('tr-TR') === "murat mutlu") {
-            if (girilenSifre === "1310") {
-                ogrenci = { ad: "Murat Mutlu (Öğretmen)", sinif: sinif || "Master", no: numara || "1310" };
+                if (ad.toLocaleLowerCase('tr-TR') === "murat mutlu") {
+            const _SALT = "BogaziciTarih_2026_MuratMutlu_#Key!";
+            const _HASH = "c2003bf55bd2f06c61066252eb2857111e32b5ba678d70d17316b290871103d6";
+            if (_sha256(_SALT + girilenSifre) === _HASH) {
+                ogrenci = { ad: "Murat Mutlu (Öğretmen)", sinif: sinif || "Master", no: numara || "Öğretmen" };
                 girisBasariliIslemleri(ogrenci);
             } else { alert("Master şifresi hatalı!"); }
             return;
@@ -886,6 +932,74 @@ function girisBasariliIslemleri(ogr) {
     function duyuruKapat() { document.getElementById('duyuruModal').style.display = 'none'; }
     function odeveGit() { duyuruKapat(); testSec('test_u1_20_yuzyil_1'); }
 
+    
+    function getTamTestBasligi(testKodu, isKlasik) {
+        let testObj = null;
+        let uniteObj = null;
+        let uniteKey = (typeof aktifOda !== 'undefined' && aktifOda) ? aktifOda : null;
+
+        if (window.MENU_VERI) {
+            if (uniteKey && window.MENU_VERI[uniteKey] && window.MENU_VERI[uniteKey].testler) {
+                testObj = window.MENU_VERI[uniteKey].testler.find(t => t.id === testKodu);
+                if (testObj) uniteObj = window.MENU_VERI[uniteKey];
+            }
+            if (!testObj) {
+                for (const [uKey, uVal] of Object.entries(window.MENU_VERI)) {
+                    if (uVal && uVal.testler) {
+                        const found = uVal.testler.find(t => t.id === testKodu);
+                        if (found) {
+                            testObj = found;
+                            uniteObj = uVal;
+                            uniteKey = uKey;
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+
+        if (!testObj) {
+            return isKlasik ? "Klasik Sınav (Açık Uçlu)" : "Çoktan Seçmeli Test";
+        }
+
+        let uniteNo = "";
+        if (uniteObj && uniteObj.baslik) {
+            const m = uniteObj.baslik.match(/(\d+)\.\s*Ünite/i);
+            if (m) uniteNo = m[1] + ". Ünite";
+        }
+        if (!uniteNo && uniteKey) {
+            const num = String(uniteKey).replace(/\D/g, '');
+            if (num) uniteNo = num + ". Ünite";
+        }
+
+        let baslik = (testObj.baslik || testObj.ad || "").trim();
+        let konu = (testObj.konu || "").trim();
+
+        const isGenelVeyaKlasikGrup = konu.toLowerCase().includes("genel") || konu.toLowerCase() === "klasik sınavlar";
+
+        let detayBaslik = "";
+        if (isGenelVeyaKlasikGrup) {
+            detayBaslik = baslik || "Sınav";
+        } else {
+            const cleanBaslikStem = baslik.replace(/Test\s*\d+/i, '').replace(/Klasik\s*\d+/i, '').trim();
+            if (konu && cleanBaslikStem && (baslik.toLowerCase().includes(konu.toLowerCase()) || konu.toLowerCase().includes(cleanBaslikStem.toLowerCase()))) {
+                detayBaslik = baslik;
+            } else if (konu && baslik) {
+                detayBaslik = konu + " " + baslik;
+            } else {
+                detayBaslik = baslik || konu || "Test";
+            }
+        }
+
+        if (uniteNo) {
+            if (detayBaslik.toLowerCase().startsWith(uniteNo.toLowerCase())) {
+                return detayBaslik;
+            }
+            return uniteNo + ": " + detayBaslik;
+        }
+        return detayBaslik;
+    }
+
     function testSec(testKodu) {
         aktifTest = testKodu;
         const isKlasik = testKodu.includes('klasik');
@@ -910,31 +1024,79 @@ function girisBasariliIslemleri(ogr) {
         ihlalSayisi = 0;
         document.addEventListener("visibilitychange", ihlalTakip);
 
-        let testAdi = isKlasik ? "Klasik Sınav (Açık Uçlu)" : "Çoktan Seçmeli Test";
-        if (window.MENU_VERI && aktifOda) {
-            const testData = window.MENU_VERI[aktifOda].testler.find(t => t.id === testKodu);
-            if (testData) testAdi = testData.baslik;
-        }
+        let testAdi = getTamTestBasligi(testKodu, isKlasik);
         document.getElementById("testBaslik").innerText = testAdi;
+        const printBaslikEl = document.getElementById("printHeaderBaslik");
+        if (printBaslikEl) printBaslikEl.innerText = testAdi;
+        const printBadgeEl = document.getElementById("printHeaderBadge");
+        if (printBadgeEl) {
+            if (isKlasik) {
+                printBadgeEl.innerHTML = '<span class="badge-row1">AÇIK UÇLU</span><span class="badge-row2">KLASİK TEST</span>';
+            } else {
+                printBadgeEl.innerHTML = '<span class="badge-row1">ÇOKTAN SEÇMELİ</span><span class="badge-row2">TEST</span>';
+            }
+        }
 
         sayacBaslat(isKlasik ? 40 * 60 : 30 * 60);
 
         flagged = {};
-        autoSaveData = { cevaplar: {}, flagged: {}, ihlal: 0, testKodu: testKodu, ogrenci: ogrenci, startTime: Date.now() };
+
+        // ═══ GÜVENLİK KALKANI: OTURUM DAMGASI & GİZLİ KASA ═══
+        const baslangicTs = Date.now();
+        const ogrenciId = ogrenci ? (ogrenci.no || ogrenci.ad || "Anonim") : "Bilinmeyen";
+        _aktifSinavOturumu = {
+            testKodu: testKodu,
+            ogrenciId: ogrenciId,
+            baslangic: baslangicTs,
+            soruSayisi: hamSorular.length,
+            token: (typeof _sha256 === 'function' ? _sha256("TarihSinavKalkan_" + testKodu + "_" + baslangicTs + "_" + ogrenciId) : "TOK_" + baslangicTs)
+        };
+
+        _guvenliKasa[testKodu] = [];
+        autoSaveData = { cevaplar: {}, flagged: {}, ihlal: 0, testKodu: testKodu, ogrenci: ogrenci, startTime: baslangicTs };
 
         if (isKlasik) {
-            renderKlasik(alan, hamSorular);
+            const arindirilmisKlasik = hamSorular.map((item, idx) => {
+                _guvenliKasa[testKodu][idx] = { soru: item.soru, cevap: item.cevap };
+                const kopya = Object.assign({}, item);
+                delete kopya.cevap;
+                return kopya;
+            });
+            renderKlasik(alan, arindirilmisKlasik);
         } else {
-            suankiSorular = shuffle(JSON.parse(JSON.stringify(hamSorular))).map(s => {
-                s.shuffledOptions = shuffle([...s.secenekler]); return s;
+            suankiSorular = shuffle(JSON.parse(JSON.stringify(hamSorular))).map((s, idx) => {
+                _guvenliKasa[testKodu][idx] = {
+                    cevap: s.cevap,
+                    aciklama: s.aciklama || ""
+                };
+                delete s.cevap;
+                delete s.aciklama;
+                s.shuffledOptions = shuffle([...s.secenekler]);
+                return s;
             });
             renderTest(alan);
+        }
+
+        // Sınav süresince window.allTests içindeki cevapları maskele
+        if (window.allTests && window.allTests[testKodu]) {
+            window.allTests[testKodu].forEach(item => {
+                if (!item._orijinalKorumada) {
+                    item._gizliCevap = item.cevap;
+                    item._gizliAciklama = item.aciklama;
+                    item._orijinalKorumada = true;
+                    delete item.cevap;
+                    delete item.aciklama;
+                }
+            });
         }
         updateProgress();
         saveToLocal();
     }
 
-    function cleanText(text) { return text.replace(/^[A-E]\)\s*/, ''); }
+    function cleanText(text) {
+        if (!text || typeof text !== 'string') return '';
+        return text.replace(/^[A-E]\)\s*/, '').trim();
+    }
 
     function renderTest(alan) {
         const map = document.getElementById("navMap");
@@ -952,7 +1114,7 @@ function girisBasariliIslemleri(ogr) {
             
             let qHtml = "<div class='question-header'>";
             let konuEtiketi = soru.robotKonu ? " <span style='font-size:13px; font-weight:600; color:var(--text-color); opacity:0.6; margin-left: 8px;'>[" + soru.robotKonu + "]</span>" : "";
-            qHtml += "<span class='question-number'>Soru " + (index + 1) + konuEtiketi + "</span>";
+            qHtml += "<span class='question-number'><span class='screen-q-num'>Soru " + (index + 1) + "</span><span class='print-q-num'>" + (index + 1) + ".</span>" + konuEtiketi + "</span>";
             qHtml += "<button class='flag-btn' id='flag-" + index + "' onclick='bayrakKoy(" + index + ")'><i class=\"fa-solid fa-flag\"></i> Sonra Bak</button>";
             qHtml += "</div>";
             qHtml += "<div class='question-text'>" + soru.soru + "</div>";
@@ -1088,8 +1250,11 @@ function girisBasariliIslemleri(ogr) {
             
             sourceSorular.forEach((item, index) => {
                 const cvp = autoSaveData.cevaplar[index] || "";
+                const kasaVerisi = (_guvenliKasa[aktifTest] && _guvenliKasa[aktifTest][index]) 
+                    ? _guvenliKasa[aktifTest][index] 
+                    : { cevap: "" };
                 raporMetni += "S" + (index+1) + ": " + cvp.replace(/\n/g," ") + " || ";
-                detayHtml += "<div class='explanation-card'><div style='font-weight:700; margin-bottom:10px; font-size:16px;'>Soru " + (index+1) + ": " + item.soru + "</div><div style='margin-bottom:15px; padding: 10px; background: rgba(230, 126, 34, 0.1); border-radius: 8px;'><span style='color:#e67e22; font-weight:800; display:block; margin-bottom:5px;'>Sizin Cevabınız:</span>" + (cvp || "<i>Boş bırakıldı</i>") + "</div><div style='background:rgba(39, 174, 96, 0.1); padding:15px; border-radius:8px;'><span style='color:#27ae60; font-weight:800; display:block; margin-bottom:5px;'>Beklenen Cevap:</span>" + item.cevap + "</div></div>";
+                detayHtml += "<div class='explanation-card'><div style='font-weight:700; margin-bottom:10px; font-size:16px;'>Soru " + (index+1) + ": " + item.soru + "</div><div style='margin-bottom:15px; padding: 10px; background: rgba(230, 126, 34, 0.1); border-radius: 8px;'><span style='color:#e67e22; font-weight:800; display:block; margin-bottom:5px;'>Sizin Cevabınız:</span>" + (cvp || "<i>Boş bırakıldı</i>") + "</div><div style='background:rgba(39, 174, 96, 0.1); padding:15px; border-radius:8px;'><span style='color:#27ae60; font-weight:800; display:block; margin-bottom:5px;'>Beklenen Cevap:</span>" + (kasaVerisi.cevap || item._gizliCevap || item.cevap || "") + "</div></div>";
             });
 
             puan = "DEĞERLENDİRİLECEK";
@@ -1099,14 +1264,17 @@ function girisBasariliIslemleri(ogr) {
             
             suankiSorular.forEach((soru, index) => {
                 const secilen = autoSaveData.cevaplar[index] || "BOŞ";
-                const dogruMetin = cleanText(soru.cevap);
+                const kasaVerisi = (_guvenliKasa[aktifTest] && _guvenliKasa[aktifTest][index]) 
+                    ? _guvenliKasa[aktifTest][index] 
+                    : { cevap: "", aciklama: "" };
+                const dogruMetin = cleanText(kasaVerisi.cevap || "");
                 const isCorrect = (secilen === dogruMetin);
                 
                 if (isCorrect) {
                     dogruSayisi++;
-                    detayHtml += "<div class='explanation-card correct'><div style='font-weight:800; font-size:16px; margin-bottom:8px; color:#27ae60;'>Soru " + (index+1) + " <i class=\"fa-solid fa-check\"></i></div><div style='margin-bottom:8px; font-weight: 500;'>" + soru.soru + "</div><div style='margin-bottom:8px;'>Sizin Cevabınız: <b>" + secilen + "</b></div><div style='opacity:0.9; font-size:14px;'><i>" + (soru.aciklama || "") + "</i></div></div>";
+                    detayHtml += "<div class='explanation-card correct'><div style='font-weight:800; font-size:16px; margin-bottom:8px; color:#27ae60;'>Soru " + (index+1) + " <i class=\"fa-solid fa-check\"></i></div><div style='margin-bottom:8px; font-weight: 500;'>" + soru.soru + "</div><div style='margin-bottom:8px;'>Sizin Cevabınız: <b>" + secilen + "</b></div><div style='opacity:0.9; font-size:14px;'><i>" + (kasaVerisi.aciklama || "") + "</i></div></div>";
                 } else {
-                    detayHtml += "<div class='explanation-card wrong'><div style='font-weight:800; font-size:16px; margin-bottom:8px; color:#e74c3c;'>Soru " + (index+1) + " <i class=\"fa-solid fa-xmark\"></i></div><div style='margin-bottom:8px; font-weight: 500;'>" + soru.soru + "</div><div style='margin-bottom:4px; text-decoration: line-through; opacity: 0.8;'>Sizin Cevabınız: " + secilen + "</div><div style='margin-bottom:8px;'>Doğru Cevap: <b style='color:#e74c3c;'>" + dogruMetin + "</b></div><div style='opacity:0.9; font-size:14px;'><i>" + (soru.aciklama || "") + "</i></div></div>";
+                    detayHtml += "<div class='explanation-card wrong'><div style='font-weight:800; font-size:16px; margin-bottom:8px; color:#e74c3c;'>Soru " + (index+1) + " <i class=\"fa-solid fa-xmark\"></i></div><div style='margin-bottom:8px; font-weight: 500;'>" + soru.soru + "</div><div style='margin-bottom:4px; text-decoration: line-through; opacity: 0.8;'>Sizin Cevabınız: " + secilen + "</div><div style='margin-bottom:8px;'>Doğru Cevap: <b style='color:#e74c3c;'>" + dogruMetin + "</b></div><div style='opacity:0.9; font-size:14px;'><i>" + (kasaVerisi.aciklama || "") + "</i></div></div>";
                     raporMetni += "S" + (index+1) + ":Y (" + secilen + ") | ";
                 }
             });
@@ -1136,11 +1304,46 @@ function girisBasariliIslemleri(ogr) {
             document.getElementById("ihlalSayisi").style.color = "#27ae60";
         }
 
+        // ═══ GÜVENLİK DOĞRULAMA İMZASI & SÜRE DENETİMİ ═══
+        if (_aktifSinavOturumu) {
+            const minBeklenenSure = Math.max(10, (suankiSorular ? suankiSorular.length : 5) * 2);
+            let guvenlikNotu = "";
+            if (gecenSureSn < minBeklenenSure && (suankiSorular ? suankiSorular.length : 0) >= 5) {
+                guvenlikNotu = " [ŞÜPHELİ HIZ]";
+            }
+            const imzaKodu = (typeof _sha256 === 'function' ? _sha256(_aktifSinavOturumu.token + ":" + puan + ":" + gecenSureSn).substring(0, 8).toUpperCase() : "OK");
+            raporMetni += " [İmza: #" + imzaKodu + "]" + guvenlikNotu;
+        }
+
+        // Test tamamlandıktan sonra window.allTests maskesini kaldır
+        if (window.allTests && window.allTests[aktifTest]) {
+            window.allTests[aktifTest].forEach(item => {
+                if (item._orijinalKorumada) {
+                    item.cevap = item._gizliCevap;
+                    item.aciklama = item._gizliAciklama;
+                    delete item._gizliCevap;
+                    delete item._gizliAciklama;
+                    delete item._orijinalKorumada;
+                }
+            });
+        }
+
         const data = { isim: ogrenci.ad, sinif: ogrenci.sinif, numara: ogrenci.no, puan: puan, rapor: "(Süre: " + gecenSureStr + ") " + raporMetni };
         fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(data) }).catch(e => console.log(e));
     }
 
     function anasayfayaDon() {
+        if (window.allTests && aktifTest && window.allTests[aktifTest]) {
+                    window.allTests[aktifTest].forEach(item => {
+                        if (item._orijinalKorumada) {
+                            item.cevap = item._gizliCevap;
+                            item.aciklama = item._gizliAciklama;
+                            delete item._gizliCevap;
+                            delete item._gizliAciklama;
+                            delete item._orijinalKorumada;
+                        }
+                    });
+                }
         document.getElementById("sonucEkrani").classList.add("hidden");
         document.getElementById("menuEkrani").classList.remove("hidden");
         if(typeof salonaDon === 'function') salonaDon();
@@ -1152,6 +1355,17 @@ function girisBasariliIslemleri(ogr) {
 
     function testtenCik() {
         if(confirm("Testten çıkmak istediğinize emin misiniz? Kaydetmediğiniz ilerlemeler kaybolacaktır.")) {
+            if (window.allTests && aktifTest && window.allTests[aktifTest]) {
+                        window.allTests[aktifTest].forEach(item => {
+                            if (item._orijinalKorumada) {
+                                item.cevap = item._gizliCevap;
+                                item.aciklama = item._gizliAciklama;
+                                delete item._gizliCevap;
+                                delete item._gizliAciklama;
+                                delete item._orijinalKorumada;
+                            }
+                        });
+                    }
             clearInterval(timerInterval); document.removeEventListener("visibilitychange", ihlalTakip);
             localStorage.removeItem('sinavSession12'); document.getElementById("testEkrani").classList.add("hidden");
             document.getElementById("menuEkrani").classList.remove("hidden");
@@ -1267,7 +1481,12 @@ function girisBasariliIslemleri(ogr) {
         aktifOda = null; 
         testSec("robot_sinavi");
         
-        document.getElementById("testBaslik").innerHTML = '<i class="fa-solid fa-robot"></i> Özel Karma Sınav (' + secilenSorular.length + ' Soru)';
+        const robotBaslik = "Özel Karma Sınav (" + secilenSorular.length + " Soru)";
+        document.getElementById("testBaslik").innerHTML = '<i class="fa-solid fa-robot"></i> ' + robotBaslik;
+        const printBaslikEl = document.getElementById("printHeaderBaslik");
+        if (printBaslikEl) printBaslikEl.innerText = robotBaslik;
+        const printBadgeEl = document.getElementById("printHeaderBadge");
+        if (printBadgeEl) printBadgeEl.innerHTML = '<span class="badge-row1">KARMA TEST</span><span class="badge-row2">' + secilenSorular.length + ' SORU</span>';
     }
 
     /* --- YEDEKLEME (LOCAL STORAGE) FONKSİYONLARI --- */
