@@ -336,6 +336,25 @@
 
     <!-- ═══ TEST EKRANI ═══ -->
     <div id="testEkrani" class="hidden">
+        <!-- ═══ YAZDIRMA BAŞLIK BANDI (Sadece Yazdırmada Görünür) ═══ -->
+        <div class="print-header-banner">
+            <div class="print-banner-wrapper">
+                <div class="print-banner-left">
+                    <span class="print-banner-school">TARİH PORTALI</span>
+                    <span class="print-banner-sub">Soru Bankası</span>
+                </div>
+                <div class="print-banner-center">
+                    <h1 class="print-banner-title" id="printHeaderBaslik">Sınav</h1>
+                </div>
+                <div class="print-banner-right">
+                    <div class="print-banner-badge" id="printHeaderBadge">
+                        <span class="badge-row1">ÇOKTAN SEÇMELİ</span>
+                        <span class="badge-row2">TEST</span>
+                    </div>
+                </div>
+            </div>
+            <div class="print-banner-divider"></div>
+        </div>
         <div class="sticky-header">
             <div style="display:flex;justify-content:space-between;align-items:center;">
                 <div style="display:flex;align-items:center;gap:10px;">
@@ -351,6 +370,10 @@
             <div class="nav-map" id="navMap"></div>
         </div>
         <div id="sorularAlani" style="margin-top:25px;"></div>
+        <div class="print-footer-banner">
+            <span>Tarih Portalı — Soru Bankası</span>
+            <span>Özel Batman Boğaziçi Koleji MTAL</span>
+        </div>
         <button class="action-btn btn-center" onclick="ozetGoster()">Sınavı Bitir ve Gönder</button>
     </div>
 
@@ -665,12 +688,13 @@
             <button onclick="onPdfZoomIn()" style="background: rgba(201,168,76,0.15); border: 1px solid rgba(201,168,76,0.3); color: var(--accent-color); padding: 4px 10px; border-radius: 6px; cursor: pointer; margin-left: 5px; transition: 0.2s;"><i class="fa-solid fa-magnifying-glass-plus"></i></button>
             <button onclick="onPdfZoomOut()" style="background: rgba(201,168,76,0.15); border: 1px solid rgba(201,168,76,0.3); color: var(--accent-color); padding: 4px 10px; border-radius: 6px; cursor: pointer; transition: 0.2s;"><i class="fa-solid fa-magnifying-glass-minus"></i></button>
             
+            <a id="pdfNewTabBtn" href="#" target="_blank" style="background: rgba(52, 152, 219, 0.2); border: 1px solid rgba(52, 152, 219, 0.5); color: #3498db; padding: 4px 10px; border-radius: 6px; cursor: pointer; margin-left: 5px; transition: 0.2s; text-decoration: none; display: flex; align-items: center; justify-content: center;" title="Yeni Sekmede Tam Ekran Aç" onmouseover="this.style.background='rgba(52, 152, 219, 0.4)'" onmouseout="this.style.background='rgba(52, 152, 219, 0.2)'"><i class="fa-solid fa-arrow-up-right-from-square"></i></a>
             <a id="pdfDownloadBtn" href="#" target="_blank" download style="background: rgba(139, 26, 26, 0.2); border: 1px solid rgba(139, 26, 26, 0.5); color: #A83232; padding: 4px 10px; border-radius: 6px; cursor: pointer; margin-left: 5px; transition: 0.2s; text-decoration: none; display: flex; align-items: center; justify-content: center;" title="PDF'yi İndir" onmouseover="this.style.background='rgba(139, 26, 26, 0.4)'" onmouseout="this.style.background='rgba(139, 26, 26, 0.2)'"><i class="fa-solid fa-download"></i></a>
             
             <button onclick="pdfKapat()" style="background: transparent; border: none; color: var(--accent-color); cursor: pointer; font-size: 20px; display: flex; align-items: center; justify-content: center; margin-left: 5px;" title="Kapat"><i class="fa-solid fa-xmark"></i></button>
         </div>
     </div>
-    <div id="pdfRenderArea" style="width: 100%; height: 65vh; overflow: auto; display: flex; justify-content: center; background: rgba(0,0,0,0.1); padding: 20px 0;">
+    <div id="pdfRenderArea" style="width: 100%; height: 75vh; min-height: 520px; overflow: auto; display: flex; justify-content: center; background: #ffffff; position: relative;">
         <canvas id="pdfCanvas" style="box-shadow: 0 4px 15px rgba(0,0,0,0.3); max-width: 100%; height: auto;"></canvas>
     </div>
 </div>
